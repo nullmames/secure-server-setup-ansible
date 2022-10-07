@@ -1,9 +1,0 @@
----
-- name: Run setup playbook
-  hosts: all
-  gather_facts: false
-  become: true
-  vars_files:
-    - "{{ user_file }}"
-  roles:
-    - setup
