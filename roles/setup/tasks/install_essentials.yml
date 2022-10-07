@@ -21,6 +21,8 @@
       - zip
       - net-tools
       - tuned
+      - tuned-utils
+      - tuned-utils-systemtap
       - tmux
       - vlan
       - nvme-cli
@@ -38,8 +40,8 @@
     name: Etc/UTC
 
 # Set tune profile
-- name: Force tuned server profile to throughput-performance
-  ansible.builtin.command: /usr/sbin/tuned-adm profile throughput-performance
+- name: Force tuned server profile to latency-performance
+  ansible.builtin.command: /usr/sbin/tuned-adm profile latency-performance
 
 # Add toml highlighter for vim
 - name: Add TOML vim plugin
