@@ -1,0 +1,12 @@
+---
+#
+# Prepare a target for an upgrade
+# ansible-playbook main_cosmos_node_upgrade.yml -i inventory-testnet.ini --limit testnet_juno -e "upgrade_name=v12.0.0 node_version=1.2.3"
+- name: Prepare network upgrade using cosmovisor
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ var_file }}"
+  roles:
+    - cosmos_node_install
+    - cosmos_node_upgrade

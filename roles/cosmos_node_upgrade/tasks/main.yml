@@ -1,0 +1,24 @@
+---
+# Prep upgrade in cosmovisor
+- name: Create cosmovisor upgrade directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
+
+- name: Copy upgraded binary to upgrade directory
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/go/bin/{{ daemon }}"
+    dest: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
+    remote_src: true
+    mode: 0755
+
+- name: Save version
+  ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin/{{ daemon }} version"
+  register: version
+
+- name: Confirm version
+  ansible.builtin.debug:
+    msg: "{{ version.stdout }} or {{ version.stderr }} should be equal to {{ node_version }}"

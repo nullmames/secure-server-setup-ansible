@@ -38,7 +38,17 @@ ansible-playbook main.yml
 
 # or, for some scripts that are reduced to a target
 
-anisble-playbook main.yaml -e "target=hostname"
+anisble-playbook main.yaml --limit groupName
+
+# For Cosmos init:
+ansible-playbook main_cosmos_node.yml --limit groupName # or machineName
+
+# To stage an upgrade
+# upgrade_name is the upgrade name as defined in the proposal.  node_version overrides the variable as set in the vars file.
+# Caution: This will replace the version located in $HOME/go/bin with this upgraded version, so be sure to not run this manually prior to upgrade or you could app-hash and have to re-sync
+
+ansible-playbook main_cosmos_node_upgrade.yml --limit groupName -e "upgrade_name=v1.2.0beta node_version=v1.2.0beta"
+
 
 ```
 
