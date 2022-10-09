@@ -5,4 +5,4 @@
   gather_facts: false
   become: true
   roles:
-    - init
+    - init_vsphere

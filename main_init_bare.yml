@@ -1,0 +1,28 @@
+---
+# To init a templated vsphere image for use
+- name: Initial init of machines not ready for other playbooks
+  hosts: raw
+  gather_facts: false
+  vars_files:
+    - "{{ user_file }}"
+  become: true
+  roles:
+    - init_bare
+
+  post_tasks:
+    - name: Get list of PIDs for user
+      ansible.builtin.shell: "ps -u {{ initial_user }} -o pid --no-header | awk '{print $1}'"
+      register: pids_result
+
+    - name: Wait for all user processes to exit
+      ansible.builtin.wait_for:
+        path: "/proc/{{ item }}/status"
+        state: absent
+      with_items: "{{ pids_result.stdout_lines }}"
+      when: pids_result is defined
+
+    - name: Delete ansible_user
+      ansible.builtin.user:
+        name: "{{ initial_user }}"
+        state: absent
+        remove: true
