@@ -31,14 +31,18 @@ cp inventory.sample inventory.ini
 Update information in the inventory file. Mostly like you will need to update the server IP and hostname fields, create groups, all that. Then run main ansible playbook.
 
 ```bash
+# For init'ing new machines, two playbooks exist:
+#
+# vSphere machines that carry multiple IPs:
+ansible-playbook main_init_vsphere --limit groupName
+# These inventory items carry additional fields: internal_ip="10.254.106.175" external_ip="38.146.3.175"
+#
+# Bare metal from cloud providers.  These are typically provisioned with a username (debian, etc.) using a provided security key.
+ansible-playbook main_init_bare --limit groupName
+# These inventory items carry an additional field for the initial login: initial_user="debian".  This user is deleted at the end of this profile.
 
-ansible-playbook main.yml
-
-# Optionally with a `--limit groupname`
-
-# or, for some scripts that are reduced to a target
-
-anisble-playbook main.yaml --limit groupName
+# For Basic user and security setup:
+ansible-playbook main.yaml --limit groupName
 
 # For Cosmos init:
 ansible-playbook main_cosmos_node.yml --limit groupName # or machineName
