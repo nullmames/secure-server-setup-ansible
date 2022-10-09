@@ -7,7 +7,7 @@
     autoremove: true
     autoclean: true
 
-# Ensure sudo is on
+# Ensure sudo is installed
 - name: Install sudo
   ansible.builtin.apt:
     name:
