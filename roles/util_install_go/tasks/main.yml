@@ -3,20 +3,24 @@
     url: "https://golang.org/dl/{{ go_release }}"
     dest: "/tmp/{{ go_release }}"
     mode: "0700"
+  register: goversion
 
-- name: Remove go binary
-  ansible.builtin.file:
-    path: /usr/local/go
-    state: absent
-  become: true
-  ignore_errors: true
+- name: Install new go version
+  block:
+    - name: Remove go binary
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+      become: true
+      ignore_errors: true
 
-- name: Unarchive go release
-  ansible.builtin.unarchive:
-    src: /tmp/{{ go_release }}
-    dest: /usr/local
-    remote_src: true
-  become: true
+    - name: Unarchive go release
+      ansible.builtin.unarchive:
+        src: /tmp/{{ go_release }}
+        dest: /usr/local
+        remote_src: true
+      become: true
+  when: goversion.changed
 
 # Copy .profile with GO additions
 - name: Copy .profile

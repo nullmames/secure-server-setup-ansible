@@ -5,6 +5,7 @@ val = $(or $(word 2,$(subst ": ", , $1)),$(value 2))
 # "cannot execute binary file: Exec format error"
 #hostarch:=linux_amd64
 hostarch:=darwin_arm64
+
 tmphorcruxVer := $(shell grep horcrux_version group_vars/all.yml)
 tmphorcruxRepo := $(shell grep horcrux_repo group_vars/all.yml)
 horcruxVer = $(subst $\',,$(call val,$(tmphorcruxVer)))

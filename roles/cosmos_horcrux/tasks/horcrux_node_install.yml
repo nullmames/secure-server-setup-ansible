@@ -4,6 +4,7 @@
     dest: "{{ user_dir }}/source/horcrux"
     version: "{{ horcrux_version }}"
     update: true
+  register: horcrux
 
 - name: Install horcrux
   ansible.builtin.command: "{{ item }}"
@@ -14,3 +15,4 @@
   environment:
     PATH: "{{ path }}"
     GOPATH: "{{ user_dir }}/go"
+  when: horcrux.changed

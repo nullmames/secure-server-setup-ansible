@@ -4,10 +4,7 @@
   hosts: horcrux
   gather_facts: false
   vars_files:
-    - "{{ user_file }}"
     - "{{ var_file_horcrux }}"
   roles:
-    # - { role: setup, become: true }
-    # - { role: secure, become: true }
-    # - cosmos_node_dependencies
+    - util_install_go
     - cosmos_horcrux
