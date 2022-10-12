@@ -15,3 +15,4 @@
         name: "aptos-node"
         daemon_reload: true
         state: restarted
+      when: aptos_version.changed
