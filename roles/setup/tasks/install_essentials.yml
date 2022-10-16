@@ -6,7 +6,6 @@
       - chrony
       - htop
       - screen
-      - git
       - build-essential
       - wget
       - curl
@@ -39,18 +38,22 @@
   community.general.timezone:
     name: Etc/UTC
 
-# Set tune profile
-- name: Force tuned server profile to latency-performance
-  ansible.builtin.command: /usr/sbin/tuned-adm profile latency-performance
+- name: Retrieve tuned profile
+  ansible.builtin.slurp:
+    src: "/etc/tuned/active_profile"
+  register: active_profile
 
-# Add toml highlighter for vim
+- name: Set tuned profile
+  ansible.builtin.command: "/usr/sbin/tuned-adm profile {{ tuned }}"
+  when: active_profile.content | b64decode | trim != tuned
+
 - name: Add TOML vim plugin
   become: false
   ansible.builtin.git:
-    repo: https://github.com/cespare/vim-toml.git
-    dest: /home/{{ ansible_user }}/.vim/pack/plugins/start/vim-toml
+    repo: "https://github.com/cespare/vim-toml.git"
+    dest: "{{ user_dir }}/.vim/pack/plugins/start/vim-toml"
     single_branch: true
-    version: main
+    version: "main"
 
 - name: Create source if it does not exist
   become: false
@@ -58,11 +61,3 @@
     path: "{{ user_dir }}/source"
     state: directory
     mode: "0755"
-
-- name: Add Yet Another Benchmark script
-  become: false
-  ansible.builtin.git:
-    repo: https://github.com/masonr/yet-another-bench-script.git
-    dest: /home/{{ ansible_user }}/source/yabs
-    single_branch: true
-    version: master

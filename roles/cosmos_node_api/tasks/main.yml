@@ -5,6 +5,15 @@
     regexp: "iavl-cache-size"
     line: "iavl-cache-size = 3906250"
 
+- name: Add IAVLDisableFastNode option
+  ansible.builtin.blockinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    insertafter: "iavl-cache-size = 3906250"
+    block: |
+      # IAVLDisableFastNode enables or disables the fast node feature of IAVL.
+      # Default is true.
+      iavl-disable-fastnode = true
+
 - name: Enable unsafe CORS
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
@@ -15,12 +24,12 @@
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
     regexp: "query_gas_limit"
-    line: "query_gas_limit = 1000000"
+    line: "query_gas_limit = 5000000"
 
 - name: Add additional wasm items
   ansible.builtin.blockinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    insertafter: "query_gas_limit = 1000000"
+    insertafter: "query_gas_limit = 5000000"
     block: |
-      simulation_gas_limit = 20000000
-      memory_cache_size = 4000
+      simulation_gas_limit = 50000000
+      memory_cache_size = 8000

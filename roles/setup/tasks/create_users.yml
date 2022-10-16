@@ -4,33 +4,23 @@
     name: "{{ ansible_user }}"
     password: "{{ password }}"
     state: present
-    shell: /bin/bash
+    shell: /bin/zsh
 
-- name: Set authorized key 1
+- name: Set authorized keys
   ansible.posix.authorized_key:
     user: "{{ ansible_user }}"
-    key: "{{ ssh_pubkey1 }}"
+    key: "{{ item }}"
+  loop:
+    - "{{ ssh_pubkey1 }}"
+    - "{{ ssh_pubkey2 }}"
 
-- name: Set authorized key 2
-  ansible.posix.authorized_key:
-    user: "{{ ansible_user }}"
-    key: "{{ ssh_pubkey2 }}"
-
-- name: Allow sudo for administrator
+- name: Allow sudo
   ansible.builtin.copy:
     content: "{{ ansible_user }} ALL=(ALL:ALL) NOPASSWD: ALL"
     dest: "/etc/sudoers.d/{{ ansible_user }}"
     owner: "root"
     group: "root"
     mode: "0440"
-
-- name: Create alias file
-  ansible.builtin.template:
-    src: bash_aliases.j2
-    dest: "/home/{{ ansible_user }}/.bash_aliases"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0644"
 
 - name: Create .screenrc
   ansible.builtin.template:
@@ -39,3 +29,40 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0644"
+
+- name: Clone ohmyz.sh
+  become: false
+  ansible.builtin.git:
+    repo: "https://github.com/ohmyzsh/ohmyzsh.git"
+    dest: "{{ user_dir }}/.oh-my-zsh"
+    version: "master"
+    single_branch: true
+    update: true
+    force: true
+
+- name: Copy .zshrc config
+  become: false
+  ansible.builtin.template:
+    src: "zshrc.j2"
+    dest: "{{ user_dir }}/.zshrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Add honukai theme
+  become: false
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/oskarkrawczyk/honukai-iterm/master/honukai.zsh-theme"
+    dest: "{{ user_dir }}/.oh-my-zsh/custom/themes/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Add zsh-autosuggestion
+  become: false
+  ansible.builtin.git:
+    repo: "https://github.com/zsh-users/zsh-autosuggestions"
+    dest: "{{ user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    version: "master"
+    single_branch: true
+    update: true

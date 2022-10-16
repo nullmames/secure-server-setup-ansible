@@ -1,68 +1,71 @@
 ---
-- name: Create Promtail user
-  ansible.builtin.user:
-    name: promtail
-    comment: "Promtail user"
-    shell: /usr/sbin/nologin
-    groups: ["systemd-journal", "adm"]
-    state: present
+- name: Install Promtail
+  when: promtail == "true"
+  block:
+    - name: Create Promtail user
+      ansible.builtin.user:
+        name: promtail
+        comment: "Promtail user"
+        shell: /usr/sbin/nologin
+        groups: ["systemd-journal", "adm"]
+        state: present
 
-- name: Creates Promtail directory
-  ansible.builtin.file:
-    path: "/etc/promtail"
-    state: directory
-    owner: promtail
-    group: promtail
-    recurse: true
-    mode: "0755"
-  changed_when: false
+    - name: Creates Promtail directory
+      ansible.builtin.file:
+        path: "/etc/promtail"
+        state: directory
+        owner: promtail
+        group: promtail
+        recurse: true
+        mode: "0755"
+      changed_when: false
 
-- name: Install unzip
-  ansible.builtin.apt:
-    name: unzip
-    state: present
+    - name: Install unzip
+      ansible.builtin.apt:
+        name: unzip
+        state: present
 
-- name: Download Promtail
-  ansible.builtin.get_url:
-    url: "https://github.com/grafana/loki/releases/download/{{ promtail_version }}/promtail-linux-amd64.zip"
-    dest: "/tmp/promtail-linux-amd64.zip"
-    mode: "0700"
+    - name: Download Promtail
+      ansible.builtin.get_url:
+        url: "https://github.com/grafana/loki/releases/download/{{ promtail_version }}/promtail-linux-amd64.zip"
+        dest: "/tmp/promtail-linux-amd64.zip"
+        mode: "0700"
 
-- name: Unarchive promtail
-  ansible.builtin.unarchive:
-    src: "/tmp/promtail-linux-amd64.zip"
-    remote_src: true
-    dest: "/tmp"
+    - name: Unarchive promtail
+      ansible.builtin.unarchive:
+        src: "/tmp/promtail-linux-amd64.zip"
+        remote_src: true
+        dest: "/tmp"
 
-- name: Copy binary file
-  ansible.builtin.copy:
-    src: "/tmp/promtail-linux-amd64"
-    dest: "/usr/local/bin/promtail"
-    remote_src: true
-    owner: promtail
-    group: promtail
-    mode: "0755"
+    - name: Copy binary file
+      ansible.builtin.copy:
+        src: "/tmp/promtail-linux-amd64"
+        dest: "/usr/local/bin/promtail"
+        remote_src: true
+        owner: promtail
+        group: promtail
+        mode: "0755"
 
-- name: Copy promtail config
-  ansible.builtin.template:
-    src: "promtail.yml.j2"
-    dest: "/etc/promtail/promtail.yml"
-    owner: promtail
-    group: promtail
-    mode: "0600"
+    - name: Copy promtail config
+      ansible.builtin.template:
+        src: "promtail.yml.j2"
+        dest: "/etc/promtail/promtail.yml"
+        owner: promtail
+        group: promtail
+        mode: "0600"
 
-- name: Copy promtail service file
-  ansible.builtin.copy:
-    src: "promtail.service"
-    dest: "/etc/systemd/system/promtail.service"
-    owner: root
-    group: root
-    mode: "0600"
+    - name: Copy promtail service file
+      ansible.builtin.copy:
+        src: "promtail.service"
+        dest: "/etc/systemd/system/promtail.service"
+        owner: root
+        group: root
+        mode: "0600"
 
-- name: Start promtail service
-  ansible.builtin.systemd:
-    name: promtail
-    state: started
-    daemon_reload: true
-    enabled: true
-  changed_when: false
+    - name: Start promtail service
+      ansible.builtin.systemd:
+        name: promtail
+        state: started
+        daemon_reload: true
+        enabled: true
+      changed_when: false

@@ -8,10 +8,12 @@
     autoclean: true
 
 # Ensure sudo is installed
-- name: Install sudo
+- name: Install required packages
   ansible.builtin.apt:
     name:
       - sudo
+      - zsh
+      - git
     state: present
     update_cache: true
     cache_valid_time: 3600

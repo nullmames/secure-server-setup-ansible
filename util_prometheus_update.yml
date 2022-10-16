@@ -1,0 +1,8 @@
+---
+- name: Update prometheus
+  hosts: monitoring-grafana-prod
+  gather_facts: false
+  become: true
+  roles:
+    - util_system_update
+    - util_prometheus

@@ -20,3 +20,10 @@ iface ens224 inet static
         gateway {{ external_ip.split('.')[0] }}.{{ external_ip.split('.')[1] }}.{{ external_ip.split('.')[2] }}.1
         dns-nameservers 208.67.220.220 208.67.222.222
         dns-search rhinostake.com
+
+{% if external_ip.split('.')[0] == '38' %}
+iface ens224 inet6 static
+    address 2001:550:2:DF::10:{{ external_ip.split('.')[3] }}/112
+    gateway 2001:550:2:DF::10:1
+    dns-nameservers 2620:119:35::35 2620:119:53::53
+{% endif %}

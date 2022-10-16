@@ -4,7 +4,7 @@
   register: aptos_version
 
 - name: Build new version & install
-  when: "aptos_version.stdout != node_version"
+  when: (aptos_version.stdout != node_version) or (aptos_version.sdtout == "")
   block:
     - name: Update aptos repo for node install
       ansible.builtin.git:
@@ -20,9 +20,9 @@
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
-        - "nice -n 10 cargo clean"
-        - "nice -n 10 cargo build --package aptos --profile release"
-        - "nice -n 10 cargo build --package aptos-node --profile release"
+        - "nice -n 15 cargo clean"
+        - "nice -n 15 cargo build --package aptos --profile release"
+        - "nice -n 15 cargo build --package aptos-node --profile release"
       environment:
         PATH: "{{ path }}"
 
@@ -38,3 +38,4 @@
       loop:
         - aptos
         - aptos-node
+      notify: Restart aptos-node

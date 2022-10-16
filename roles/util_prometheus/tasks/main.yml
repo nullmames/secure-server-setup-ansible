@@ -1,0 +1,9 @@
+---
+- name: Update prometheus.yml
+  ansible.builtin.copy:
+    src: prometheus.yml
+    dest: "/etc/prometheus/prometheus.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart prometheus

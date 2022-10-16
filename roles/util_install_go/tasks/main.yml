@@ -22,11 +22,10 @@
       become: true
   when: goversion.changed
 
-# Copy .profile with GO additions
-- name: Copy .profile
+- name: Copy .zprofile
   ansible.builtin.template:
-    src: "profile.j2"
-    dest: "{{ user_dir }}/.profile"
+    src: "zprofile.j2"
+    dest: "{{ user_dir }}/.zprofile"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0600"

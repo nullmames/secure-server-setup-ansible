@@ -21,4 +21,6 @@
 
 - name: Confirm version
   ansible.builtin.debug:
-    msg: "{{ version.stdout }} or {{ version.stderr }} should be equal to {{ node_version }}"
+    msg:
+      - "Binary reported version: {{ version.stdout }} should match requested: {{ node_version }}."
+      - "Binary installed into {{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin/"
