@@ -1,8 +1,8 @@
 ---
 - name: Restart aptos-node
   become: true
+  when: aptos_version.stdout is none
   ansible.builtin.systemd:
-    name: "aptos-node"
-    daemon_reload: true
+    name: aptos-node
     state: restarted
-  when: aptos_version.sdtout != ""
+    daemon_reload: true
