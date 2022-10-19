@@ -19,7 +19,7 @@
         recurse: true
         mode: "0755"
 
-    - name: Install node
+    - name: Build and install node to go/bin folder
       ansible.builtin.command: "{{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"

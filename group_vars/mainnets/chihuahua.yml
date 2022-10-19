@@ -14,4 +14,3 @@ snap_rpc: "https://chihuahua-rpc.polkachu.com:443"
 # [Optional] Snapshot
 snapshot_hour: 0
 snapshot_minute: 0
-# upgrade_name: burnmech

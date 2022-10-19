@@ -1,9 +1,10 @@
 - name: Download go
+  become: true
+  register: goversion
   ansible.builtin.get_url:
     url: "https://golang.org/dl/{{ go_release }}"
     dest: "/tmp/{{ go_release }}"
     mode: "0700"
-  register: goversion
 
 - name: Install new go version
   block:
