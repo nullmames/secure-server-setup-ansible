@@ -1,8 +1,25 @@
 ---
 - name: Restart aptos-node
   become: true
-  when: aptos_version.stdout is none
+  when: (aptos_version.stdout != node_version)
+  notify: Add annotation
   ansible.builtin.systemd:
     name: aptos-node
     state: restarted
     daemon_reload: true
+
+- name: Add annotation
+  vars:
+    time: "{{ lookup('pipe', 'date +%s000') }}"
+  ansible.builtin.uri:
+    url: "{{ grafana_url }}/api/annotations"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: Bearer {{ grafana_api }}
+      Accept: application/json
+    body:
+      dashboardUID: bz8kPr673
+      tags: ["aptos:upgrade", "aptos:restart", "{{ folder }}"]
+      text: "Upgrade to version {{ node_version }}"
+  delegate_to: 127.0.0.1
