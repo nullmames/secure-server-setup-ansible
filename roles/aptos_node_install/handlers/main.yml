@@ -9,8 +9,6 @@
     daemon_reload: true
 
 - name: Add annotation
-  vars:
-    time: "{{ lookup('pipe', 'date +%s000') }}"
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
     method: POST
