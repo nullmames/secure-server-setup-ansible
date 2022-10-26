@@ -13,6 +13,6 @@
   args:
     chdir: "{{ user_dir }}/source/{{ network }}"
   with_items:
-    - "./scripts/dev_setup.sh -b"
+    - "nice -n 15 ./scripts/dev_setup.sh -b"
   environment:
     PATH: "{{ path }}"
