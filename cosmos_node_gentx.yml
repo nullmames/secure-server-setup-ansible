@@ -1,0 +1,10 @@
+---
+- name: Cosmos Gentx Prep
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ var_file }}"
+    - "{{ user_file }}"
+  roles:
+    - util_install_go
+    - cosmos_node_install
