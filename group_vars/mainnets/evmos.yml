@@ -13,5 +13,3 @@ snap_rpc: "https://evmos-rpc.polkachu.com:443"
 # [Optional] Snapshot
 snapshot_hour: 1
 snapshot_minute: 30
-
-upgrade_name: v9.1.0
