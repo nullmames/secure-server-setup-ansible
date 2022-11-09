@@ -84,8 +84,21 @@
     single_branch: true
     force: true
     version: main
-# - name: Add blockpane's pvtop
-#   ansible.builtin.shell: "go install github.com/blockpane/pvtop@latest"
-#   environment:
-#     PATH: "/usr/local/go/bin"
-#     GOPATH: "{{ user_dir }}/go"
+
+- name: Add pvtop repository
+  ansible.builtin.git:
+    repo: https://github.com/blockpane/pvtop.git
+    dest: /home/{{ ansible_user }}/source/pvtop
+    single_branch: true
+    force: true
+    version: main
+
+- name: Install pvtop
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "{{ user_dir }}/source/pvtop"
+  with_items:
+    - "go install ./..."
+  environment:
+    PATH: "{{ path }}"
+    GOPATH: "{{ user_dir }}/go"
