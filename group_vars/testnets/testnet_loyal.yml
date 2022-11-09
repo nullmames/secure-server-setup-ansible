@@ -1,0 +1,12 @@
+network: loyal
+folder: ".loyal"
+daemon: loyald
+chain_id: loyal-testnet-001
+node_version: "v0.25.1"
+repo: https://github.com/LoyalLabs/loyal.git
+genesis: https://raw.githubusercontent.com/LoyalLabs/net/main/testnet/genesis.json
+seeds: "a5852ff5a394e498e5f555ee0fab2e96269c309b@loyal-seed.netdots.net:27656,34e8067f85d2659cccc41e18a62f6d0e51c5c229@pubnode1.joinloyal.io:27656"
+minimum_gas_price: "0.025ulyl"
+custom_port_prefix: 172
+# [Optional] Prep for upgrade in cosmovisor
+#upgrade_name:

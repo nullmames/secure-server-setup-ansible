@@ -1,10 +1,10 @@
 network: defund
 folder: ".defund"
 daemon: defundd
-chain_id: defund-private-2
-node_version: v0.1.0-alpha
+chain_id: defund-private-3
+node_version: v0.1.0
 repo: https://github.com/defund-labs/defund
-genesis: "https://github.com/RhinoStake/defund-testnet/raw/main/defund-private-2/pre-genesis.json"
+genesis: "https://github.com/defund-labs/testnet/raw/main/defund-private-3/defund-private-3-gensis.tar.gz"
 peers: ""
-seeds: ""
+seeds: "09ce2d3fc0fdc9d1e879888e7d72ae0fefef6e3d@65.108.105.48:11256"
 custom_port_prefix: 112

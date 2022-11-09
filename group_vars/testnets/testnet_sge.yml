@@ -2,8 +2,10 @@ network: sge
 folder: ".sge"
 daemon: sged
 chain_id: sge-network-1
-node_version: v0.0.1
+node_version: v0.0.3
 repo: https://github.com/sge-network/sge
 genesis: ""
 seeds: ""
 custom_port_prefix: 172
+
+upgrade_name: v003-Peace
