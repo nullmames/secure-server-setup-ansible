@@ -7,5 +7,3 @@ repo: https://github.com/sge-network/sge
 genesis: ""
 seeds: ""
 custom_port_prefix: 172
-
-upgrade_name: v003-Peace
