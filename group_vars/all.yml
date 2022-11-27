@@ -1,5 +1,5 @@
 # go
-go_release: "go1.18.7.linux-amd64.tar.gz"
+go_release: "go1.19.3.linux-amd64.tar.gz"
 
 # cosmovisor
 cosmovisor_version: "v1.0.0"
