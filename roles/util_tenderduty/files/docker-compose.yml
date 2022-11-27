@@ -1,0 +1,65 @@
+---
+version: "3.2"
+services:
+  odin:
+    build: .
+    command: "-c odinvalcons1dx7200gevpn7lg96k8pjl5ky3mwgrg2hd8mdtt -u http://10.254.107.152:26657,http://10.254.107.151:26657 -p ${PG_SEVERE} -threshold 100 -alert-unavailable true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    restart: unless-stopped
+
+  nomic:
+    build: .
+    command: "-c nomicvalcons18jh68dake2dnynnfz4tkqafrjlre4jjc37w7ff -u http://10.254.106.189:26657,http://10.254.106.190:26657 -p ${PG_LOW} -alert-unavailable true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    restart: unless-stopped
+
+  ## json-exporter
+  json-exporter-paprika:
+    image: quay.io/prometheuscommunity/json-exporter:latest
+    container_name: json-exporter-paprika
+    ports:
+      - 7979:7979
+    volumes:
+      - /home/rhino/json-exporter/config-paprika.yml:/config.yml
+    command: "--config.file=/config.yml"
+    restart: unless-stopped
+
+  json-exporter-ethscan:
+    image: quay.io/prometheuscommunity/json-exporter:latest
+    container_name: json-exporter-ethscan
+    ports:
+      - 7980:7979
+    volumes:
+      - /home/rhino/json-exporter/config-ethscan.yml:/config.yml
+    command: "--config.file=/config.yml"
+    restart: unless-stopped
+
+  ## Monitoring
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - 9494:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    restart: unless-stopped
