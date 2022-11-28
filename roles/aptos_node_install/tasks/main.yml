@@ -1,7 +1,7 @@
 ---
 - name: Check version of node
   # ansible.builtin.shell: "/usr/local/bin/aptos info | jq -r .Result.build_commit_hash"
-  ansible.builtin.shell: "curl -sL localhost:8080/v1/ | jq -r .git_hashed"
+  ansible.builtin.shell: "curl -sL localhost:8080/v1/ | jq -r .git_hash"
   register: aptos_version
 
 - name: Build new version & install
