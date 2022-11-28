@@ -7,3 +7,5 @@ waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/waypoint
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
+
+hotfix_binary_url: https://github.com/aptos-labs/aptos-core/releases/download/aptos-node-mainnet_f0c03310a58bd212c04e65def103c5f7862be29f/aptos-node-ubuntu-20.04.bz2

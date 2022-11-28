@@ -1,0 +1,27 @@
+---
+- name: Download hotfix binary
+  ansible.builtin.get_url:
+    url: "{{ hotfix_binary_url }}"
+    dest: /tmp/aptos_binary.bz2
+    mode: "0644"
+
+- name: Unarchive hotfix
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "/tmp"
+  environment:
+    PATH: "{{ path }}"
+  with_items:
+    - "bzip2 -df aptos_binary.bz2"
+
+- name: Copy hotfix
+  become: true
+  ansible.builtin.copy:
+    src: "/tmp/aptos_binary"
+    dest: "/usr/local/bin/aptos-node"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+    force: true
+  notify: Restart aptos-node
