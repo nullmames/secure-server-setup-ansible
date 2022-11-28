@@ -19,5 +19,5 @@
     body:
       dashboardUID: bz8kPr673
       tags: ["aptos:upgrade", "aptos:restart", "chain:{{ folder }}"]
-      text: "Upgrade to version {{ node_version }}"
+      text: "Upgrade {{ aptos_role }} to version `{{ node_version }}`"
   delegate_to: 127.0.0.1
