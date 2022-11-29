@@ -12,7 +12,7 @@
   environment:
     PATH: "{{ path }}"
   with_items:
-    - "bzip2 -df aptos_binary.bz2"
+    - "nice -n 15 bzip2 -df aptos_binary.bz2"
 
 - name: Copy hotfix
   become: true
