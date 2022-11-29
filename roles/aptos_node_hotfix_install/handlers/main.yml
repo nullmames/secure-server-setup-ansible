@@ -23,5 +23,5 @@
     body:
       dashboardUID: bz8kPr673
       tags: ["aptos:upgrade", "aptos:restart", "chain:{{ folder }}"]
-      text: "HOTFIX upgrade on {{ aptos_role }} to version `{{ hotfix_version }}`"
+      text: "HOTFIX upgrade on {{ aptos_role }} to version {{ hotfix_version.stdout }}"
   delegate_to: 127.0.0.1
