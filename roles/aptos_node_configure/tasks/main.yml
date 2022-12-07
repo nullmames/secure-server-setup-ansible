@@ -27,7 +27,7 @@
 
     - name: Copy appropriate config file
       ansible.builtin.template:
-        src: "{{ aptos_role }}.j2"
+        src: "{{ group_names[0] }}/{{ aptos_role }}.j2"
         dest: "{{ user_dir }}/{{ folder }}/{{ aptos_role }}.yaml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
