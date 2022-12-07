@@ -5,7 +5,7 @@ chain_id: evmos_9001-2
 node_version: v9.1.0
 repo: https://github.com/tharsis/evmos
 genesis: "https://archive.evmos.org/mainnet/genesis.json"
-seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:34656,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:13456"
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:13456,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:13456,588cedb70fa1d98c14a2f2c1456bfa41e1a156a8@evmos-sentry.mercury-nodes.net:29539"
 minimum_gas_price: "2500000000000aevmos"
 custom_port_prefix: 134
 snap_rpc: "https://evmos-rpc.polkachu.com:443"
