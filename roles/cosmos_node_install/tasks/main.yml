@@ -24,6 +24,7 @@
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
+        - "make build"
         - "make install"
       environment:
         PATH: "{{ path }}"
