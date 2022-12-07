@@ -22,13 +22,13 @@
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "max_num_inbound_peers"
-    line: "max_num_inbound_peers = 80"
+    line: "max_num_inbound_peers = 60"
 
 - name: Adjust number of outbound peers
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "max_num_outbound_peers"
-    line: "max_num_outbound_peers = 60"
+    line: "max_num_outbound_peers = 30"
 
 - name: Adjust app.toml port settings
   ansible.builtin.lineinfile:
