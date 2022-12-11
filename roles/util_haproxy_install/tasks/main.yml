@@ -1,0 +1,32 @@
+- name: Install haproxy
+  become: true
+  ansible.builtin.apt:
+    name:
+      - haproxy
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Copy haproxy config
+  become: true
+  ansible.builtin.template:
+    src: "{{ haproxy_config }}.cfg"
+    dest: "/etc/haproxy/haproxy.cfg"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Open http in ufw
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "80"
+
+- name: Enable haproxy service
+  become: true
+  ansible.builtin.systemd:
+    name: "haproxy"
+    daemon_reload: true
+    enabled: true
+    state: restarted
