@@ -1,0 +1,74 @@
+- name: Download ipfs-cluster-service
+  register: ipfsclusterversion
+  ansible.builtin.get_url:
+    url: "https://dist.ipfs.tech/ipfs-cluster-service/{{ ipfs_cluster_release }}/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
+    dest: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
+    mode: "0755"
+
+- name: Install ipfs-cluster-service daemon
+  block:
+    - name: Unarchive ipfs-cluster-service release
+      ansible.builtin.unarchive:
+        src: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
+        dest: "{{ user_dir }}/source"
+        remote_src: true
+
+    - name: Install ipfs-cluster-service release
+      become: true
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/ipfs-cluster-service/ipfs-cluster-service"
+        dest: "/usr/local/bin"
+        owner: root
+        group: root
+        mode: 0755
+        remote_src: true
+        force: true
+  when: ipfsclusterversion.changed
+
+- name: Check if node has been initialized
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/.ipfs-cluster"
+  register: node_initialized
+
+- name: Init ipfs-cluster
+  when: not node_initialized.stat.exists
+  block:
+    - name: Init ipfs-cluster
+      ansible.builtin.command: "ipfs-cluster-service init"
+      environment:
+        PATH: "{{ path }}"
+
+- name: Copy ipfs-cluster files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ user_dir }}/.ipfs-cluster/{{ item }}"
+    owner: rhino
+    group: rhino
+    mode: "0644"
+  with_items:
+    - peerstore
+    - service.json
+
+- name: Open ipfs-cluster p2p port in ufw
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "9096"
+
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: "ipfs-cluster.service.j2"
+    dest: "/etc/systemd/system/ipfs-cluster.service"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable ipfs-cluster service
+  become: true
+  ansible.builtin.systemd:
+    name: "ipfs-cluster"
+    daemon_reload: true
+    enabled: true
+    state: restarted

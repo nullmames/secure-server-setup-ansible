@@ -9,6 +9,10 @@ promtail: false
 promtail_version: "v2.6.1"
 promtail_monitor: "http://10.254.100.13:3100"
 
+# ipfs
+ipfs_release: "v0.17.0"
+ipfs_cluster_release: "v1.0.4"
+
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"
 horcrux_version: "v2.0.0"

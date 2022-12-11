@@ -1,0 +1,17 @@
+[Unit]
+Description=IPFS daemon
+After=network.target
+
+[Service]
+Type=notify
+User={{ ansible_user }}
+LimitNOFILE=1048576
+MemorySwapMax=0
+ExecStart=/usr/local/bin/ipfs daemon --migrate
+Environment="IPFS_FD_MAX=8192"
+
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
