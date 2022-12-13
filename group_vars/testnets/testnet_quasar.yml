@@ -1,0 +1,11 @@
+network: quasar
+folder: ".quasarnode"
+daemon: quasard
+chain_id: qsr-questnet-03
+node_version: TBD
+repo: https://github.com/quasar-finance/binary-release/
+genesis: https://raw.githubusercontent.com/quasar-finance/questnet/main/v03/definitive-genesis.json
+binary: https://github.com/quasar-finance/binary-release/blob/main/v0.0.1-alpha-6/quasarnoded-linux-amd64?raw=true
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:18256"
+peers: ""
+custom_port_prefix: 182
