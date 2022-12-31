@@ -9,6 +9,9 @@ seeds: ""
 minimum_gas_price: ""
 custom_port_prefix:
 
+# StateSync
+snap_rpc:
+
 # [Optional] Snapshot
 snapshot_hour: 1
 snapshot_minute: 30
