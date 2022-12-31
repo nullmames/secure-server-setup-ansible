@@ -4,5 +4,4 @@
   gather_facts: false
   become: true
   roles:
-    - util_system_update
     - util_prometheus
