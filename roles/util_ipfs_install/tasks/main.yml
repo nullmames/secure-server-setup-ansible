@@ -44,8 +44,9 @@
     PATH: "{{ path }}"
   with_items:
     - "ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080"
+    - "ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001"
     - "ipfs config Datastore.Bloomfilter 1048576"
-    - "ipfs config Datastore.StorageMax 100GB"
+    - "ipfs config Datastore.StorageMax 200GB"
 
 - name: Open ipfs p2p port in ufw
   become: true
@@ -70,3 +71,4 @@
     daemon_reload: true
     enabled: true
     state: restarted
+
