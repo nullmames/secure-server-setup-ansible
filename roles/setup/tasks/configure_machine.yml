@@ -25,3 +25,13 @@
       {{ ansible_user }} hard nofile 1048576
       {{ ansible_user }} soft nproc 1048576
       {{ ansible_user }} hard nproc 1048576
+
+# Modify logrotate.conf & restart
+- name: Update logrotate.conf
+  ansible.builtin.template:
+    src: "logrotate.conf.j2"
+    dest: "/etc/logrotate.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Restart logrotate
