@@ -71,3 +71,16 @@
     regexp: "^prometheus ="
     line: "prometheus = true"
     state: present
+
+- name: Add Skip configuration
+  ansible.builtin.blockinfile:
+    insertafter: EOF
+    dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    create: true
+    state: present
+    content: |
+      [sidecar]
+      sentinel_peer_string = "{{sentinel_peer_string}}"
+      sentinel_rpc_string = "{{sentinel_rpc_string}}"
+      api_key = "{{skip_api_key}}"
+  when: skip_version is defined

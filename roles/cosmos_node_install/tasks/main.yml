@@ -19,6 +19,23 @@
         recurse: true
         mode: "0755"
 
+    - name: Add replacement for Skip enabled chains
+      ansible.builtin.lineinfile:
+        insertafter: replace \(
+        line: '    github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint {{ skip_version }}'
+        path: '{{ user_dir }}/source/{{ network }}/go.mod'
+        state: present
+      when: skip_version is defined
+
+    - name: Go mod tidy for Skip enabled chains
+      ansible.builtin.command: "go mod tidy"
+      args:
+        chdir: "{{ user_dir }}/source/{{ network }}"
+      environment:
+        PATH: "{{ path }}"
+        GOPATH: "{{ user_dir }}/go"
+      when: skip_version is defined
+
     - name: Build and install node to go/bin folder
       ansible.builtin.command: "{{ item }}"
       args:
