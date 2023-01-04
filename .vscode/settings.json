@@ -2,5 +2,4 @@
   "files.associations": {
     "*.yml": "ansible",
   },
-  "ansible.validation.lint.path": "/opt/homebrew/bin/ansible-lint"
 }
