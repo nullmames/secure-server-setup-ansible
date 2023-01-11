@@ -7,8 +7,8 @@ Type=notify
 User={{ ansible_user }}
 LimitNOFILE=1048576
 MemorySwapMax=0
-ExecStart=/usr/local/bin/ipfs daemon --migrate --enable-gc
-Environment="IPFS_FD_MAX=8192"
+ExecStart=/usr/local/bin/ipfs daemon --migrate
+Environment="IPFS_FD_MAX=1048576"
 
 Restart=on-failure
 KillSignal=SIGINT
