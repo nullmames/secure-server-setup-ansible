@@ -32,11 +32,9 @@
 
 - name: Init ipfs-cluster
   when: not node_initialized.stat.exists
-  block:
-    - name: Init ipfs-cluster
-      ansible.builtin.command: "ipfs-cluster-service init"
-      environment:
-        PATH: "{{ path }}"
+  ansible.builtin.command: "ipfs-cluster-service init"
+  environment:
+    PATH: "{{ path }}"
 
 - name: Copy ipfs-cluster files
   ansible.builtin.template:
