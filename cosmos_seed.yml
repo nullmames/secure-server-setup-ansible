@@ -5,5 +5,4 @@
   vars_files:
     - "{{ var_file }}"
   roles:
-    - util_install_go
     - cosmos_seed
