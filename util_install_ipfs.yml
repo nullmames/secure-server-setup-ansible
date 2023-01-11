@@ -3,5 +3,5 @@
   hosts: stargaze_api,monitoring-grafana-prod
   gather_facts: false
   roles:
-    - { role: util_ipfs_install, when: ipfs is defined }
+    - { role: util_ipfs_install, when: ipfs_role == "recent" }
     - { role: util_ipfs_cluster_install, when: ipfs is defined }
