@@ -14,11 +14,26 @@ sub vcl_recv {
     # Typically you clean up the request here, removing cookies you don't need,
     # rewriting the request, etc.
 
+    if ( req.http.upgrade ~ "(?i)websocket" ) {
+        return (pipe);
+    }
+
     if (! req.url ~ "/ipfs") {
         return(pass);
     }
 
     return(hash);
+}
+
+sub vcl_pipe {
+    # Added to handle websocket requests
+    #
+    # https://varnish-cache.org/docs/7.2/users-guide/vcl-example-websockets.html?highlight=websocket
+
+    if (req.http.upgrade) {
+        set bereq.http.upgrade = req.http.upgrade;
+        set bereq.http.connection = req.http.connection;
+    }
 }
 
 sub vcl_backend_response {
@@ -39,5 +54,5 @@ sub vcl_deliver {
     # response to the client.
     #
     # You can do accounting or modifying the final object here.
-    
+
 }
