@@ -38,7 +38,7 @@
   environment:
     PATH: "{{ path }}"
 
-- name: IPFS config via cli
+- name: IPFS config via cli, including star-eastna-03 node bootstrap
   ansible.builtin.command: "{{ item }}"
   environment:
     PATH: "{{ path }}"
@@ -46,7 +46,23 @@
     - "ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080"
     - "ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001"
     - "ipfs config Datastore.Bloomfilter 1048576"
+    - "ipfs bootstrap add /ip4/15.204.183.107/tcp/4001/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM"
+
+- name: IPFS StorageMax if recent node
+  ansible.builtin.command: "{{ item }}"
+  when: ipfs_role == "recent"
+  environment:
+    PATH: "{{ path }}"
+  with_items:
     - "ipfs config Datastore.StorageMax 200GB"
+
+- name: IPFS StorageMax if archive node
+  ansible.builtin.command: "{{ item }}"
+  when: ipfs_role == "archive"
+  environment:
+    PATH: "{{ path }}"
+  with_items:
+    - "ipfs config Datastore.StorageMax 2000GB"
 
 - name: Open ipfs p2p port in ufw
   become: true
@@ -71,4 +87,3 @@
     daemon_reload: true
     enabled: true
     state: restarted
-
