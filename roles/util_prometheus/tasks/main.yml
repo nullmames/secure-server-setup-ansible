@@ -7,3 +7,6 @@
     group: root
     mode: "0644"
   notify: Restart prometheus
+
+- name: Verify prometheus.yml with promtool
+  ansible.builtin.command: /usr/bin/promtool check config /etc/prometheus/prometheus.yml
