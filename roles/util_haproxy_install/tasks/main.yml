@@ -19,6 +19,9 @@
     mode: "0644"
   notify: Restart haproxy
 
+- name: Test haproxy config
+  ansible.builtin.command: /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -c
+
 - name: Copy varnish config
   become: true
   ansible.builtin.template:
@@ -28,6 +31,10 @@
     group: root
     mode: "0644"
   notify: Restart varnish
+
+- name: Test varnish config
+  become: true
+  ansible.builtin.command: /usr/sbin/varnishd -Cf /etc/varnish/default.vcl
 
 - name: Create varnish systemd directory
   become: true
