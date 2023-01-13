@@ -47,6 +47,7 @@
     - "ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001"
     - "ipfs config Datastore.Bloomfilter 1048576"
     - "ipfs bootstrap add /ip4/15.204.183.107/tcp/4001/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM"
+    - "ipfs bootstrap add /ip4/15.204.183.107/udp/4001/quic/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM"
 
 - name: IPFS StorageMax if recent node
   ansible.builtin.command: "{{ item }}"
