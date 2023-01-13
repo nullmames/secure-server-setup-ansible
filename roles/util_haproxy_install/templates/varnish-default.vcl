@@ -8,6 +8,11 @@ backend default {
     .port = "81";
 }
 
+backend grpc {
+    .host = "127.0.0.1";
+    .port = "82";
+}
+
 sub vcl_recv {
     # Happens before we check if we have this in cache already.
     #
@@ -15,7 +20,12 @@ sub vcl_recv {
     # rewriting the request, etc.
 
     if ( req.http.upgrade ~ "(?i)websocket" ) {
-        return (pipe);
+        return(pipe);
+    }
+
+    if ( req.http.host == "grpc.stargaze-apis.com" ) {
+        set req.backend_hint = grpc;
+        return(pass);
     }
 
     if (! req.url ~ "/ipfs") {
@@ -30,7 +40,7 @@ sub vcl_pipe {
     #
     # https://varnish-cache.org/docs/7.2/users-guide/vcl-example-websockets.html?highlight=websocket
 
-    if (req.http.upgrade) {
+    if ( req.http.upgrade ) {
         set bereq.http.upgrade = req.http.upgrade;
         set bereq.http.connection = req.http.connection;
     }
@@ -42,11 +52,10 @@ sub vcl_backend_response {
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
 
-    if (bereq.url ~ "/ipfs") {
+    if ( bereq.url ~ "/ipfs" ) {
         set beresp.ttl = 1w;
         set beresp.grace = 24h;
     }
-
 }
 
 sub vcl_deliver {
