@@ -19,11 +19,19 @@
         recurse: true
         mode: "0755"
 
+    - name: See if tendermint replacement already exists
+      ansible.builtin.lineinfile:
+        path: "{{ user_dir }}/source/{{ network }}/go.mod"
+        regexp: "\\s*github.com/tendermint/tendermint =>"
+        state: absent
+        backup: true
+      when: skip_version is defined
+
     - name: Add replacement for Skip enabled chains
       ansible.builtin.lineinfile:
         insertafter: replace \(
-        line: '    github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint {{ skip_version }}'
-        path: '{{ user_dir }}/source/{{ network }}/go.mod'
+        line: "        github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint {{ skip_version }}"
+        path: "{{ user_dir }}/source/{{ network }}/go.mod"
         state: present
       when: skip_version is defined
 
@@ -59,3 +67,7 @@
 - name: Install from binary tar gz
   include_tasks: binary_targz.yml
   when: binary is defined and binary_processing is defined and binary_processing == 'targz'
+
+- name: Install from binary tar bz2
+  include_tasks: binary_tarbz2.yml
+  when: binary is defined and binary_processing is defined and binary_processing == 'tarbz2'
