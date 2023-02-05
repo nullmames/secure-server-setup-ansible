@@ -1,0 +1,20 @@
+---
+#
+## Assumes Tenderduty 1.0 is already installed on node
+#
+- name: Copy tenderduty service file
+  become: true
+  ansible.builtin.template:
+    src: "tenderduty.service.j2"
+    dest: "/etc/systemd/system/tenderduty_{{ network }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Start tenderduty service
+  become: true
+  ansible.builtin.systemd:
+    name: "tenderduty_{{ network }}"
+    state: restarted
+    daemon_reload: true
+    enabled: true
