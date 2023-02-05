@@ -1,6 +1,0 @@
----
-- name: Install and configure haproxy for Stargaze nodes
-  hosts: stargaze_api
-  gather_facts: false
-  roles:
-    - { role: util_haproxy_install, when: haproxy_config is defined }

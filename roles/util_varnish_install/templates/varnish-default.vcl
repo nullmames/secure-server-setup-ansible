@@ -5,12 +5,7 @@ vcl 4.1;
 # Pointing to haproxy
 backend default {
     .host = "127.0.0.1";
-    .port = "81";
-}
-
-backend grpc {
-    .host = "127.0.0.1";
-    .port = "82";
+    .port = "8080";
 }
 
 sub vcl_recv {
@@ -18,19 +13,6 @@ sub vcl_recv {
     #
     # Typically you clean up the request here, removing cookies you don't need,
     # rewriting the request, etc.
-
-    if ( req.http.upgrade ~ "(?i)websocket" ) {
-        return(pipe);
-    }
-
-    if ( req.http.host == "grpc.stargaze-apis.com" ) {
-        set req.backend_hint = grpc;
-        return(pass);
-    }
-
-    if (! req.url ~ "/ipfs") {
-        return(pass);
-    }
 
     return(hash);
 }
@@ -40,10 +22,6 @@ sub vcl_pipe {
     #
     # https://varnish-cache.org/docs/7.2/users-guide/vcl-example-websockets.html?highlight=websocket
 
-    if ( req.http.upgrade ) {
-        set bereq.http.upgrade = req.http.upgrade;
-        set bereq.http.connection = req.http.connection;
-    }
 }
 
 sub vcl_backend_response {
@@ -52,10 +30,9 @@ sub vcl_backend_response {
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
 
-    if ( bereq.url ~ "/ipfs" ) {
-        set beresp.ttl = 1w;
-        set beresp.grace = 24h;
-    }
+    set beresp.ttl = 1w;
+    set beresp.grace = 24h;
+    
 }
 
 sub vcl_deliver {

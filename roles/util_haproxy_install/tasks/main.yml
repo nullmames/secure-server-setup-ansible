@@ -1,10 +1,8 @@
-- name: Install varnish and haproxy
+- name: Install haproxy
   become: true
   ansible.builtin.apt:
     name:
-      - varnish
       - haproxy
-      - prometheus-varnish-exporter
     state: present
     update_cache: true
     cache_valid_time: 3600
@@ -22,51 +20,9 @@
 - name: Test haproxy config
   ansible.builtin.command: /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -c
 
-- name: Copy varnish config
-  become: true
-  ansible.builtin.template:
-    src: "varnish-default.vcl"
-    dest: "/etc/varnish/default.vcl"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart varnish
-
-- name: Test varnish config
-  become: true
-  ansible.builtin.command: /usr/sbin/varnishd -Cf /etc/varnish/default.vcl
-
-- name: Create varnish systemd directory
-  become: true
-  ansible.builtin.file:
-    path: "/etc/systemd/system/varnish.service.d"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  notify: Restart varnish
-
-- name: Add configuration for varnish systemd
-  become: true
-  ansible.builtin.template:
-    src: "varnish-customexec.conf"
-    dest: "/etc/systemd/system/varnish.service.d/customexec.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart varnish
-
 - name: Open http in ufw
   become: true
   community.general.ufw:
     rule: allow
     proto: tcp
     port: "80"
-
-- name: Add prometheus to varnish user group
-  become: true
-  ansible.builtin.user:
-    user: prometheus
-    groups: varnish
-    append: true
-  notify: Restart prometheus-varnish-exporter

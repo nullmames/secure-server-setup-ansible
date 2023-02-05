@@ -1,0 +1,16 @@
+---
+- name: Restart varnish
+  become: true
+  ansible.builtin.systemd:
+    name: varnish
+    daemon_reload: true
+    enabled: true
+    state: restarted
+
+- name: Restart prometheus-varnish-exporter
+  become: true
+  ansible.builtin.systemd:
+    name: prometheus-varnish-exporter
+    daemon_reload: true
+    enabled: true
+    state: restarted
