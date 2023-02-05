@@ -24,7 +24,6 @@
         path: "{{ user_dir }}/source/{{ network }}/go.mod"
         regexp: "\\s*github.com/tendermint/tendermint =>"
         state: absent
-        backup: true
       when: skip_version is defined
 
     - name: Add replacement for Skip enabled chains
