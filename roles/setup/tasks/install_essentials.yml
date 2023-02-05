@@ -48,6 +48,13 @@
   ansible.builtin.command: "/usr/sbin/tuned-adm profile {{ tuned }}"
   when: active_profile.content | b64decode | trim != tuned
 
+- name: Set swappiness to 10
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "10"
+    state: present
+    reload: true
+
 - name: Add TOML vim plugin
   become: false
   ansible.builtin.git:
