@@ -58,6 +58,14 @@
     state: present
   when: rpc is undefined
 
+- name: Ensure indexer to kv RPC nodes
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: 'indexer = "'
+    line: 'indexer = "kv"'
+    state: present
+  when: rpc is defined
+
 - name: Bind RPC port to 0.0.0.0
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
