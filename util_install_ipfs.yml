@@ -1,7 +1,7 @@
 ---
 - name: Install or reinstall ipfs and ipfs-cluster
-  hosts: stargaze_api,monitoring-grafana-prod
+  hosts: stargaze_api
   gather_facts: false
   roles:
-    - { role: util_ipfs_install, when: ipfs_role == "recent" }
+    - { role: util_ipfs_install, when: ipfs_role is defined }
     - { role: util_ipfs_cluster_install, when: ipfs is defined }
