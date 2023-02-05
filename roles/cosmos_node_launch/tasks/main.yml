@@ -102,3 +102,28 @@
   environment:
     PATH: "{{ path }}"
     GOPATH: "{{ user_dir }}/go"
+
+- name: Add Cosmprund repository
+  ansible.builtin.git:
+    repo: https://github.com/binaryholdings/cosmprund.git
+    dest: /home/{{ ansible_user }}/source/cosmprund
+    single_branch: true
+    force: true
+    version: master
+
+- name: Build cosmprund
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "{{ user_dir }}/source/cosmprund"
+  with_items:
+    - "make build"
+  environment:
+    PATH: "{{ path }}"
+    GOPATH: "{{ user_dir }}/go"
+
+- name: Copy cosmprund to directory
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
+    dest: "{{ user_dir }}/go/bin/cosmprund"
+    remote_src: true
+    mode: "0755"
