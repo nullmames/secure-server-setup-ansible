@@ -2,6 +2,17 @@
 #
 # Prepare a target for an upgrade
 # ansible-playbook main_cosmos_node_upgrade.yml -i inventory-testnet.ini --limit testnet_juno -e "upgrade_name=v12.0.0 node_version=1.2.3"
+- name: Verify pre-requisites
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ var_file }}"
+  tasks:
+    - name: Verify upgrade_name is set
+      ansible.builtin.fail:
+        msg: upgrade_name is not set in config
+      when: upgrade_name is not defined
+
 - name: Prepare network upgrade using cosmovisor
   hosts: all
   gather_facts: false
