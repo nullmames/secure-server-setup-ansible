@@ -14,6 +14,12 @@
       # Default is true.
       iavl-disable-fastnode = true
 
+- name: Increase max-open-connections to 10000
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "max-open-connections"
+    line: "max-open-connections = 10000"
+
 - name: Enable unsafe CORS
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
