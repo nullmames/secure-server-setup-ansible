@@ -1,5 +1,5 @@
 # go
-go_release: "go1.19.4.linux-amd64.tar.gz"
+go_release: "go1.19.5"
 
 # cosmovisor
 cosmovisor_version: "v1.0.0"
@@ -10,8 +10,8 @@ promtail_version: "v2.6.1"
 promtail_monitor: "http://10.254.100.13:3100"
 
 # ipfs
-ipfs_release: "v0.17.0"
-ipfs_cluster_release: "v1.0.4"
+ipfs_release: "v0.18.1"
+ipfs_cluster_release: "v1.0.5"
 
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"

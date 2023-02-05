@@ -1,11 +1,9 @@
 network: aptos
 folder: llt
 repo: https://github.com/aptos-labs/aptos-core
-node_version: d7fe6d2f68e6b25bddce8e13546e0b24076f47a5
+node_version: aptos-node-v1.2.4
 genesis_blob: https://github.com/aptos-labs/aptos-genesis-waypoint/raw/main/testnet/genesis.blob
 waypoint: https://github.com/aptos-labs/aptos-genesis-waypoint/raw/main/testnet/waypoint.txt
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
-
-hotfix_binary_url: https://github.com/aptos-labs/aptos-core/releases/download/aptos-node-mainnet_f0c03310a58bd212c04e65def103c5f7862be29f/aptos-node-ubuntu-20.04.bz2

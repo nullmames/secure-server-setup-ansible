@@ -1,10 +1,10 @@
-network: sei
+network: sei-devnet
 folder: ".sei"
 daemon: seid
-chain_id: "sei-devnet-1"
-node_version: "1.2.3beta"
+chain_id: "sei-devnet-2"
+node_version: "sei-devnet-2"
 repo: https://github.com/sei-protocol/sei-chain.git
-genesis: https://github.com/sei-protocol/testnet/raw/main/sei-devnet-1/genesis.json
-seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:51956"
+genesis: https://github.com/sei-protocol/testnet/raw/main/sei-devnet-2/genesis.json
+seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:51956,f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@sei-devnet.seed.brocha.in:30515"
+peers: "1977382a8b085b60d6545f78910979e34514120a@162.19.232.153:51956,1fb59ca4fe3d3a701768443fbfdfb5bb9070fade@3.73.138.242:26656"
 custom_port_prefix: 519
-snap_rpc: http://54.183.99.245:26657

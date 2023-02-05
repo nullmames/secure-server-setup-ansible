@@ -2,7 +2,7 @@ network: konstellation
 folder: ".knstld"
 daemon: knstld
 chain_id: darchub
-node_version: v0.6.1
+node_version: v0.6.2
 repo: https://github.com/konstellation/konstellation
 genesis: "https://raw.githubusercontent.com/Konstellation/konstellation/master/config/genesis.json"
 peers: ""
@@ -13,3 +13,5 @@ custom_port_prefix: 133
 # [Optional] Snapshot
 # snapshot_hour: 3
 # snapshot_minute: 30
+
+snap_rpc: "https://rpc-konstellation-ia.cosmosia.notional.ventures:443"

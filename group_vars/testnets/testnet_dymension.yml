@@ -1,0 +1,9 @@
+network: dymension
+folder: ".dymension"
+daemon: dymd
+chain_id: 35-C
+node_version: v0.2.0-beta
+repo: https://github.com/dymensionxyz/dymension.git
+genesis: ""
+peers: ""
+custom_port_prefix: 205
