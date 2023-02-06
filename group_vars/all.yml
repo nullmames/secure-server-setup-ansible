@@ -1,6 +1,9 @@
 # go
 go_release: "go1.19.5"
 
+# node
+node_release: "node_18.x"
+
 # cosmovisor
 cosmovisor_version: "v1.0.0"
 
