@@ -2,10 +2,12 @@ network: juno
 folder: .juno
 daemon: junod
 chain_id: uni-6
-node_version: v11.0.0
+node_version: v12.0.0-beta
 repo: https://github.com/CosmosContracts/juno
 genesis: https://github.com/CosmosContracts/testnets/raw/main/uni-6/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:12656"
 peers: ""
 minimum_gas_price: "0.025ujunox"
 custom_port_prefix: 126
+
+upgrade_name: v12
