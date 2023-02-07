@@ -1,0 +1,12 @@
+- name: Download genesis file
+  ansible.builtin.get_url:
+    url: "{{ genesis }}"
+    dest: "/tmp/genesis.tar.bz2"
+    mode: "0700"
+
+- name: Unarchive genesis file
+  ansible.builtin.unarchive:
+    src: "/tmp/genesis.tar.bz2"
+    dest: "{{ user_dir }}/{{ folder }}/config"
+    remote_src: true
+    mode: "0644"

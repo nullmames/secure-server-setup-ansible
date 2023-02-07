@@ -33,21 +33,25 @@
         mode: "0644"
       when: addrbook_file is defined
 
-    - name: regular genesis download
-      include_tasks: genesis_default.yml
+    - name: Regular genesis download
+      ansible.builtin.include_tasks: genesis_default.yml
       when: genesis_processing is undefined
 
-    - name: zip genesis download
-      include_tasks: genesis_zip.yml
+    - name: Zip genesis download
+      ansible.builtin.include_tasks: genesis_zip.yml
       when: genesis_processing is defined and genesis_processing == "zip"
 
-    - name: gz genesis download
-      include_tasks: genesis_gz.yml
+    - name: Gz genesis download
+      ansible.builtin.include_tasks: genesis_gz.yml
       when: genesis_processing is defined and genesis_processing == "gz"
 
-    - name: targz genesis download
-      include_tasks: genesis_targz.yml
+    - name: Targz genesis download
+      ansible.builtin.include_tasks: genesis_targz.yml
       when: genesis_processing is defined and genesis_processing == "targz"
+
+    - name: Tarbz2 genesis download
+      ansible.builtin.include_tasks: genesis_tarbz2.yml
+      when: genesis_processing is defined and genesis_processing == "tarbz2"
 
 - name: Update minimum gas price on config file
   ansible.builtin.lineinfile:
