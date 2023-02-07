@@ -4,16 +4,15 @@ daemon: babylond
 chain_id: bbn-test-1
 node_version: v0.5.0
 repo: https://github.com/babylonchain/babylon.git
-genesis: https://github.com/babylonchain/networks/raw/init/bbn-test-1/bbn-test-1/genesis.tar.bz2
-seeds: ""
-minimum_gas_price: ""
+genesis: https://github.com/babylonchain/networks/raw/main/bbn-test-1/genesis.tar.bz2
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:20656"
+minimum_gas_price: "0ubaby"
 custom_port_prefix: 206
 
-binary: true
-binary_processing: "tarbz2"
+genesis_processing: "tarbz2"
 
 # StateSync
-snap_rpc:
+snap_rpc: https://babylon-testnet-rpc.polkachu.com:443
 # [Optional] Snapshot
 # snapshot_hour: 1
 # snapshot_minute: 30
