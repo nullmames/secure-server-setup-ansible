@@ -1,0 +1,41 @@
+---
+# For now this uses Polkachu's snapshot urls.  This will eventually need to be replaced
+- name: Set URLs for retrieving items
+  ansible.builtin.set_fact:
+    snapshot_url: "{{ snapshot_url }}/{{ network }}"
+    addrbook_url: "{{ addrbook_url }}/{{ network }}/addrbook.json"
+
+- name: Parse snapshot command
+  ansible.builtin.shell: "curl -s {{ snapshot_url }} | grep curl | sed 's/<[^>]*>//g' | awk '{$1=$1};1'"
+  environment:
+    PATH: "{{ path }}"
+  register: snapshot_command
+
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Download addrbook
+  ansible.builtin.get_url:
+    url: "{{ addrbook_url }}"
+    dest: "{{ user_dir }}/{{ folder }}/config/addrbook.json"
+    mode: "0440"
+  register: url_correct
+
+- name: Reset data folder
+  ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Download and extract snapshot
+  ansible.builtin.shell: "eval $({{ snapshot_command.stdout }})"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Start cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted

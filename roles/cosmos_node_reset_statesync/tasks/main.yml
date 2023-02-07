@@ -1,0 +1,32 @@
+---
+- name: Verify state_sync exists for chain
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+  register: statesync
+
+- name: Fail if file not found
+  when: statesync.stat.exists == false
+  ansible.builtin.fail:
+    msg: "State sync file not present on node"
+
+- name: Run state_sync script on node
+  ansible.builtin.shell: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Reset data folder
+  ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Start cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted
