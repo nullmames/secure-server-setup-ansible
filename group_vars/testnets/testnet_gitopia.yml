@@ -1,10 +1,13 @@
 network: gitopia
-folder: '.gitopia'
+folder: ".gitopia"
 daemon: gitopiad
 chain_id: gitopia-janus-testnet-2
 node_version: v0.13.0
 repo: gitopia://gitopia1dlpc7ps63kj5v0kn5v8eq9sn2n8v8r5z9jmwff/gitopia
-genesis: 'missing_genesis'
-peers: 'missing_peers'
-minimum_gas_price: '0.001utlore'
+genesis: "missing_genesis"
+peers: ""
+seeds: "399d4e19186577b04c23296c4f7ecc53e61080cb@seed.gitopia.com:26656"
+minimum_gas_price: "0.001utlore"
 custom_port_prefix: 113
+
+snap_rpc: "https://gitopia-testnet-rpc.polkachu.com:443"
