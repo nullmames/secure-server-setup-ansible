@@ -5,7 +5,7 @@ chain_id: 35-C
 node_version: v0.2.0-beta
 repo: https://github.com/dymensionxyz/dymension.git
 genesis: "https://github.com/dymensionxyz/testnets/raw/main/dymension-hub/35-C/pre-genesis.json"
-seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:20556,f97a75fb69d3a5fe893dca7c8d238ccc0bd66a8f@dymension-testnet.seed.brocha.in:30584"
+seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:20556,c6cdcc7f8e1a33f864956a8201c304741411f219@3.214.163.125:26656"
 peers: ""
 minimum_gas_price: "0.025udym,0.025uatom"
 custom_port_prefix: 205
