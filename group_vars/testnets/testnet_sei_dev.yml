@@ -2,7 +2,7 @@ network: sei-devnet
 folder: ".sei"
 daemon: seid
 chain_id: "sei-devnet-3"
-node_version: 2.0.27beta
+node_version: 2.0.29beta
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/sei-devnet-3/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:51956"
@@ -12,3 +12,5 @@ custom_port_prefix: 519
 # Tenderduty High
 
 threshold_type: "high"
+
+upgrade_name: "2.0.29beta"
