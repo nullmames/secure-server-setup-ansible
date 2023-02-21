@@ -2,6 +2,7 @@
 - name: Install essentials
   ansible.builtin.apt:
     name:
+      - logrotate
       - ufw
       - chrony
       - htop
