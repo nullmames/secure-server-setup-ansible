@@ -1,0 +1,14 @@
+network: mars
+folder: ".mars"
+daemon: marsd
+chain_id: "mars-1"
+node_version: "v1.0.0"
+repo: "https://github.com/mars-protocol/hub.git"
+genesis: "https://raw.githubusercontent.com/mars-protocol/networks/main/mars-1/genesis.json"
+peers: ""
+seeds: "20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:18556,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:18556"
+minimum_gas_price: "0umars"
+custom_port_prefix: 185
+
+# StateSync
+snap_rpc: https://rpc.mars.kingnodes.com:443
