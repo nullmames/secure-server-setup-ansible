@@ -11,7 +11,12 @@
     - name: Verify upgrade_name is set
       ansible.builtin.fail:
         msg: upgrade_name is not set in config
-      when: upgrade_name is not defined
+      when: upgrade_name == None
+
+    - name: Verify version is set
+      ansible.builtin.fail:
+        msg: version is not set in config
+      when: node_version == None
 
 - name: Prepare network upgrade using cosmovisor
   hosts: all
