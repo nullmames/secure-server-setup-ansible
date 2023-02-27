@@ -1,5 +1,7 @@
 .DS_Store
-inventory.ini
-inventory-testnet.ini
+# inventory.ini
+# inventory-testnet.ini
 vault-password-file
 hostbin
+node_modules
+package-lock.json
