@@ -1,12 +1,12 @@
 network: sei
 folder: ".sei"
 daemon: seid
-chain_id: "atlantic-1"
-node_version: "1.2.2beta-postfix"
+chain_id: "atlantic-2"
+node_version: "2.0.34beta-atlantic-2"
 repo: https://github.com/sei-protocol/sei-chain.git
-genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/sei-incentivized-testnet/genesis.json
+genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
-seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:11956,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:11956"
+seeds: ""
 peers: ""
 
 # StateSync
