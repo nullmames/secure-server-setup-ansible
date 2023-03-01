@@ -3,3 +3,14 @@
   ansible.builtin.systemd:
     name: prometheus
     state: restarted
+  notify: Get service status
+
+- name: Get service status
+  ansible.builtin.systemd:
+    name: "prometheus"
+  register: prometheus_status
+  notify: Display status
+
+- name: Display status
+  ansible.builtin.debug:
+    var: prometheus.status.ActiveState
