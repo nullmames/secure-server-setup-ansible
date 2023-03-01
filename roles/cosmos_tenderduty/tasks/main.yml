@@ -18,3 +18,12 @@
     state: restarted
     daemon_reload: true
     enabled: true
+
+- name: Get service Status
+  ansible.builtin.systemd:
+    name: "tenderduty_{{ network }}"
+  register: td_status
+
+- name: Display Status
+  ansible.builtin.debug:
+    var: td_status.status.ActiveState
