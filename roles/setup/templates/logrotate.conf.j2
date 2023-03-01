@@ -1,5 +1,10 @@
 # see "man logrotate" for details
 
+{% if ansible_facts['distribution'] == 'Ubuntu'  %}
+## Required for Ubuntu
+su root syslog
+{% endif %}
+
 # global options do not affect preceding include directives
 
 # rotate log files daily
