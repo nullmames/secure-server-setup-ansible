@@ -1,0 +1,9 @@
+network: aptos
+folder: previewnet
+repo: https://github.com/aptos-labs/aptos-core
+node_version: preview
+genesis_blob: https://github.com/aptos-labs/aptos-previewnet/raw/main/genesis.blob
+waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-previewnet/main/waypoint.txt
+p2p_port: 6180
+p2p_port_vfn: 6182
+api_port: 8080
