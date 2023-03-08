@@ -6,3 +6,11 @@
     daemon_reload: true
     enabled: true
     state: restarted
+
+- name: Restart journald
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-journald
+    daemon_reload: true
+    enabled: true
+    state: restarted
