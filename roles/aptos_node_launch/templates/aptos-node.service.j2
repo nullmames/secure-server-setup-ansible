@@ -5,9 +5,12 @@ After=network-online.target
 [Service]
 User={{ ansible_user }}
 ExecStart=/usr/local/bin/aptos-node --config {{ user_dir }}/{{ folder }}/{{ aptos_role }}.yaml
-Restart=always
+Restart=on-failure
 RestartSec=5
-Environment="RUST_LOG=WARN"
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=20
+LogNamespace=noisy
+
 
 [Install]
 WantedBy=multi-user.target
