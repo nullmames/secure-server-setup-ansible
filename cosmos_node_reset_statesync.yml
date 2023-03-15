@@ -4,5 +4,10 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  tasks:
+    - name: Verify RPC is set
+      ansible.builtin.fail:
+        msg: RPC addresses not set for statesync
+      when: snap_rpc == None
   roles:
     - cosmos_node_reset_statesync

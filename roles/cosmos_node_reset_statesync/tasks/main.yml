@@ -1,4 +1,20 @@
 ---
+- name: Create state_sync directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/state_sync"
+    state: directory
+    mode: "0755"
+  when: snap_rpc is defined
+
+- name: Copy state_sync file
+  ansible.builtin.template:
+    src: "../cosmos_node_launch/templates/state_sync.sh.j2"
+    dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0700"
+  when: snap_rpc is defined
+
 - name: Verify state_sync exists for chain
   ansible.builtin.stat:
     path: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
