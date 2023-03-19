@@ -23,8 +23,8 @@
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
         - "nice -n 15 cargo clean"
-        - "nice -n 15 cargo build --package aptos --profile release"
-        - "nice -n 15 cargo build --package aptos-node --profile release"
+        - "nice -n 15 cargo build --package aptos --profile performance"
+        - "nice -n 15 cargo build --package aptos-node --profile performance"
       environment:
         PATH: "{{ path }}"
 
