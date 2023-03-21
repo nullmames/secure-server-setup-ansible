@@ -31,11 +31,11 @@
     - name: Copy binaries
       become: true
       ansible.builtin.copy:
-        src: "{{ user_dir }}/source/{{ network }}/target/release/{{ item }}"
+        src: "{{ user_dir }}/source/{{ network }}/target/performance/{{ item }}"
         dest: "/usr/local/bin"
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
         remote_src: true
         force: true
       loop:
