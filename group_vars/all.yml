@@ -1,5 +1,5 @@
 # go
-go_release: "go1.19.5"
+go_release: "go1.20.2"
 
 # node
 node_release: "node_18.x"
