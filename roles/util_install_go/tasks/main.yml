@@ -41,10 +41,9 @@
     state: directory
     mode: "0755"
 
-- name: Change go folder permission
+- name: Change go folder ownership
   ansible.builtin.file:
     path: "{{ user_dir }}/go"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     recurse: true
-    mode: "0755"
