@@ -110,3 +110,10 @@ alias stop="sudo systemctl stop"
 #
 alias consensus="python3 /home/{{ ansible_user}}/source/consensus/consensus.py"
 alias yabs="curl -sL https://github.com/masonr/yet-another-bench-script/raw/master/yabs.sh | bash -s -- -ig"
+#
+## Functions
+rhinoshare() {
+        /usr/bin/rsync -av --progress "$1" rsync://10.254.110.101/share/
+        echo -e "\n\nShare link: https://share.rhinostake.com/$1"
+}
+
