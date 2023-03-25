@@ -23,15 +23,15 @@
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
         - "nice -n 15 cargo clean"
-        - "nice -n 15 cargo build --package aptos --profile performance"
-        - "nice -n 15 cargo build --package aptos-node --profile performance"
+        - "nice -n 15 cargo build --package aptos --profile {{ build_profile }}"
+        - "nice -n 15 cargo build --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
 
     - name: Copy binaries
       become: true
       ansible.builtin.copy:
-        src: "{{ user_dir }}/source/{{ network }}/target/performance/{{ item }}"
+        src: "{{ user_dir }}/source/{{ network }}/target/{{ build_profile }}/{{ item }}"
         dest: "/usr/local/bin"
         owner: root
         group: root

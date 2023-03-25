@@ -21,7 +21,7 @@
     dest: "/usr/local/bin/aptos-node"
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
     remote_src: true
     force: true
   notify: Restart aptos-node

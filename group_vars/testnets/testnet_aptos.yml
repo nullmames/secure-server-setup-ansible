@@ -7,3 +7,6 @@ waypoint: https://github.com/aptos-labs/aptos-genesis-waypoint/raw/main/testnet/
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
+
+# Build profile
+build_profile: release

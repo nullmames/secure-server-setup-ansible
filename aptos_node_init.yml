@@ -4,6 +4,11 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  tasks:
+    - name: Verify build_profile is set
+      ansible.builtin.fail:
+        msg: build_profile is not set in config
+      when: build_profile == None
   roles:
     - aptos_node_dependencies
     - aptos_node_install

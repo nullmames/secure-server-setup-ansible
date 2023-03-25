@@ -7,3 +7,6 @@ waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-previewnet/main/way
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
+
+# Build profile
+build_profile: performance
