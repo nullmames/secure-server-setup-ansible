@@ -5,17 +5,25 @@
     snapshot_url: "{{ snapshot_url }}/{{ network }}"
     addrbook_url: "{{ addrbook_url }}/{{ network }}/addrbook.json"
 
-- name: Parse snapshot command
-  ansible.builtin.shell: "curl -s {{ snapshot_url }} | grep curl | sed 's/<[^>]*>//g' | awk '{$1=$1};1'"
+- name: Parse snapshot url
+  ansible.builtin.shell: 'curl -s {{ snapshot_url }} | grep ''<a href="https://snapshots'' | grep -Eo ''https.*tar.lz4'' | head -1'
   environment:
     PATH: "{{ path }}"
-  register: snapshot_command
+  register: snapshot_url
 
-- name: Stop cosmovisor
-  become: true
-  ansible.builtin.systemd:
-    name: "{{ daemon }}"
-    state: stopped
+- name: Print snapshot_url
+  ansible.builtin.debug:
+    msg: "Downloading snapshot {{ snapshot_url.stdout }}"
+
+- name: Fail if snapshot_url not defined
+  ansible.builtin.fail:
+    msg: snapshot_url is not available
+  when: snapshot_url.stdout == None
+
+- name: Download snapshot
+  ansible.builtin.shell: "aria2c -x10 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url.stdout }}"
+  environment:
+    PATH: "{{ path }}"
 
 - name: Download addrbook
   ansible.builtin.get_url:
@@ -24,13 +32,23 @@
     mode: "0440"
   register: url_correct
 
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Pause for 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
 - name: Reset data folder
   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
   environment:
     PATH: "{{ path }}"
 
-- name: Download and extract snapshot
-  ansible.builtin.shell: "eval $({{ snapshot_command.stdout }})"
+- name: Extract archive
+  ansible.builtin.shell: "lz4 -c -d {{ user_dir }}/{{ network }}-snapshot.tar.lz4 | tar -x -C {{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
 
@@ -39,3 +57,8 @@
   ansible.builtin.systemd:
     name: "{{ daemon }}"
     state: restarted
+
+- name: Cleanup snapshot archive
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ network }}-snapshot.tar.lz4"
+    state: absent
