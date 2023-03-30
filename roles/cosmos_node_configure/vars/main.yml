@@ -3,10 +3,10 @@ config_port_changes:
   'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
   'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
   'proxy_app = "tcp://127.0.0.1:26658"': 'proxy_app = "tcp://127.0.0.1:{{ custom_port_prefix }}58"'
-  ## Horcrux
-  # 'priv_validator_laddr = ""': 'priv_validator_laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}59"'
   'pprof_laddr = "localhost:6060"': 'pprof_laddr = "localhost:{{ custom_port_prefix }}60"'
   'prometheus_listen_addr = ":26660"': 'prometheus_listen_addr = ":{{ custom_port_prefix }}61"'
+  ## Horcrux
+  # 'priv_validator_laddr = ""': 'priv_validator_laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}59"'
 app_port_changes:
   'address = "tcp://0.0.0.0:1317"': 'address = "tcp://0.0.0.0:{{ custom_port_prefix }}17"'
   'address = ":8080"': 'address = ":{{ custom_port_prefix }}80"'
@@ -15,5 +15,19 @@ app_port_changes:
 pruning:
   'pruning = "': 'pruning = "custom"'
   'pruning-keep-recent = "': 'pruning-keep-recent = "101"'
+  'pruning-keep-every = "': 'pruning-keep-every = "0"'
   'pruning-interval = "': 'pruning-interval = "13"'
   "snapshot-interval = ": "snapshot-interval = 0"
+pruning_rpc:
+  "pruning = ": 'pruning = "custom"'
+  "pruning-keep-recent = ": 'pruning-keep-recent = "20000"'
+  "pruning-keep-every = ": 'pruning-keep-every = "0"'
+  "pruning-interval = ": 'pruning-interval = "17"'
+  "iavl-cache-size = ": "iavl-cache-size = 3906250"
+  "max-open-connections = ": "max-open-connections = 10000"
+  "enabled-unsafe-cors = ": "enabled-unsafe-cors = true"
+  "snapshot-interval = ": "snapshot-interval = 2000"
+  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
+  "query_gas_limit = ": "query_gas_limit = 5000000"
+  "simulation_gas_limit = ": "simulation_gas_limit = 50000000"
+  "memory_cache_size = ": "memory_cache_size = 8000"
