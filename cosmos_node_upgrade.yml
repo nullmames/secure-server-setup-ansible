@@ -7,7 +7,7 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
-  tasks:
+  pre_tasks:
     - name: Verify upgrade_name is set
       ansible.builtin.fail:
         msg: upgrade_name is not set in config

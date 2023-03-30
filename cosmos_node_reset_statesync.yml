@@ -4,7 +4,7 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
-  tasks:
+  pre_tasks:
     - name: Verify RPC is set
       ansible.builtin.fail:
         msg: RPC addresses not set for statesync
