@@ -21,7 +21,7 @@
   when: snapshot_url.stdout == None
 
 - name: Download snapshot
-  ansible.builtin.shell: "aria2c -x10 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url.stdout }}"
+  ansible.builtin.shell: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url.stdout }}"
   environment:
     PATH: "{{ path }}"
 
