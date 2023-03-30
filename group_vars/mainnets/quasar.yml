@@ -7,6 +7,8 @@ node_version: v0.1.0
 repo: https://github.com/quasar-finance/quasar-preview
 genesis: https://raw.githubusercontent.com/quasar-finance/networks/main/quasar-1/definitive-genesis.json
 minimum_gas_price: "0.01uqsr"
-seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:18256"
+seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:18256,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:18256"
 peers: ""
 custom_port_prefix: 182
+
+snap_rpc: https://quasar-rpc.polkachu.com:443
