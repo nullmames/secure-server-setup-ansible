@@ -1,15 +1,17 @@
 #!/bin/bash
 
+SNAP_HEIGHT_BUFFER=15000
 SNAP_RPC="{{ snap_rpc }}"
 
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
-BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAP_HEIGHT_BUFFER)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
-echo -e "Modifying $HOME/{{ folder }}/config/config.toml with the following values:"
-echo -e "RPC Node Address:  $SNAP_RPC"
-echo -e "Sync Block Height: $BLOCK_HEIGHT"
-echo -e "Trust Hash:        $TRUST_HASH"
+echo -e "Modifying $HOME/{{ folder }}/config/config.toml based on the following values:"
+echo -e "RPC Address:          $SNAP_RPC"
+echo -e "Latest Block Height:  $LATEST_HEIGHT"
+echo -e "Sync Block Height:    $BLOCK_HEIGHT"
+echo -e "Trust Hash:           $TRUST_HASH"
 
 sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
 s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
