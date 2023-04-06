@@ -10,4 +10,4 @@ seeds: "399d4e19186577b04c23296c4f7ecc53e61080cb@seed.gitopia.com:26656"
 minimum_gas_price: "0.001utlore"
 custom_port_prefix: 113
 
-snap_rpc: "https://gitopia-testnet-rpc.polkachu.com:443"
+snap_rpc: https://gitopia-testnet.nodejumper.io:443
