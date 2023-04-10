@@ -2,7 +2,7 @@
 # 4.0 or 4.1 syntax.
 vcl 4.1;
 
-# Pointing to haproxy
+# Pointing to ipfs listener
 backend default {
     .host = "127.0.0.1";
     .port = "8080";
