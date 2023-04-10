@@ -1,8 +1,8 @@
 - name: Download ipfs
   register: ipfsversion
   ansible.builtin.get_url:
-    url: "https://dist.ipfs.tech/kubo/{{ ipfs_release }}/kubo_{{ ipfs_release}}_linux-amd64.tar.gz"
-    dest: "{{ user_dir }}/source/kubo_{{ ipfs_release}}_linux-amd64.tar.gz"
+    url: "https://dist.ipfs.tech/kubo/{{ ipfs_release }}/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
+    dest: "{{ user_dir }}/source/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
     mode: "0700"
 
 - name: Install ipfs daemon
@@ -10,7 +10,7 @@
   block:
     - name: Unarchive ipfs release
       ansible.builtin.unarchive:
-        src: "{{ user_dir }}/source/kubo_{{ ipfs_release}}_linux-amd64.tar.gz"
+        src: "{{ user_dir }}/source/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
         dest: "{{ user_dir }}/source"
         remote_src: true
 
@@ -21,7 +21,7 @@
         dest: "/usr/local/bin"
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
         remote_src: true
         force: true
 
@@ -71,6 +71,14 @@
     rule: allow
     proto: tcp
     port: "4001"
+
+- name: Increase UDP Receive Buffer Size
+  become: true
+  ansible.posix.sysctl:
+    name: net.core.rmem_max
+    value: 2500000
+    state: present
+    sysctl_set: true
 
 - name: Copy service file
   become: true
