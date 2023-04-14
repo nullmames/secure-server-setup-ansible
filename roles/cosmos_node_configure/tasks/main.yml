@@ -97,7 +97,7 @@
     state: present
     content: |
       [sidecar]
-      sentinel_peer_string = "{{sentinel_peer_string}}"
-      sentinel_rpc_string = "{{sentinel_rpc_string}}"
-      api_key = "{{skip_api_key}}"
-  when: skip_version is defined
+      sentinel_peer_string = "{{ sentinel_peer_string }}"
+      sentinel_rpc_string = "{{ sentinel_rpc_string }}"
+      api_key = "{{ skip_api_key }}"
+  when: sentinel_peer_string is defined
