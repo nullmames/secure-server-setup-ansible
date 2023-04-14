@@ -1,15 +1,16 @@
 - name: Download ipfs-cluster-service
   register: ipfsclusterversion
   ansible.builtin.get_url:
-    url: "https://dist.ipfs.tech/ipfs-cluster-service/{{ ipfs_cluster_release }}/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
-    dest: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
+    url: "https://dist.ipfs.tech/ipfs-cluster-service/{{ ipfs_cluster_release }}/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+    dest: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
     mode: "0755"
 
 - name: Install ipfs-cluster-service daemon
+  when: ipfsclusterversion.changed
   block:
     - name: Unarchive ipfs-cluster-service release
       ansible.builtin.unarchive:
-        src: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release}}_linux-amd64.tar.gz"
+        src: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
         dest: "{{ user_dir }}/source"
         remote_src: true
 
@@ -20,10 +21,9 @@
         dest: "/usr/local/bin"
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"
         remote_src: true
         force: true
-  when: ipfsclusterversion.changed
 
 - name: Check if node has been initialized
   ansible.builtin.stat:
@@ -38,7 +38,7 @@
 
 - name: Copy ipfs-cluster files
   ansible.builtin.template:
-    src: "{{ item }}.j2"
+    src: "{{ item }}-{{ ipfs_role }}.j2"
     dest: "{{ user_dir }}/.ipfs-cluster/{{ item }}"
     owner: rhino
     group: rhino

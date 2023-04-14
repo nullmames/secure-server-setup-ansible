@@ -3,5 +3,5 @@
   hosts: stargaze_api
   gather_facts: false
   roles:
-    - { role: util_varnish_install, when: ipfs is defined }
+    - { role: util_varnish_install, when: ipfs_role is defined }
     - { role: util_haproxy_install, when: haproxy_config is defined }

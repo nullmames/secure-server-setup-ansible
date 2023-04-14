@@ -32,7 +32,7 @@ sub vcl_backend_response {
 
     set beresp.ttl = 1w;
     set beresp.grace = 24h;
-    
+
 }
 
 sub vcl_deliver {

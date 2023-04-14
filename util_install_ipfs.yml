@@ -4,4 +4,4 @@
   gather_facts: false
   roles:
     - { role: util_ipfs_install, when: ipfs_role is defined }
-    - { role: util_ipfs_cluster_install, when: ipfs is defined }
+    - { role: util_ipfs_cluster_install, when: ipfs_role is defined }
