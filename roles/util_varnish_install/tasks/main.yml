@@ -8,6 +8,15 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Create varnish cache folder
+  become: true
+  ansible.builtin.file:
+    path: "/opt/varnish"
+    state: directory
+    owner: varnish
+    group: varnish
+    mode: "0755"
+
 - name: Copy varnish config
   become: true
   ansible.builtin.template:
