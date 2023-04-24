@@ -1,6 +1,7 @@
 ---
 # Install binary
 - name: Install from source
+  when: binary is undefined
   block:
     - name: Clone node repo
       ansible.builtin.git:
@@ -41,7 +42,6 @@
       environment:
         PATH: "{{ path }}"
         GOPATH: "{{ user_dir }}/go"
-  when: binary is undefined
 
 - name: Install from binary
   ansible.builtin.include_tasks: binary_default.yml
