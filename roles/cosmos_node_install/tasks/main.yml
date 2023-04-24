@@ -37,8 +37,8 @@
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
-        - "make build"
-        - "make install"
+        - "nice -n 15 make build"
+        - "nice -n 15 make install"
       environment:
         PATH: "{{ path }}"
         GOPATH: "{{ user_dir }}/go"
