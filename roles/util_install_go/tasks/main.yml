@@ -14,7 +14,6 @@
         mode: "0700"
 
     - name: Remove go binary
-      when: goversion is defined
       ansible.builtin.file:
         path: /usr/local/go
         state: absent
@@ -26,6 +25,11 @@
         dest: /usr/local
         remote_src: true
       become: true
+
+    - name: Delete temporary file
+      ansible.builtin.file:
+        path: "/tmp/{{ go_release }}"
+        state: absent
 
 - name: Copy .zprofile
   ansible.builtin.template:
