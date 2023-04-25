@@ -7,24 +7,23 @@
   when: goversion.stdout != go_release
   block:
     - name: Download go
-      become: true
       ansible.builtin.get_url:
         url: "https://golang.org/dl/{{ go_release }}.linux-amd64.tar.gz"
         dest: "/tmp/{{ go_release }}"
         mode: "0700"
 
     - name: Remove go binary
+      become: true
       ansible.builtin.file:
         path: /usr/local/go
         state: absent
-      become: true
 
     - name: Unarchive go release
+      become: true
       ansible.builtin.unarchive:
         src: /tmp/{{ go_release }}
         dest: /usr/local
         remote_src: true
-      become: true
 
     - name: Delete temporary file
       ansible.builtin.file:
