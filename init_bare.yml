@@ -18,7 +18,7 @@
         path: "/proc/{{ item }}/status"
         state: absent
       with_items: "{{ pids_result.stdout_lines }}"
-      when: pids_result is defined
+      when: pids_result
 
     - name: Delete ansible_user
       ansible.builtin.user:

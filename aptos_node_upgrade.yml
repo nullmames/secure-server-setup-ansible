@@ -7,8 +7,8 @@
   pre_tasks:
     - name: Verify build_profile is set
       ansible.builtin.fail:
-        msg: build_profile is not set in config
-      when: build_profile == None
+        msg: build_profile is not set in config. Unable to continue.
+      when: not build_profile
   roles:
     - aptos_node_dependencies
     - aptos_node_install

@@ -10,13 +10,13 @@
   pre_tasks:
     - name: Verify upgrade_name is set
       ansible.builtin.fail:
-        msg: upgrade_name is not set in config
-      when: upgrade_name == None
+        msg: upgrade_name is not set in config. Unable to continue.
+      when: not upgrade_name
 
     - name: Verify version is set
       ansible.builtin.fail:
-        msg: version is not set in config
-      when: node_version == None
+        msg: version is not set in config. Unable to continue.
+      when: not node_version
 
 - name: Prepare network upgrade using cosmovisor
   hosts: all

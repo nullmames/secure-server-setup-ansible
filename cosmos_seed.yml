@@ -4,5 +4,12 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+
+  pre_tasks:
+    - name: Verify seeds are set
+      ansible.builtin.fail:
+        msg: seeds is not set in config.  Cannot continue.
+      when: not seeds
+
   roles:
     - cosmos_seed
