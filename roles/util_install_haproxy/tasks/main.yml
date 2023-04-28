@@ -7,6 +7,16 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Copy certificate
+  become: true
+  ansible.builtin.copy:
+    src: "templates/rhinossl.pem"
+    dest: "/etc/ssl/rhinossl.pem"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart haproxy
+
 - name: Copy haproxy config
   become: true
   ansible.builtin.template:
@@ -26,3 +36,10 @@
     rule: allow
     proto: tcp
     port: "80"
+
+- name: Open https in ufw
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "443"
