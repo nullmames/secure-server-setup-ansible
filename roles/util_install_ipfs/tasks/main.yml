@@ -38,16 +38,17 @@
   environment:
     PATH: "{{ path }}"
 
-- name: IPFS config via cli, including star-eastna-03 node bootstrap
+- name: IPFS config via cli, including node bootstrap
   ansible.builtin.command: "{{ item }}"
   environment:
     PATH: "{{ path }}"
   with_items:
-    - "ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080"
-    - "ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001"
-    - "ipfs config Datastore.Bloomfilter 1048576"
-    - "ipfs bootstrap add /ip4/15.204.183.107/tcp/4001/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM"
-    - "ipfs bootstrap add /ip4/15.204.183.107/udp/4001/quic/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM"
+    - ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/8080
+    - ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001
+    - ipfs config Datastore.Bloomfilter 1048576
+    - ipfs bootstrap add /ip4/15.204.183.107/tcp/4001/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM
+    - ipfs bootstrap add /ip4/15.204.183.107/udp/4001/quic/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM
+    - ipfs config --json Peering.Peers '[{ "ID":"Qma8ddFEQWEU8ijWvdxXm3nxU7oHsRtCykAaVz8WUYhiKn", "Addrs":["/dnsaddr/production-ipfs-peer.pinata.cloud"]}]'
 
 - name: IPFS StorageMax if recent node
   ansible.builtin.command: "{{ item }}"

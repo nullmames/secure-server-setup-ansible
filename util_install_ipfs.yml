@@ -3,5 +3,5 @@
   hosts: stargaze_api
   gather_facts: false
   roles:
-    - { role: util_ipfs_install, when: ipfs_role is defined }
-    - { role: util_ipfs_cluster_install, when: ipfs_role is defined }
+    - { role: util_install_ipfs, when: ipfs_role is defined }
+    - { role: util_install_ipfs_cluster, when: ipfs_role is defined }
