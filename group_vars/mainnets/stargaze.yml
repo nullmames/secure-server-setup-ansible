@@ -8,7 +8,7 @@ genesis: "https://raw.githubusercontent.com/public-awesome/mainnet/main/stargaze
 genesis_processing: targz
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:13756,d5fc4f479c4e212c96dff5704bb2468ea03b8ae3@sg-seed.blockpane.com:26656,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:13756"
 custom_port_prefix: 137
-snap_rpc: "https://stargaze-rpc.polkachu.com:443"
+snap_rpc: "https://rpc.stargaze-apis.com:443"
 
 # [Optional] Snapshot
 snapshot_hour: 2
