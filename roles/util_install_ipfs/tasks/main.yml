@@ -48,7 +48,7 @@
     - ipfs config Datastore.Bloomfilter 1048576
     - ipfs bootstrap add /ip4/15.204.183.107/tcp/4001/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM
     - ipfs bootstrap add /ip4/15.204.183.107/udp/4001/quic/p2p/12D3KooWSK5sr9g4uHWSmwaB7jLvKveDkt5U4fy4JRpVrzSWRpGM
-    - ipfs config --json Peering.Peers '[{ "ID":"Qma8ddFEQWEU8ijWvdxXm3nxU7oHsRtCykAaVz8WUYhiKn", "Addrs":["/dnsaddr/production-ipfs-peer.pinata.cloud"]}]'
+    - ipfs config --json Peering.Peers '[{"ID":"Qma8ddFEQWEU8ijWvdxXm3nxU7oHsRtCykAaVz8WUYhiKn","Addrs":["/dnsaddr/production-ipfs-peer.pinata.cloud"]},{"ID":"12D3KooWKd92H37a8gCDZPDAAGTYvEGAq7CNk1TcaCkcZedkTwFG","Addrs":["/ip4/147.75.85.47/tcp/4001"]},{"ID":"12D3KooWGGyvEomXVi5YHqXdfGHx1GKHjVrUo313pWCs5uSfkoHK","Addrs":["/ip4/145.40.89.165/tcp/4001"]}]'
 
 - name: IPFS StorageMax if recent node
   ansible.builtin.command: "{{ item }}"
