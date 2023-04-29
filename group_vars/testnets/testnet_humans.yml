@@ -1,0 +1,14 @@
+network: humans
+folder: ".humansd"
+daemon: humansd
+chain_id: humans_3000-1
+node_version: v0.1.0
+repo: https://github.com/humansdotai/humans
+genesis: "https://raw.githubusercontent.com/humansdotai/testnets/master/friction/genesis.json"
+peers: ""
+seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:18456"
+minimum_gas_price: "0.025uheart"
+custom_port_prefix: 184
+# [Optional] Snapshot
+# snapshot_hour: 0
+# snapshot_minute: 30
