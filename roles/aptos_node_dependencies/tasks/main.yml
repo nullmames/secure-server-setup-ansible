@@ -8,6 +8,19 @@
     force: true
     recursive: false
 
+- name: Create pip directory to bypass Externally Managed
+  ansible.builtin.file:
+    path: "{{ user_dir }}/.config/pip"
+    state: directory
+
+- name: Add pip.conf to bypass Externally Managed
+  ansible.builtin.copy:
+    src: "files/pip.conf"
+    dest: "{{ user_dir }}/.config/pip/pip.conf"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
 - name: Run/update Aptos prep script
   ansible.builtin.command: "{{ item }}"
   args:
