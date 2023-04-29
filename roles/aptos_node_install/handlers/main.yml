@@ -8,6 +8,10 @@
     state: restarted
     daemon_reload: true
 
+- name: Pause for node to start
+  ansible.builtin.pause:
+    seconds: 15
+
 - name: Add annotation
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"

@@ -7,6 +7,10 @@
     state: restarted
     daemon_reload: true
 
+- name: Pause for node to start
+  ansible.builtin.pause:
+    seconds: 15
+
 - name: Check version of node
   ansible.builtin.shell: "curl -sL localhost:8080/v1/ | jq -r .git_hash"
   notify: Add annotation
