@@ -1,4 +1,6 @@
+---
 - name: Uninstall repo docker files is present
+  become: true
   ansible.builtin.apt:
     name:
       - docker
@@ -7,26 +9,24 @@
       - containerd
       - runc
     state: absent
-  become: true
-
-- name: Verify release of distribution
-  ansible.builtin.shell: "/usr/bin/lsb_release -s -c"
-  register: distrib
 
 - name: Install docker repository key
-  ansible.builtin.apt_key:
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-    url: https://download.docker.com/linux/debian/gpg
-    state: present
   become: true
+  ansible.builtin.get_url:
+    url: "https://download.docker.com/linux/debian/gpg"
+    dest: /etc/apt/trusted.gpg.d/docker.asc
+    mode: "0644"
+    force: true
 
 - name: Install docker repository
-  ansible.builtin.apt_repository:
-    repo: "deb https://download.docker.com/linux/debian {{ distrib.stdout }} stable"
-    state: present
   become: true
+  ansible.builtin.apt_repository:
+    repo: "deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: true
 
 - name: Install docker components
+  become: true
   ansible.builtin.apt:
     name:
       - docker-ce
@@ -34,12 +34,10 @@
       - containerd.io
       - docker-compose-plugin
     state: present
-    update_cache: true
-  become: true
 
 - name: Add ansible user to docker group
+  become: true
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: docker
     append: true
-  become: true

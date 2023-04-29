@@ -1,27 +1,25 @@
-- name: Verify release of distribution
-  ansible.builtin.shell: "/usr/bin/lsb_release -s -c"
-  register: distrib
-
+---
 - name: Install nodesource repository key
-  ansible.builtin.apt_key:
-    id: 9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280
-    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-    state: present
   become: true
+  ansible.builtin.get_url:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    dest: /etc/apt/trusted.gpg.d/nodesource.asc
+    mode: "0644"
+    force: true
 
 - name: Install nodesource repository
+  become: true
   ansible.builtin.apt_repository:
     repo: "{{ item }}"
     state: present
+    update_cache: true
   with_items:
-    - deb https://deb.nodesource.com/{{ node_release }} {{ distrib.stdout }} main
-    - deb-src https://deb.nodesource.com/{{ node_release }} {{ distrib.stdout }} main
-  become: true
+    - deb https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
+    - deb-src https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
 
 - name: Install nodejs
+  become: true
   ansible.builtin.apt:
     name:
       - nodejs
     state: present
-    update_cache: true
-  become: true
