@@ -7,7 +7,8 @@ waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/waypoint
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
-# hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/aptos-node-testnet_80d7b03c630e0066bc12e2a3ba6f3546542bbb8c/aptos-node-ubuntu-20-04.tgz"
 
 # Build profile
 build_profile: release
+
+hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/aptos-node-v1.3.5/aptos-node-ubuntu-22-04.tgz"

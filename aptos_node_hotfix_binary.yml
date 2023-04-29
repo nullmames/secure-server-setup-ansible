@@ -4,5 +4,10 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  tasks:
+    - name: Verify hotfix_binary_url is set
+      ansible.builtin.fail:
+        msg: hotfix_binary_url is not set in config. Unable to continue.
+      when: not hotfix_binary_url
   roles:
     - aptos_node_hotfix_install
