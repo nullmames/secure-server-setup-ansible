@@ -3,7 +3,7 @@
   become: true
   ansible.builtin.get_url:
     url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-    dest: /etc/apt/trusted.gpg.d/nodesource.asc
+    dest: /usr/share/keyrings/nodesource.asc
     mode: "0644"
     force: true
 
@@ -14,8 +14,8 @@
     state: present
     update_cache: true
   with_items:
-    - deb https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
-    - deb-src https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
+    - deb [signed-by=/usr/share/keyrings/nodesource.asc] https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
+    - deb-src [signed-by=/usr/share/keyrings/nodesource.asc] https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
 
 - name: Install nodejs
   become: true
