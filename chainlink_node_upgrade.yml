@@ -1,5 +1,5 @@
 ---
-- name: Chainlink configuration update
+- name: Chainlink version, config and bridge configuration update
   hosts: all
   gather_facts: true
   vars_files:
