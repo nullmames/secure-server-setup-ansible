@@ -68,7 +68,7 @@
     single_branch: true
     version: "main"
 
-- name: Create source if it does not exist
+- name: Create source folder in home directory
   become: false
   ansible.builtin.file:
     path: "{{ user_dir }}/source"
