@@ -31,7 +31,7 @@
     name: "{{ daemon }}"
     state: stopped
 
-- name: Reset data folder
+- name: Reset data folder while keeping address book
   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
   environment:
     PATH: "{{ path }}"
