@@ -1,0 +1,12 @@
+---
+- name: Chainlink configuration update
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "{{ var_file }}"
+  roles:
+    - util_install_go
+    - util_install_node
+    - chainlink_node_install
+    - chainlink_node_configure
+    - chainlink_node_launch

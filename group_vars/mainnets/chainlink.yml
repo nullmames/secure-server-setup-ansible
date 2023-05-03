@@ -1,0 +1,12 @@
+network: chainlink
+folder: .chainlink
+repo: https://github.com/smartcontractkit/chainlink.git
+node_version: 0970c819be6bb2b6714644c6d44509ddeffc2a24 # 2.0.0
+p2p_port: 32451
+
+# Grafana dashboard
+dashboardUID: NGatdDfnk
+
+# Forcing specific build versions
+# node
+node_release: "node_16.x"

@@ -1,0 +1,18 @@
+---
+- name: Create Chainlink directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/chainlink"
+    state: directory
+    mode: "0755"
+
+- name: Copy Chainlink config files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ user_dir }}/chainlink/"
+    mode: "0644"
+  with_fileglob:
+    - "templates/config.toml"
+    - "templates/secrets.toml"
+  notify:
+    - Restart chainlink
+    - Grafana chainlink update

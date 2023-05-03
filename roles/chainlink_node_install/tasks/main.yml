@@ -1,0 +1,41 @@
+---
+- name: Check git hash version of node
+  ansible.builtin.shell: "/usr/local/bin/chainlink --version | awk '{print $3}' | sed 's/.*@//'"
+  register: chainlink_version
+
+- name: Build new version & install
+  when: (chainlink_version.stdout != node_version) or (chainlink_version.stdout is none)
+  notify:
+    - Restart chainlink
+    - Grafana chainlink upgrade
+  block:
+    - name: Update chainlink repo for node install
+      ansible.builtin.git:
+        repo: "{{ repo }}"
+        dest: "{{ user_dir }}/source/{{ network }}"
+        version: "{{ node_version }}"
+        update: true
+        force: true
+        recursive: true
+
+    - name: Build chainlink
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ user_dir }}/source/{{ network }}"
+      with_items:
+        - "nice -n 15 make install"
+      environment:
+        PATH: "{{ path }}"
+
+    - name: Copy chainlink binary
+      become: true
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/go/bin/chainlink"
+        dest: "/usr/local/bin"
+        owner: root
+        group: root
+        mode: "0755"
+        remote_src: true
+        force: true
+      loop:
+        - chainlink

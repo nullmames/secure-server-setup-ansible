@@ -1,0 +1,17 @@
+---
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: "chainlink.service.j2"
+    dest: "/etc/systemd/system/chainlink.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart chainlink
+
+- name: Enable chainlink service
+  become: true
+  ansible.builtin.systemd:
+    name: "chainlink"
+    daemon_reload: true
+    enabled: true

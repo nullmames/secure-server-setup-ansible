@@ -1,0 +1,49 @@
+---
+- name: Restart chainlink
+  become: true
+  ansible.builtin.systemd:
+    name: chainlink
+    state: restarted
+    daemon_reload: true
+
+- name: Grafana bridge update
+  ansible.builtin.uri:
+    url: "{{ grafana_url }}/api/annotations"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: Bearer {{ grafana_api }}
+      Accept: application/json
+    body:
+      dashboardUID: "{{ dashboardUID }}"
+      tags: ["chainlink:update"]
+      text: "Updated chainlink bridge configuration"
+  delegate_to: 127.0.0.1
+
+- name: Grafana chainlink update
+  ansible.builtin.uri:
+    url: "{{ grafana_url }}/api/annotations"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: Bearer {{ grafana_api }}
+      Accept: application/json
+    body:
+      dashboardUID: "{{ dashboardUID }}"
+      tags: ["chainlink:update"]
+      text: "Updated chainlink node configuration"
+  delegate_to: 127.0.0.1
+
+- name: Grafana chainlink upgrade
+  ansible.builtin.uri:
+    url: "{{ grafana_url }}/api/annotations"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: Bearer {{ grafana_api }}
+      Accept: application/json
+    body:
+      dashboardUID: "{{ dashboardUID }}"
+      tags: ["chainlink:upgrade", "chainlink:restart"]
+      text: "Upgrade chainlink to version `{{ node_version }}`"
+  delegate_to: 127.0.0.1

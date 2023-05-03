@@ -1,0 +1,6 @@
+---
+- name: Configure Chainlink components
+  ansible.builtin.import_tasks: update_chainlink.yml
+
+- name: Configure Bridge components
+  ansible.builtin.import_tasks: update_bridge.yml

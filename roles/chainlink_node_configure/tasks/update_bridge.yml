@@ -1,0 +1,32 @@
+---
+- name: Create docker-compose directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose"
+    state: directory
+    mode: "0755"
+
+- name: Copy docker-compose files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ user_dir }}/docker-compose/"
+    mode: "0644"
+  with_fileglob:
+    - "templates/.env"
+    - "templates/docker-compose.yml"
+  notify: Grafana bridge update
+
+- name: Update and launch containers
+  community.docker.docker_compose:
+    project_src: "{{ user_dir }}/docker-compose"
+
+- name: Prune everything
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    images_filters:
+      dangling: false
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output

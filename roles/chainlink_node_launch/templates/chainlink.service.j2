@@ -1,0 +1,13 @@
+[Unit]
+Description=Chainlink
+After=network-online.target
+
+[Service]
+User={{ ansible_user }}
+ExecStart=/usr/local/bin/chainlink --config {{ user_dir }}/chainlink/config.toml --secrets {{ user_dir }}/chainlink/secrets.toml node start
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
