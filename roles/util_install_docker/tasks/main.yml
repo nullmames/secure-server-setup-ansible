@@ -32,8 +32,15 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-      - docker-compose-plugin
+      - python3-pip
     state: present
+
+- name: Remove Compose 2.0 component
+  become: true
+  ansible.builtin.apt:
+    name:
+      - docker-compose-plugin
+    state: absent
 
 - name: Add ansible user to docker group
   become: true
@@ -41,3 +48,9 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: true
+
+- name: Install docker python package
+  ansible.builtin.pip:
+    name:
+      - docker
+      - docker-compose
