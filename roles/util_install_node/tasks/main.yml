@@ -23,3 +23,9 @@
     name:
       - nodejs
     state: present
+
+- name: Install node.js packages
+  become: true
+  community.general.npm:
+    name: pnpm
+    global: true
