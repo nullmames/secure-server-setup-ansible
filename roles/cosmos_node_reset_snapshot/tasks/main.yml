@@ -25,12 +25,12 @@
   environment:
     PATH: "{{ path }}"
 
-- name: Download addrbook
-  ansible.builtin.get_url:
-    url: "{{ addrbook_url }}"
-    dest: "{{ user_dir }}/{{ folder }}/config/addrbook.json"
-    mode: "0440"
-  register: url_correct
+# - name: Download addrbook
+#   ansible.builtin.get_url:
+#     url: "{{ addrbook_url }}"
+#     dest: "{{ user_dir }}/{{ folder }}/config/addrbook.json"
+#     mode: "0440"
+#   register: url_correct
 
 - name: Stop cosmovisor
   become: true
@@ -42,6 +42,16 @@
   ansible.builtin.pause:
     seconds: 5
 
+- name: Save the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    dest: "{{ user_dir }}/priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
+
 - name: Reset data folder
   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
   environment:
@@ -52,13 +62,26 @@
   environment:
     PATH: "{{ path }}"
 
+- name: Replace the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/priv_validator_state.json"
+    dest: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
+
 - name: Start cosmovisor
   become: true
   ansible.builtin.systemd:
     name: "{{ daemon }}"
     state: restarted
 
-- name: Cleanup snapshot archive
+- name: Cleanup temporary files
   ansible.builtin.file:
-    path: "{{ user_dir }}/{{ network }}-snapshot.tar.lz4"
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - "{{ user_dir }}/{{ network }}-snapshot.tar.lz4"
+    - "{{ user_dir }}/priv_validator_state.json"
