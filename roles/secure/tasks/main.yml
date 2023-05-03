@@ -10,12 +10,20 @@
     rule: allow
     src: "{{ item }}"
   loop:
-    - 10.0.0.0/8 # RHINO Internal
-    - 192.168.0.0/16 # Remote Mgmt
-    - 172.16.0.0/24 # Horcrux
-    - 38.32.16.56/29 # Troy Mgmt
-    - 104.244.208.240/29 # Southfield Mgmt
-    - 38.146.3.100/31 # Troy Tenderduty
+    - 10.0.0.0/8 # Internal - RHINOMgmt
+    - 192.168.0.0/16 # Internal - RemoteMgmt
+    - 172.16.0.0/24 # Internal - Horcrux
+    - 38.32.16.56/29 # External - TroyMgmt
+    - 104.244.208.240/29 # External - SouthfieldMgmt
+    - 38.146.3.100/31 # External - Troy Tenderduty
+
+# - name: Remove outdated ufw rules
+#   community.general.ufw:
+#     rule: allow
+#     src: "{{ item }}"
+#     delete: true
+#   loop:
+#     - 104.244.208.240/29 # Southfield Mgmt
 
 - name: Disable root login over SSH
   ansible.builtin.lineinfile:
