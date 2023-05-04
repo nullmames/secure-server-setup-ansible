@@ -22,13 +22,13 @@
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "max_num_inbound_peers"
-    line: "max_num_inbound_peers = 31"
+    line: "max_num_inbound_peers = 27"
 
 - name: Adjust number of outbound peers
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "max_num_outbound_peers"
-    line: "max_num_outbound_peers = 31"
+    line: "max_num_outbound_peers = 34"
 
 - name: Adjust app.toml port settings
   ansible.builtin.lineinfile:
@@ -43,7 +43,7 @@
     regexp: "{{ item.key }}"
     line: "{{ item.value }}"
   loop: "{{ pruning | dict2items }}"
-  when: rpc is undefined
+  when: (rpc is undefined) and (archive is undefined)
 
 - name: Adjust pruning settings for rpc nodes
   ansible.builtin.lineinfile:
@@ -52,6 +52,14 @@
     line: "{{ item.value }}"
   loop: "{{ pruning_rpc | dict2items }}"
   when: rpc is defined
+
+- name: Adjust pruning settings for archive
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ pruning_archive | dict2items }}"
+  when: archive is defined
 
 - name: Enable API in app.toml
   ansible.builtin.replace:
@@ -65,15 +73,15 @@
     regexp: 'indexer = "'
     line: 'indexer = "null"'
     state: present
-  when: rpc is undefined
+  when: (rpc is undefined) and (archive is undefined)
 
-- name: Ensure indexer to kv for RPC nodes
+- name: Ensure indexer to kv for RPC and archive nodes
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: 'indexer = "'
     line: 'indexer = "kv"'
     state: present
-  when: rpc is defined
+  when: (rpc is defined) or (archive is defined)
 
 - name: Bind RPC port to 0.0.0.0
   ansible.builtin.lineinfile:
@@ -87,6 +95,13 @@
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "^prometheus ="
     line: "prometheus = true"
+    state: present
+
+- name: Force Prometheus namespace to tendermint
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^namespace ="
+    line: 'namespace = "tendermint"'
     state: present
 
 - name: Add Skip configuration

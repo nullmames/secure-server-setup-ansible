@@ -31,3 +31,7 @@ pruning_rpc:
   "query_gas_limit = ": "query_gas_limit = 5000000"
   "simulation_gas_limit = ": "simulation_gas_limit = 50000000"
   "memory_cache_size = ": "memory_cache_size = 8000"
+pruning_archive:
+  'pruning = "': 'pruning = "nothing"'
+  "snapshot-interval = ": "snapshot-interval = 2000"
+  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
