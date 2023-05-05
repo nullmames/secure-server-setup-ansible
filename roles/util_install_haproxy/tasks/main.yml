@@ -30,16 +30,12 @@
 - name: Test haproxy config
   ansible.builtin.command: /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -c
 
-- name: Open http in ufw
+- name: Open http ports in ufw
   become: true
   community.general.ufw:
     rule: allow
     proto: tcp
-    port: "80"
-
-- name: Open https in ufw
-  become: true
-  community.general.ufw:
-    rule: allow
-    proto: tcp
-    port: "443"
+    port: "{{ item }}"
+  loop:
+    - 80
+    - 443
