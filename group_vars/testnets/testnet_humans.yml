@@ -1,10 +1,10 @@
 network: humans
 folder: ".humansd"
 daemon: humansd
-chain_id: humans_3000-1
-node_version: v0.1.0
+chain_id: humans_3000-2
+node_version: v0.1.2
 repo: https://github.com/humansdotai/humans
-genesis: "https://raw.githubusercontent.com/humansdotai/testnets/master/friction/genesis.json"
+genesis: "https://raw.githubusercontent.com/humansdotai/testnets/master/friction/mission-2/genesis-m2-p1.json"
 peers: ""
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:18456"
 minimum_gas_price: "0.025uheart"
