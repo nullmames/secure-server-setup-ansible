@@ -1,14 +1,15 @@
 ---
+# Assumes tenderseed is already installed on node
+# Seed address: babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:{{ custom_port_prefix }}56
 #
-## Assumes tenderseed is already installed on node
-## Seed address: babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:{{ custom_port_prefix }}56
-#
-# Create tenderseed folder
-- name: Create folder for tenderseed files
+- name: Create folders for tenderseed files
   ansible.builtin.file:
+    path: "{{ item }}"
     state: directory
-    path: "{{ user_dir }}/tenderseed/{{ network }}/config"
     mode: "0755"
+  with_items:
+    - "{{ user_dir }}/tenderseed/{{ network }}/config"
+    - "{{ user_dir }}/tenderseed/{{ network }}/data"
 
 - name: Copy tenderseed config.toml
   ansible.builtin.template:
@@ -17,6 +18,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0644"
+  register: config
 
 - name: Copy node_key.json
   ansible.builtin.template:
@@ -42,10 +44,29 @@
     proto: tcp
     port: "{{ custom_port_prefix }}56"
 
+- name: Stop tenderseed service (if started)
+  become: true
+  ansible.builtin.systemd:
+    name: "tenderseed_{{ network }}"
+    state: stopped
+    daemon_reload: true
+    enabled: true
+
+- name: Remove existing addrbook data if config (chain-id) modified
+  ansible.builtin.file:
+    path: "{{ user_dir }}/tenderseed/{{ network }}/data/addrbook.json"
+    state: absent
+  when: config.changed
+
 - name: Start tenderseed service
   become: true
   ansible.builtin.systemd:
     name: "tenderseed_{{ network }}"
-    state: restarted
-    daemon_reload: true
+    state: started
     enabled: true
+
+- name: Print seed information
+  ansible.builtin.debug:
+    msg:
+      - "Seed information for {{ group_names[1] }}:"
+      - "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:{{ custom_port_prefix }}56"
