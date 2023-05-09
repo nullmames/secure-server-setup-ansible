@@ -1,0 +1,8 @@
+---
+- name: Restart ipfs service
+  become: true
+  ansible.builtin.systemd:
+    name: "ipfs"
+    daemon_reload: true
+    enabled: true
+    state: restarted

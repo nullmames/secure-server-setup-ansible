@@ -1,0 +1,8 @@
+---
+- name: Restart ipfs-cluster service
+  become: true
+  ansible.builtin.systemd:
+    name: "ipfs-cluster"
+    daemon_reload: true
+    enabled: true
+    state: restarted

@@ -1,18 +1,27 @@
-- name: Download ipfs-cluster-service
+---
+# ipfs-cluster-service block
+- name: Register installed ipfs-cluster-service version
+  ansible.builtin.shell: "/usr/local/bin/ipfs-cluster-service version"
   register: ipfsclusterversion
-  ansible.builtin.get_url:
-    url: "https://dist.ipfs.tech/ipfs-cluster-service/{{ ipfs_cluster_release }}/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
-    dest: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
-    mode: "0755"
+  ignore_errors: true
 
-- name: Install ipfs-cluster-service daemon
-  when: ipfsclusterversion.changed
+- name: Download and install ipfs-cluster-service
+  when: ipfsclusterversion.stdout != ipfs_cluster_release
+  notify: Restart ipfs-cluster service
   block:
-    - name: Unarchive ipfs-cluster-service release
-      ansible.builtin.unarchive:
-        src: "{{ user_dir }}/source/ipfs-cluster-service_{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
-        dest: "{{ user_dir }}/source"
-        remote_src: true
+    - name: Download ipfs-cluster-service
+      ansible.builtin.get_url:
+        url: "https://dist.ipfs.tech/ipfs-cluster-service/v{{ ipfs_cluster_release }}/ipfs-cluster-service_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        dest: "{{ user_dir }}/source/ipfs-cluster-service_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        mode: "0755"
+
+    - name: Install ipfs-cluster-service daemon
+      block:
+        - name: Unarchive ipfs-cluster-service release
+          ansible.builtin.unarchive:
+            src: "{{ user_dir }}/source/ipfs-cluster-service_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+            dest: "{{ user_dir }}/source"
+            remote_src: true
 
     - name: Install ipfs-cluster-service release
       become: true
@@ -24,6 +33,14 @@
         mode: "0755"
         remote_src: true
         force: true
+
+    - name: Delete temporary files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ user_dir }}/source/ipfs-cluster-service_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        - "{{ user_dir }}/source/ipfs-cluster-service/"
 
 - name: Check if node has been initialized
   ansible.builtin.stat:
@@ -46,6 +63,7 @@
   with_items:
     - peerstore
     - service.json
+  notify: Restart ipfs-cluster service
 
 - name: Open ipfs-cluster p2p port in ufw
   become: true
@@ -62,11 +80,46 @@
     owner: root
     group: root
     mode: "0644"
+  notify: Restart ipfs-cluster service
 
-- name: Enable ipfs-cluster service
-  become: true
-  ansible.builtin.systemd:
-    name: "ipfs-cluster"
-    daemon_reload: true
-    enabled: true
-    state: restarted
+# ipfs-cluster-ctl block
+- name: Register installed ipfs-cluster-ctl version
+  ansible.builtin.shell: "/usr/local/bin/ipfs-cluster-ctl version"
+  register: ipfsclusterctlversion
+  ignore_errors: true
+
+- name: Download and install ipfs-cluster-ctl
+  when: ipfsclusterctlversion.stdout != ipfs_cluster_ctl_release
+  block:
+    - name: Download ipfs-cluster-ctl
+      ansible.builtin.get_url:
+        url: "https://dist.ipfs.tech/ipfs-cluster-ctl/v{{ ipfs_cluster_release }}/ipfs-cluster-ctl_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        dest: "{{ user_dir }}/source/ipfs-cluster-ctl_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        mode: "0755"
+
+    - name: Install ipfs-cluster-ctl application
+      block:
+        - name: Unarchive ipfs-cluster-ctl release
+          ansible.builtin.unarchive:
+            src: "{{ user_dir }}/source/ipfs-cluster-ctl_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+            dest: "{{ user_dir }}/source"
+            remote_src: true
+
+    - name: Install ipfs-cluster-ctl application
+      become: true
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/ipfs-cluster-ctl/ipfs-cluster-ctl"
+        dest: "/usr/local/bin"
+        owner: root
+        group: root
+        mode: "0755"
+        remote_src: true
+        force: true
+
+    - name: Delete temporary files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ user_dir }}/source/ipfs-cluster-ctl_v{{ ipfs_cluster_release }}_linux-amd64.tar.gz"
+        - "{{ user_dir }}/source/ipfs-cluster-ctl"

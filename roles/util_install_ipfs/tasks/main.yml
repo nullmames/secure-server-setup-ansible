@@ -1,16 +1,22 @@
-- name: Download ipfs
+---
+- name: Register installed ipfs version
+  ansible.builtin.shell: '/usr/local/bin/ipfs version | cut -d " " -f3'
   register: ipfsversion
-  ansible.builtin.get_url:
-    url: "https://dist.ipfs.tech/kubo/{{ ipfs_release }}/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
-    dest: "{{ user_dir }}/source/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
-    mode: "0700"
+  ignore_errors: true
 
-- name: Install ipfs daemon
-  when: ipfsversion.changed
+- name: Download and install ipfs
+  when: ipfsversion.stdout != ipfs_release
+  notify: Restart ipfs service
   block:
+    - name: Download ipfs
+      ansible.builtin.get_url:
+        url: "https://dist.ipfs.tech/kubo/v{{ ipfs_release }}/kubo_v{{ ipfs_release }}_linux-amd64.tar.gz"
+        dest: "{{ user_dir }}/source/kubo_v{{ ipfs_release }}_linux-amd64.tar.gz"
+        mode: "0700"
+
     - name: Unarchive ipfs release
       ansible.builtin.unarchive:
-        src: "{{ user_dir }}/source/kubo_{{ ipfs_release }}_linux-amd64.tar.gz"
+        src: "{{ user_dir }}/source/kubo_v{{ ipfs_release }}_linux-amd64.tar.gz"
         dest: "{{ user_dir }}/source"
         remote_src: true
 
@@ -24,6 +30,14 @@
         mode: "0755"
         remote_src: true
         force: true
+
+    - name: Delete temporary files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ user_dir }}/source/kubo_v{{ ipfs_release }}_linux-amd64.tar.gz"
+        - "{{ user_dir }}/source/kubo/"
 
 - name: Check if node has been initialized
   ansible.builtin.stat:
@@ -82,6 +96,7 @@
     sysctl_set: true
 
 - name: Copy service file
+  notify: Restart ipfs service
   become: true
   ansible.builtin.template:
     src: "ipfs.service.j2"
@@ -89,11 +104,3 @@
     owner: root
     group: root
     mode: "0644"
-
-- name: Enable ipfs service
-  become: true
-  ansible.builtin.systemd:
-    name: "ipfs"
-    daemon_reload: true
-    enabled: true
-    state: restarted
