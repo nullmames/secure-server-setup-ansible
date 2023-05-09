@@ -11,10 +11,10 @@
     mode: "0644"
 
 - name: Unarchive hotfix
-  ansible.builtin.unarchive:
-    src: /tmp/hotfix/aptos_binary.tgz
-    dest: /tmp/hotfix
-    remote_src: true
+  ansible.builtin.command:
+    cmd: "tar -zxf aptos_binary.tgz --absolute-names --no-anchored aptos-node --transform='s:.*/::'"
+  args:
+    chdir: /tmp/hotfix/
 
 - name: Verify hotfix
   ansible.builtin.command:
