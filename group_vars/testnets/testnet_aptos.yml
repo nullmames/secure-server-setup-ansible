@@ -10,3 +10,6 @@ api_port: 8080
 
 # Build profile
 build_profile: release
+
+# Grafana dashboard
+dashboardUID: bz8kPr673
