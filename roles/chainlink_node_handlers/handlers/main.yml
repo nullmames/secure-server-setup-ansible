@@ -7,6 +7,8 @@
     daemon_reload: true
 
 - name: Grafana bridge update
+  when: dashboardUID
+  delegate_to: 127.0.0.1
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
     method: POST
@@ -18,9 +20,10 @@
       dashboardUID: "{{ dashboardUID }}"
       tags: ["chainlink:update"]
       text: "Updated chainlink bridge configuration"
-  delegate_to: 127.0.0.1
 
 - name: Grafana chainlink update
+  when: dashboardUID
+  delegate_to: 127.0.0.1
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
     method: POST
@@ -32,9 +35,10 @@
       dashboardUID: "{{ dashboardUID }}"
       tags: ["chainlink:update"]
       text: "Updated chainlink node configuration"
-  delegate_to: 127.0.0.1
 
 - name: Grafana chainlink upgrade
+  when: dashboardUID
+  delegate_to: 127.0.0.1
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
     method: POST
@@ -46,4 +50,3 @@
       dashboardUID: "{{ dashboardUID }}"
       tags: ["chainlink:upgrade", "chainlink:restart"]
       text: "Upgrade chainlink to version `{{ node_version }}`"
-  delegate_to: 127.0.0.1

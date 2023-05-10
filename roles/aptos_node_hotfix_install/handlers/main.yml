@@ -19,7 +19,7 @@
 
 - name: Add annotation
   delegate_to: 127.0.0.1
-  when: grafana_url
+  when: dashboardUID
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
     method: POST
@@ -28,6 +28,6 @@
       Authorization: Bearer {{ grafana_api }}
       Accept: application/json
     body:
-      dashboardUID: bz8kPr673
+      dashboardUID: "{{ dashboardUID }}"
       tags: ["aptos:upgrade", "aptos:restart", "chain:{{ folder }}"]
       text: "HOTFIX upgrade on {{ aptos_role }} to version {{ hotfix_version.stdout }}"
