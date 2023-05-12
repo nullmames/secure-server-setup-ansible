@@ -1,7 +1,7 @@
 ---
 # Assumes tenderseed is already installed on node
 # Seed address: babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:{{ custom_port_prefix }}56
-#
+# Testnet seed address: babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:{{ custom_port_prefix }}56
 - name: Create folders for tenderseed files
   ansible.builtin.file:
     path: "{{ item }}"
@@ -69,4 +69,4 @@
   ansible.builtin.debug:
     msg:
       - "Seed information for {{ group_names[1] }}:"
-      - "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:{{ custom_port_prefix }}56"
+      - "babc3f3f7804933265ec9c40ad94f4da8e9e0017@(testnet-)seed.rhinostake.com:{{ custom_port_prefix }}56"
