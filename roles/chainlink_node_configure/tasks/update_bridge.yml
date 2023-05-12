@@ -15,9 +15,16 @@
     - "templates/docker-compose.yml"
   notify: Grafana bridge update
 
+- name: Run authentication for docker connecting to ecr
+  ansible.builtin.shell: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 384718691752.dkr.ecr.us-east-1.amazonaws.com"
+  environment:
+    PATH: "{{ path }}"
+
 - name: Update and launch containers
   community.docker.docker_compose:
     project_src: "{{ user_dir }}/docker-compose"
+    pull: true
+    state: present
 
 - name: Prune everything
   community.docker.docker_prune:
