@@ -24,6 +24,7 @@ pruning_rpc:
   "pruning-keep-every = ": 'pruning-keep-every = "0"'
   "pruning-interval = ": 'pruning-interval = "17"'
   "iavl-cache-size = ": "iavl-cache-size = 3906250"
+  "enabled = ": "enabled = true"
   "max-open-connections = ": "max-open-connections = 10000"
   "enabled-unsafe-cors = ": "enabled-unsafe-cors = true"
   "snapshot-interval = ": "snapshot-interval = 2000"
