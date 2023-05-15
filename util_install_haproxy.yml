@@ -1,6 +1,6 @@
 ---
 - name: Install and configure haproxy and varnish for Stargaze nodes
-  hosts: stargaze_api
+  hosts: all
   gather_facts: false
   roles:
     # - { role: util_install_varnish, when: ipfs_role is defined }
