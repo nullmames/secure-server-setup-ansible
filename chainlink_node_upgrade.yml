@@ -1,6 +1,6 @@
 ---
 - name: Chainlink version, config and bridge configuration update
-  hosts: all
+  hosts: chainlink-01
   gather_facts: true
   vars_files:
     - "{{ var_file }}"
