@@ -8,5 +8,4 @@ p2p_port: 32451
 dashboardUID: NGatdDfnk
 
 # Forcing specific build versions
-# node
 node_release: "node_16.x"
