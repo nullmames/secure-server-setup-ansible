@@ -11,8 +11,8 @@
     dest: "{{ user_dir }}/docker-compose/"
     mode: "0644"
   with_fileglob:
-    - "templates/.env"
-    - "templates/docker-compose.yml"
+    - "templates/adapters/.env"
+    - "templates/adapters/docker-compose.yml"
   notify: Grafana bridge update
 
 - name: Run authentication for docker connecting to ecr

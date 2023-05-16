@@ -11,8 +11,8 @@
     dest: "{{ user_dir }}/chainlink/"
     mode: "0644"
   with_fileglob:
-    - "templates/config.toml"
-    - "templates/secrets.toml"
+    - "templates/chainlink/config.toml"
+    - "templates/chainlink/secrets.toml"
   notify:
     - Restart chainlink
     - Grafana chainlink update
