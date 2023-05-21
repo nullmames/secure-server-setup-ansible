@@ -9,8 +9,12 @@ seeds: ""
 minimum_gas_price: ""
 custom_port_prefix:
 
+# Tendermint config version (blank = default)
+tendermint_config_version:
+
 # StateSync
 snap_rpc:
+p2p_state_sync: false
 
 # [Optional] Snapshot
 snapshot_hour: 1
@@ -21,6 +25,6 @@ upgrade_name:
 
 # Skip configuration
 skip_version:
-sentinel_peer_string: 
+sentinel_peer_string:
 sentinel_rpc_string:
 skip_api_key:
