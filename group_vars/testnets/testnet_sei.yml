@@ -3,14 +3,16 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "atlantic-2"
-node_version: 2.0.48beta
+node_version: 3.0.0
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
-seeds: ""
-peers: ""
+peers: "peersssss"
 
-upgrade_name: 2.0.48beta
+# Tendermint config version
+tendermint_config_version: 37
+
+upgrade_name: 3.0.0
 
 # StateSync
 snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
