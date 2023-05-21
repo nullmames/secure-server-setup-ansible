@@ -19,7 +19,7 @@ ipfs_cluster_ctl_release: "1.0.6"
 
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"
-horcrux_version: "v2.0.0"
+horcrux_version: "v2.1.1"
 
 # horcrux vars
 rpc_timeout: "1000ms"
