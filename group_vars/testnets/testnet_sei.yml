@@ -7,7 +7,7 @@ node_version: 3.0.0
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
-peers: "peersssss"
+peers: "ccef4d9dab0c12ea820ecefafb728a5d8eb39297@p2p.statesync.atlantic-2.seinetwork.io:26656,65c257f9275beb1b99ca169ef89743c034b15db0@3.76.192.224:26656,650a118a5919c1d0eb3d9f17b14cfb2a6b1c8b9d@3.120.150.255:26656,5710d992d9c33b01c3b23df4cbd715e9b4c7b46b@3.71.0.14:26656,8f61c476ae8862cf5a965f4cb61eb5e217b61927@18.197.228.134:26656,c6daa0350abb0ac0ed2ce65d15da04800f7e139e@142.132.209.236:11956,862b03573172a3366afe1cabb903ba0552689e63@198.244.228.59:11956"
 
 # Tendermint config version
 tendermint_config_version: 37
@@ -16,6 +16,7 @@ upgrade_name: 3.0.0
 
 # StateSync
 snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
+p2p_state_sync: true
 
 # Tenderduty High
 threshold_type: "high"
