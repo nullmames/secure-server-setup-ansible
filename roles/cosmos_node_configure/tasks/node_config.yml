@@ -1,0 +1,118 @@
+---
+- name: Register public ip
+  ansible.builtin.uri:
+    url: "https://api.ipify.org?format=json"
+  register: public_ip
+
+- name: Set external address in config.toml
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: 'external_address = "'
+    line: 'external_address = "{{ public_ip.json.ip }}:{{ custom_port_prefix }}56"'
+    state: present
+
+- name: Adjust config.toml port settings
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ config_port_changes | dict2items }}"
+
+- name: Adjust number of inbound peers
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "max_num_inbound_peers"
+    line: "max_num_inbound_peers = 27"
+
+- name: Adjust number of outbound peers
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "max_num_outbound_peers"
+    line: "max_num_outbound_peers = 34"
+
+- name: Adjust app.toml port settings
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ app_port_changes | dict2items }}"
+
+- name: Adjust pruning settings for validator
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ pruning | dict2items }}"
+  when: (rpc is undefined) and (archive is undefined)
+
+- name: Adjust pruning settings for rpc nodes
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ pruning_rpc | dict2items }}"
+  when: rpc is defined
+
+- name: Adjust pruning settings for archive
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ pruning_archive | dict2items }}"
+  when: archive is defined
+
+- name: Enable API in app.toml
+  ansible.builtin.replace:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "# Enable defines if the API(.*)\\senable = false"
+    replace: "# Enable defines if the API server should be enabled.\\nenable = true"
+
+- name: Set indexer to null for validator nodes
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: 'indexer = "'
+    line: 'indexer = "null"'
+    state: present
+  when: (rpc is undefined) and (archive is undefined)
+
+- name: Ensure indexer to kv for RPC and archive nodes
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: 'indexer = "'
+    line: 'indexer = "kv"'
+    state: present
+  when: (rpc is defined) or (archive is defined)
+
+- name: Bind RPC port to 0.0.0.0
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "{{ custom_port_prefix }}57"
+    line: 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+    state: present
+
+- name: Enable Prometheus in config.toml
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^prometheus ="
+    line: "prometheus = true"
+    state: present
+
+- name: Force Prometheus namespace to tendermint
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^namespace ="
+    line: 'namespace = "tendermint"'
+    state: present
+
+- name: Add Skip configuration
+  ansible.builtin.blockinfile:
+    insertafter: EOF
+    dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    create: true
+    state: present
+    content: |
+      [sidecar]
+      sentinel_peer_string = "{{ sentinel_peer_string }}"
+      sentinel_rpc_string = "{{ sentinel_rpc_string }}"
+      api_key = "{{ skip_api_key }}"
+  when: sentinel_peer_string is defined

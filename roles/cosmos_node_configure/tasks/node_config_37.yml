@@ -1,0 +1,119 @@
+---
+# Configure for Tendermint 0.37+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Set external address in config.toml
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: 'external-address = "'
+    line: 'external-address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
+    state: present
+
+- name: Adjust max p2p connections (peers)
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "max-connections"
+    line: "max-connections = 200"
+
+- name: Adjust config.toml port settings
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ config_port_changes_37 | dict2items }}"
+
+- name: Adjust app.toml port settings
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ app_port_changes_37 | dict2items }}"
+
+- name: Adjust pruning settings for fast chains
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+  loop: "{{ pruning_37 | dict2items }}"
+
+- name: Enable CORS origins
+  when: rpc is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^cors-allowed-origins "
+    insertafter: "# Use"
+    line: 'cors-allowed-origins = ["*"]'
+
+- name: Enable CORS Headers
+  when: rpc is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^cors-allowed-headers"
+    insertafter: "# A list"
+    line: 'cors-allowed-headers = ["*"]'
+
+- name: Increase RPC Connections
+  when: rpc is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "max-open-connections = 900"
+    line: "max-open-connections = 9000"
+    state: present
+
+- name: Ensure kv indexer
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^indexer"
+    insertafter: '# When "kv"'
+    line: 'indexer = ["kv"]'
+    state: present
+
+- name: Bind RPC port to 0.0.0.0
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "{{ custom_port_prefix }}57"
+    line: 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+    state: present
+
+- name: Enable Prometheus in config.toml
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^prometheus ="
+    line: "prometheus = true"
+    state: present
+
+- name: Force Prometheus namespace to tendermint
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^namespace ="
+    line: 'namespace = "tendermint"'
+    state: present
+
+- name: Add Skip configuration
+  ansible.builtin.blockinfile:
+    insertafter: EOF
+    dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    create: true
+    state: present
+    content: |
+      [sidecar]
+      sentinel_peer_string = "{{ sentinel_peer_string }}"
+      sentinel_rpc_string = "{{ sentinel_rpc_string }}"
+      api_key = "{{ skip_api_key }}"
+  when: sentinel_peer_string is defined
+
+- name: Enable API
+  ansible.builtin.replace:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "# Enable defines if the API(.*)\\senable = false"
+    replace: "# Enable defines if the API server should be enabled.\\nenable = true"
+
+- name: Increase API connections
+  ansible.builtin.replace:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "# MaxOpenConnections defines the number of maximum open connections.\\nmax-open-connections = 1000"
+    replace: "# MaxOpenConnections defines the number of maximum open connections.\\nmax-open-connections = 10000"

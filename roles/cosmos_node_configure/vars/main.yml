@@ -1,4 +1,5 @@
 ---
+# Default
 config_port_changes:
   'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
   'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
@@ -35,4 +36,21 @@ pruning_rpc:
 pruning_archive:
   'pruning = "': 'pruning = "nothing"'
   "snapshot-interval = ": "snapshot-interval = 2000"
+  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
+#
+## Tendermint 37+
+config_port_changes_37:
+  'proxy-app = "tcp://127.0.0.1:26658"': 'proxy-app = "tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+  'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+  'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
+  'pprof-laddr = "localhost:6060"': 'pprof-laddr = "localhost:{{ custom_port_prefix }}60"'
+  'prometheus-listen-addr = ":26660"': 'prometheus-listen-addr = ":{{ custom_port_prefix }}61"'
+app_port_changes_37:
+  'address = "tcp://0.0.0.0:1317"': 'address = "tcp://0.0.0.0:{{ custom_port_prefix }}17"'
+  'address = ":8080"': 'address = ":{{ custom_port_prefix }}80"'
+  'address = "0.0.0.0:9090"': 'address = "0.0.0.0:{{ custom_port_prefix }}90"'
+  'address = "0.0.0.0:9091"': 'address = "0.0.0.0:{{ custom_port_prefix }}91"'
+pruning_37:
+  'pruning = "': 'pruning = "nothing"'
+  "snapshot-interval = ": "snapshot-interval = 0"
   "snapshot-keep-recent = ": "snapshot-keep-recent= 4"

@@ -5,7 +5,19 @@
     regexp: "^persistent_peers ="
     line: 'persistent_peers = "{{ peers }}"'
     state: present
-  when: peers is defined
+  when:
+    - peers is defined
+    - not tendermint_config_version
+
+- name: Update peers in config.toml
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^persistent-peers ="
+    line: 'persistent-peers = "{{ peers }}"'
+    state: present
+  when:
+    - peers is defined
+    - tendermint_config_version is defined
 
 - name: Update seeds in config.toml
   ansible.builtin.lineinfile:
@@ -13,7 +25,9 @@
     regexp: "^seeds ="
     line: 'seeds = "{{ seeds }}"'
     state: present
-  when: seeds is defined
+  when:
+    - seeds is defined
+    - not tendermint_config_version
 
 - name: Open p2p port in ufw
   become: true
@@ -74,7 +88,20 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0700"
-  when: snap_rpc is defined
+  when:
+    - snap_rpc is defined
+    - p2p_state_sync is undefined
+
+- name: Copy state_sync file for p2p sync
+  ansible.builtin.template:
+    src: "state_sync-p2p.sh.j2"
+    dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0700"
+  when:
+    - snap_rpc is defined
+    - p2p_state_sync is defined
 
   # Add Consensus Tool
 - name: Add Consensus tool

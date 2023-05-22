@@ -6,14 +6,27 @@
     mode: "0755"
   when: snap_rpc is defined
 
-- name: Copy/update state_sync file
+- name: Copy state_sync file
   ansible.builtin.template:
     src: "../cosmos_node_launch/templates/state_sync.sh.j2"
     dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0700"
-  when: snap_rpc is defined
+  when:
+    - snap_rpc is defined
+    - p2p_state_sync is undefined
+
+- name: Copy state_sync file for p2p sync
+  ansible.builtin.template:
+    src: "../cosmos_node_launch/templates/state_sync-p2p.sh.j2"
+    dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0700"
+  when:
+    - snap_rpc is defined
+    - p2p_state_sync is defined
 
 - name: Run state_sync script on node
   ansible.builtin.shell: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
@@ -31,13 +44,49 @@
     name: "{{ daemon }}"
     state: stopped
 
-- name: Reset data folder while keeping address book
-  ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
-  environment:
-    PATH: "{{ path }}"
+- name: Save the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    dest: "{{ user_dir }}/priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
+
+# - name: Reset data folder while keeping address book
+#   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }}"
+#   environment:
+#     PATH: "{{ path }}"
+
+- name: Remove and create data folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/data"
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
+- name: Replace the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/priv_validator_state.json"
+    dest: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
 
 - name: Start cosmovisor
   become: true
   ansible.builtin.systemd:
     name: "{{ daemon }}"
     state: restarted
+
+- name: Cleanup temporary files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ user_dir }}/priv_validator_state.json"
