@@ -37,5 +37,3 @@
         mode: "0755"
         remote_src: true
         force: true
-      loop:
-        - chainlink
