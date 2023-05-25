@@ -1,0 +1,6 @@
+---
+- name: Restart node
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted

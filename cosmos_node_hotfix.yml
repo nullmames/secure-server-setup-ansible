@@ -1,0 +1,17 @@
+---
+#
+# Replace the current running binary in directory.  This is used to replace the current running binary with a non-breaking change
+# ansible-playbook main_cosmos_node_hotfix.yml -i inventory-testnet.ini --limit testnet_juno"
+- name: Deploy hotfix to node
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ var_file }}"
+  pre_tasks:
+    - name: Confirm with User
+      ansible.builtin.pause:
+        prompt: Please confirm that {{ network }} version {{ node_version }} will replace contents in current directory!  Press return to continue. Press Ctrl+c and then "a" to abort
+  roles:
+    - util_install_go
+    - cosmos_node_install
+    - cosmos_node_hotfix
