@@ -9,6 +9,13 @@ seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:519
 peers: ""
 custom_port_prefix: 519
 
+# Tendermint config version
+tendermint_config_version: 37
+
+# StateSync
+snap_rpc: "https://sei-devnet-rpc.brocha.in:443"
+p2p_state_sync: true
+
 # Tenderduty High
 threshold_type: "high"
 
