@@ -1,0 +1,14 @@
+network: humans
+folder: ".humansd"
+daemon: humansd
+chain_id: humans_1089-1
+node_version: tags/v1.0.0
+repo: https://github.com/humansdotai/humans
+genesis: "https://raw.githubusercontent.com/humansdotai/mainnets/main/mainnet/1/genesis.json"
+peers: ""
+seeds: ""
+minimum_gas_price: "0.025uheart"
+custom_port_prefix: 184
+# [Optional] Snapshot
+# snapshot_hour: 0
+# snapshot_minute: 30
