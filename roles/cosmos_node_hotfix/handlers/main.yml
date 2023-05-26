@@ -1,6 +1,16 @@
 ---
-- name: Restart node
+- name: Remove wasm
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ user_dir }}/{{ folder }}/wasm/wasm/cache"
+    - "{{ user_dir }}/{{ folder }}/data/wasm/wasm/cache"
+  listen: "restart node"
+
+- name: Restart daemon
   become: true
   ansible.builtin.systemd:
     name: "{{ daemon }}"
     state: restarted
+  listen: "restart node"

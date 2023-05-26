@@ -6,7 +6,7 @@
     dest: "{{ user_dir }}/{{ folder }}/cosmovisor/current/bin/"
     remote_src: true
     mode: "0755"
-  notify: Restart node
+  notify: "restart node"
 
 - name: Save version
   ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/current/bin/{{ daemon }} version"

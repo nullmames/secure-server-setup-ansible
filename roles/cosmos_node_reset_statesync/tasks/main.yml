@@ -54,11 +54,6 @@
     remote_src: true
     force: true
 
-# - name: Reset data folder while keeping address book
-#   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }}"
-#   environment:
-#     PATH: "{{ path }}"
-
 - name: Remove and create data folder
   ansible.builtin.file:
     path: "{{ user_dir }}/{{ folder }}/data"
@@ -77,6 +72,11 @@
     mode: "0600"
     remote_src: true
     force: true
+
+- name: Remove wasm folder if exists outside of data
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/wasm"
+    state: absent
 
 - name: Start cosmovisor
   become: true
