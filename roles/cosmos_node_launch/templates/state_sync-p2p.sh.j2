@@ -1,11 +1,14 @@
 #!/bin/bash
 # State_sync node via p2p
+# Block height will subtract BUFFER amount, then SYNC_BLOCK_HEIGHT will be round up or down to the nearest DENOM interval
 
-SNAP_HEIGHT_BUFFER=25000
+SNAP_HEIGHT_BUFFER=15000
+SNAP_HEIGHT_DENOM=4000
 STATE_SYNC_RPC="{{ snap_rpc }}"
 
 LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
-SYNC_BLOCK_HEIGHT=$(($LATEST_HEIGHT - $SNAP_HEIGHT_BUFFER))
+RAW_SYNC_BLOCK_HEIGHT=$(($LATEST_HEIGHT - $SNAP_HEIGHT_BUFFER))
+SYNC_BLOCK_HEIGHT=$(( ( ( $RAW_SYNC_BLOCK_HEIGHT + ( $SNAP_HEIGHT_DENOM / 2) ) / $SNAP_HEIGHT_DENOM ) * $SNAP_HEIGHT_DENOM ))
 SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .block_id.hash)
 
 echo -e "Modifying $HOME/{{ folder }}/config/config.toml based on the following values:"
