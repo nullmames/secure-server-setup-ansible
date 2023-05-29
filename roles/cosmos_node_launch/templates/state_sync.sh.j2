@@ -1,7 +1,8 @@
 #!/bin/bash
+set -e
 # Block height will subtract BUFFER amount, then SYNC_BLOCK_HEIGHT will be round up or down to the nearest DENOM interval
 
-SNAP_HEIGHT_BUFFER=6000
+SNAP_HEIGHT_BUFFER=2000
 SNAP_HEIGHT_DENOM=2000
 STATE_SYNC_RPC="{{ snap_rpc }}"
 
@@ -10,11 +11,17 @@ RAW_SYNC_BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAP_HEIGHT_BUFFER)); \
 SYNC_BLOCK_HEIGHT=$(( ( ( $RAW_SYNC_BLOCK_HEIGHT + ( $SNAP_HEIGHT_DENOM / 2) ) / $SNAP_HEIGHT_DENOM ) * $SNAP_HEIGHT_DENOM ))
 SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
+if [ "$SYNC_BLOCK_HASH" = "" ]; then
+    echo -e "Error capturing Block Hash. Check RPC. Exiting..."
+    exit 1
+fi
+
 echo -e "Modifying $HOME/{{ folder }}/config/config.toml based on the following values:"
 echo -e "RPC Address:          $STATE_SYNC_RPC"
 echo -e "Latest Block Height:  $LATEST_HEIGHT"
 echo -e "Sync Block Height:    $SYNC_BLOCK_HEIGHT"
 echo -e "Trust Hash:           $SYNC_BLOCK_HASH"
+
 
 sed -i.bak -e "s|^enable *=.*|enable = true|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^rpc_servers *=.*|rpc_servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
