@@ -12,18 +12,18 @@
   loop:
     - 10.0.0.0/8 # Internal - RHINOMgmt
     - 192.168.0.0/16 # Internal - RemoteMgmt
-    - 172.16.0.0/24 # Internal - Horcrux
     - 38.32.16.56/29 # External - TroyMgmt
+    - 38.146.3.0/24 # External - Troy /24
     - 104.244.208.240/29 # External - SouthfieldMgmt
-    - 38.146.3.100/31 # External - Troy Tenderduty
 
-# - name: Remove outdated ufw rules
-#   community.general.ufw:
-#     rule: allow
-#     src: "{{ item }}"
-#     delete: true
-#   loop:
-#     - 104.244.208.240/29 # Southfield Mgmt
+- name: Remove outdated ufw rules
+  community.general.ufw:
+    rule: allow
+    src: "{{ item }}"
+    delete: true
+  loop:
+    - 38.146.3.100/31 # Unneeded overlap
+    - 172.16.0.0/24 # Internal - Horcrux
 
 - name: Disable root login over SSH
   ansible.builtin.lineinfile:
