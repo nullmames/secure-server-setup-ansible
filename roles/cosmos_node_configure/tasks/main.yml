@@ -1,9 +1,9 @@
 ---
 - name: Update Config
   ansible.builtin.import_tasks: node_config.yml
-  when: tendermint_config_version.stdout is undefined
+  when: tendermint_config_version is undefined
 
 - name: Update Config for Tendermint 0.37+
   ansible.builtin.import_tasks: node_config_37.yml
   when:
-    - (tendermint_config_version.stdout is defined) and (tendermint_config_version.stdout == "37")
+    - (tendermint_config_version is defined) and (tendermint_config_version == 37)
