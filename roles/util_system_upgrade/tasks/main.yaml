@@ -1,0 +1,16 @@
+---
+- name: Upgrade to bookworm
+  ansible.builtin.template:
+    src: sources.list.bookworm.j2
+    dest: "/etc/apt/sources.list"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Reboot machine
+
+- name: Apt update and upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+    autoremove: true
+    autoclean: true
