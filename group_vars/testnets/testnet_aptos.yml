@@ -1,9 +1,9 @@
 network: aptos
-folder: llt
+folder: testnet
 repo: https://github.com/aptos-labs/aptos-core
-node_version: aptos-node-v1.2.4
-genesis_blob: https://github.com/aptos-labs/aptos-genesis-waypoint/raw/main/testnet/genesis.blob
-waypoint: https://github.com/aptos-labs/aptos-genesis-waypoint/raw/main/testnet/waypoint.txt
+node_version: 8731f29f80ee0458d32793f2c818243745ca3904 # 1.4.1
+genesis_blob: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/genesis.blob
+waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/waypoint.txt
 p2p_port: 6180
 p2p_port_vfn: 6182
 api_port: 8080
