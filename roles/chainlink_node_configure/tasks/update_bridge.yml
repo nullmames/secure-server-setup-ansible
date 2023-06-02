@@ -15,16 +15,35 @@
     - "templates/adapters/docker-compose.yml"
   notify: Grafana bridge update
 
-- name: Run authentication for docker connecting to ecr
-  ansible.builtin.shell: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 384718691752.dkr.ecr.us-east-1.amazonaws.com"
+- name: Get instance AWS profile info
+  amazon.aws.aws_caller_info:
+  register: aws_info
+
+- name: Set account info fact
+  ansible.builtin.set_fact:
+    ecr_registry_url: "{{ aws_info.account }}.dkr.ecr.us-east-1.amazonaws.com"
+
+- name: Get ECR token
+  ansible.builtin.shell: "aws ecr get-login-password --region us-east-1"
+  register: ecr_token
   environment:
     PATH: "{{ path }}"
 
+- name: Log into ECR registry
+  community.docker.docker_login:
+    registry_url: "{{ ecr_registry_url }}"
+    debug: true
+    username: "AWS"
+    password: "{{ ecr_token.stdout }}"
+    reauthorize: true
+
 - name: Update and launch containers
-  community.docker.docker_compose:
-    project_src: "{{ user_dir }}/docker-compose"
-    pull: true
-    state: present
+  ansible.builtin.command:
+    cmd: "docker compose up -d"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+  environment:
+    PATH: "{{ path }}"
 
 - name: Prune everything
   community.docker.docker_prune:

@@ -1,5 +1,5 @@
 ---
-- name: Uninstall repo docker files is present
+- name: Uninstall repo docker packages if present
   become: true
   ansible.builtin.apt:
     name:
@@ -9,6 +9,13 @@
       - containerd
       - runc
     state: absent
+
+- name: Remove docker-compose v1
+  ansible.builtin.pip:
+    name:
+      - docker-compose
+    state: absent
+    extra_args: --break-system-packages
 
 - name: Install docker repository key
   become: true
@@ -25,6 +32,15 @@
     state: present
     update_cache: true
 
+- name: Add python docker components
+  ansible.builtin.pip:
+    name:
+      - docker
+      - boto3
+      - botocore
+    state: present
+    extra_args: --break-system-packages
+
 - name: Install docker components
   become: true
   ansible.builtin.apt:
@@ -32,15 +48,8 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-      - python3-pip
-    state: present
-
-- name: Remove Compose 2.0 component
-  become: true
-  ansible.builtin.apt:
-    name:
       - docker-compose-plugin
-    state: absent
+    state: present
 
 - name: Add ansible user to docker group
   become: true
@@ -48,9 +57,3 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: true
-
-- name: Install docker python package
-  ansible.builtin.pip:
-    name:
-      - docker
-      - docker-compose
