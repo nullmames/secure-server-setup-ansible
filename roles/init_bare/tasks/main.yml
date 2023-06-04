@@ -1,6 +1,6 @@
 ---
 - name: Change ansible_user for initial login
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_user: "{{ initial_user }}"
 
 - name: Create {{ target_user }}
@@ -36,5 +36,21 @@
     mode: "0440"
 
 - name: Change ansible_user for back to original
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_user: "{{ target_user }}"
+
+- name: Capture files in sudoers for deletion
+  ansible.builtin.find:
+    paths: "/etc/sudoers.d"
+    file_type: file
+    excludes:
+      - "{{ target_user }}"
+      - "README"
+  register: found_files
+
+- name: Delete extra users in sudoers
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ found_files['files'] }}"
