@@ -1,24 +1,25 @@
 ---
 - name: Restart aptos-node
   become: true
-  notify: Pause for node to start
+  listen: "Restart node"
   ansible.builtin.systemd:
     name: aptos-node
     state: restarted
     daemon_reload: true
 
 - name: Pause for node to start
-  notify: Check version of node
+  listen: "Restart node"
   ansible.builtin.pause:
     seconds: 15
 
 - name: Check version of node
-  notify: Add annotation
+  listen: "Restart node"
   register: hotfix_version
   ansible.builtin.shell: "curl -sL localhost:8080/v1/ | jq -r .git_hash"
 
 - name: Add annotation
   delegate_to: 127.0.0.1
+  listen: "Restart node"
   when: dashboardUID
   ansible.builtin.uri:
     url: "{{ grafana_url }}/api/annotations"
@@ -31,3 +32,8 @@
       dashboardUID: "{{ dashboardUID }}"
       tags: ["aptos:upgrade", "aptos:restart", "chain:{{ folder }}"]
       text: "HOTFIX upgrade on {{ aptos_role }} to version {{ hotfix_version.stdout }}"
+
+- name: Report version
+  listen: "Restart node"
+  ansible.builtin.debug:
+    msg: "HOTFIX upgrade on {{ aptos_role }} to version {{ hotfix_version.stdout }}"

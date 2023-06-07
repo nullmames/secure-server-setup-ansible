@@ -37,7 +37,7 @@
     mode: "0755"
     remote_src: true
     force: true
-  notify: Restart aptos-node
+  notify: Restart node
 
 - name: Cleanup hotfix
   ansible.builtin.file:
