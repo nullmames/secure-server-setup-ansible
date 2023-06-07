@@ -4,6 +4,12 @@
   hosts: all
   gather_facts: false
   become: true
+  pre_tasks:
+    - name: Apt update and upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: full
+        autoremove: true
+        autoclean: true
   roles:
-    - util_system_update
     - init_vsphere
