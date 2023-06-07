@@ -1,0 +1,31 @@
+---
+- name: Ensure cosmprune is available
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/go/bin/cosmprund"
+  register: cosmprund
+
+- name: Fail if missing
+  when: not cosmprund.stat.exists
+  ansible.builtin.fail:
+    msg: "cosmprund missing"
+
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Pause for 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Prune node
+  ansible.builtin.command: "{{ user_dir }}/go/bin/cosmprund prune {{ user_dir }}/{{ folder }}/data"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Start cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted
