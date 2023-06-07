@@ -2,7 +2,7 @@ network: stargaze
 folder: ".starsd"
 daemon: starsd
 chain_id: stargaze-1
-node_version: v9.1.0
+node_version: v10.0.1
 repo: "https://github.com/public-awesome/stargaze"
 genesis: "https://raw.githubusercontent.com/public-awesome/mainnet/main/stargaze-1/genesis.tar.gz"
 genesis_processing: targz
@@ -16,4 +16,4 @@ snapshot_minute: 30
 wasm: true
 
 # Upgrade name
-upgrade_name: v9
+upgrade_name: v10
