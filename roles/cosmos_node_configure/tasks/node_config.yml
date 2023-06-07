@@ -1,14 +1,15 @@
 ---
 - name: Register public ip
   ansible.builtin.uri:
-    url: "https://api.ipify.org?format=json"
+    url: https://ipv4.icanhazip.com/
+    return_content: true
   register: public_ip
 
 - name: Set external address in config.toml
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: 'external_address = "'
-    line: 'external_address = "{{ public_ip.json.ip }}:{{ custom_port_prefix }}56"'
+    regexp: 'external-address = "'
+    line: 'external-address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
     state: present
 
 - name: Adjust config.toml port settings
