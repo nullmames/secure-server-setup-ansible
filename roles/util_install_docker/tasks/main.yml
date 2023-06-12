@@ -15,7 +15,6 @@
     name:
       - docker-compose
     state: absent
-    extra_args: --break-system-packages
 
 - name: Install docker repository key
   become: true
@@ -39,7 +38,6 @@
       - boto3
       - botocore
     state: present
-    extra_args: --break-system-packages
 
 - name: Install docker components
   become: true
