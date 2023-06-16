@@ -5,9 +5,11 @@ After=network-online.target
 [Service]
 User={{ ansible_user }}
 ExecStart={{ user_dir }}/go/bin/cosmovisor start
+WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=1048576
+ExecStartPre=-/usr/bin/rm -r {{ user_dir }}/{{ folder }}/wasm/wasm/cache {{ user_dir }}/{{ folder }}/data/wasm/wasm/cache
 Environment="DAEMON_NAME={{ daemon }}"
 Environment="DAEMON_HOME={{ user_dir }}/{{ folder }}"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
