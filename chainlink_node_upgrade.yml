@@ -3,7 +3,7 @@
   hosts: chainlink-01
   gather_facts: true
   vars_files:
-    - "{{ var_file }}"
+    - "group_vars/mainnets/chainlink.yml"
   roles:
     - util_install_go
     - util_install_node
