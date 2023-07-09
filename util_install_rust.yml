@@ -1,0 +1,6 @@
+---
+- name: Install or update rust/cargo
+  hosts: all
+  gather_facts: false
+  roles:
+    - util_install_rust
