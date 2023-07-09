@@ -2,35 +2,35 @@
 # For now this uses Polkachu's snapshot urls.  This will eventually need to be replaced
 - name: Set URLs for retrieving items
   ansible.builtin.set_fact:
-    snapshot_url: "{{ snapshot_url }}/{{ network }}"
-    addrbook_url: "{{ addrbook_url }}/{{ network }}/addrbook.json"
+    snapshotpage_url: "{{ snapshotpage_url }}/{{ network }}"
+    addrbookpage_url: "{{ addrbookpage_url }}/{{ network }}/addrbook.json"
 
-- name: Parse snapshot url
-  ansible.builtin.shell: 'curl -s {{ snapshot_url }} | grep ''<a href="https://snapshots'' | grep -Eo ''https.*tar.lz4'' | head -1'
-  environment:
-    PATH: "{{ path }}"
-  register: snapshot_url
+- name: Parse Snapshot URL
+  when: snapshot_url is not defined
+  block:
+    - name: Parse snapshot url from snapshot
+      ansible.builtin.shell: 'curl -s {{ snapshotpage_url }} | grep ''<a href="https://snapshots'' | grep -Eo ''https.*tar.lz4'' | head -1'
+      environment:
+        PATH: "{{ path }}"
+      register: snapshot_url_raw
 
-- name: Print snapshot_url
-  ansible.builtin.debug:
-    msg: "Downloading snapshot {{ snapshot_url.stdout }}"
+    - name: Set fact
+      ansible.builtin.set_fact:
+        snapshot_url: "{{ snapshot_url_raw.stdout }}"
 
 - name: Fail if snapshot_url not defined
   ansible.builtin.fail:
     msg: snapshot_url is not available
-  when: snapshot_url.stdout == None
+  when: snapshot_url == None
+
+- name: Print snapshot_url
+  ansible.builtin.debug:
+    msg: "Downloading snapshot {{ snapshot_url }}"
 
 - name: Download snapshot
-  ansible.builtin.shell: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url.stdout }}"
+  ansible.builtin.shell: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
   environment:
     PATH: "{{ path }}"
-
-# - name: Download addrbook
-#   ansible.builtin.get_url:
-#     url: "{{ addrbook_url }}"
-#     dest: "{{ user_dir }}/{{ folder }}/config/addrbook.json"
-#     mode: "0440"
-#   register: url_correct
 
 - name: Stop cosmovisor
   become: true
