@@ -10,6 +10,13 @@
       - runc
     state: absent
 
+- name: pip3 install
+  become: true
+  ansible.builtin.apt:
+    name:
+      - python3-pip
+    state: present
+
 - name: Remove docker-compose v1
   ansible.builtin.pip:
     name:
@@ -31,7 +38,7 @@
     state: present
     update_cache: true
 
-- name: Add python docker components
+- name: Add python docker components for ansible
   ansible.builtin.pip:
     name:
       - docker
