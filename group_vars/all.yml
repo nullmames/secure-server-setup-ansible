@@ -1,5 +1,5 @@
 # go
-go_release: "go1.20.3"
+go_release: "go1.20.5"
 
 # node
 node_release: "node_18.x"
@@ -13,7 +13,7 @@ promtail_version: "v2.6.1"
 promtail_monitor: "http://10.254.100.13:3100"
 
 # ipfs
-ipfs_release: "0.20.0"
+ipfs_release: "0.21.0"
 ipfs_cluster_release: "1.0.6"
 ipfs_cluster_ctl_release: "1.0.6"
 
