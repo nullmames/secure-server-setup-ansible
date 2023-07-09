@@ -2,7 +2,7 @@ network: evmos
 folder: ".evmosd"
 daemon: evmosd
 chain_id: evmos_9001-2
-node_version: v12.1.5
+node_version: v13.0.2
 repo: https://github.com/tharsis/evmos
 genesis: "https://archive.evmos.org/mainnet/genesis.json"
 seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:13456,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:13456"
@@ -15,7 +15,7 @@ snap_rpc: "https://evmos-rpc.lavenderfive.com:443"
 # snapshot_hour: 1
 # snapshot_minute: 30
 
-upgrade_name: v12.1.0
+upgrade_name: v13.0.2
 # Skip configuration
 # skip_version: v0.34.26-mev.16
 # sentinel_peer_string: c0a2990e2a5dad7f4ace044d2f936de6891c6f0a@evmos_9001-2-sentinel.skip.money:26656
