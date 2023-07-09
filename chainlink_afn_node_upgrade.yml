@@ -1,0 +1,10 @@
+---
+- name: Chainlink afn install and configure
+  hosts: chainlink-afn-01
+  gather_facts: true
+  vars_files:
+    - "group_vars/mainnets/chainlink_afn.yml"
+  roles:
+    - util_install_rust
+    - chainlink_afn_node_install
+    - chainlink_afn_node_configure

@@ -1,0 +1,43 @@
+---
+- name: Create config directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy shared.toml
+  notify: Restart chainlink_afn
+  ansible.builtin.copy:
+    src: "templates/shared.toml.j2"
+    dest: "{{ user_dir }}/{{ folder }}/shared.toml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Copy local-config.toml
+  notify: Restart chainlink_afn
+  ansible.builtin.copy:
+    src: "templates/local-config.toml.j2"
+    dest: "{{ user_dir }}/{{ folder }}/local-config.toml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Copy env-vars
+  become: true
+  notify: Restart chainlink_afn
+  ansible.builtin.copy:
+    src: "templates/env-vars.env"
+    dest: "{{ user_dir }}/{{ folder }}/env-vars"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+
+- name: Copy keystore-file
+  notify: Restart chainlink_afn
+  ansible.builtin.copy:
+    src: "templates/keystore-file.json"
+    dest: "{{ user_dir }}/{{ folder }}/keystore-file"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"

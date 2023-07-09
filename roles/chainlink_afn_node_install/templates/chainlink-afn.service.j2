@@ -1,0 +1,15 @@
+[Unit]
+Description=Chainlink AFN
+After=network-online.target
+
+[Service]
+User={{ ansible_user }}
+ExecStart=/usr/local/bin/afn run --mode active --keystore {{ user_dir }}/{{ folder }}/keystore-file
+WorkingDirectory={{ user_dir }}/{{ folder }}
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=1048576
+EnvironmentFile={{ user_dir }}/{{ folder }}/env-vars
+
+[Install]
+WantedBy=multi-user.target

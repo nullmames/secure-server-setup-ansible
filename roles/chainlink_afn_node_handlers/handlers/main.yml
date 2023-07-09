@@ -1,0 +1,7 @@
+---
+- name: Restart chainlink_afn
+  become: true
+  ansible.builtin.systemd:
+    name: chainlink-afn
+    state: restarted
+    daemon_reload: true

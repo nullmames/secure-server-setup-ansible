@@ -1,0 +1,70 @@
+---
+- name: Ensure .ssh directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/.ssh"
+    state: directory
+
+- name: Upload github ssh key
+  ansible.builtin.copy:
+    src: "keys/github-ssh-key"
+    dest: "{{ user_dir }}/.ssh/github-ssh-key"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "600"
+
+- name: Check git hash version of node
+  ansible.builtin.shell: '/usr/local/bin/afn version | cut -d ''"'' -f2 | awk ''{ print substr( $0, 1, length($0)-2 ) }'''
+  register: chainlink_afn_version
+
+- name: Build new version & install
+  when: (chainlink_afn_version.stdout != node_version) or (chainlink_afn_version.stdout is none)
+  notify: Restart chainlink_afn
+  block:
+    - name: Update chainlink_afn repo for node install
+      ansible.builtin.git:
+        repo: "git@github.com:{{ repo }}"
+        dest: "{{ user_dir }}/source/{{ network }}"
+        version: "{{ node_version }}"
+        key_file: "{{ user_dir }}/.ssh/github-ssh-key"
+        clone: true
+        accept_hostkey: true
+        update: true
+        force: true
+        recursive: true
+
+    - name: Build chainlink_afn
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ user_dir }}/source/{{ network }}"
+      with_items:
+        - "nice -n 15 cargo install --bin afn --locked --path afn/"
+      environment:
+        PATH: "{{ path }}"
+
+    - name: Copy chainlink_afn binary
+      become: true
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/{{ network }}/target/release/afn"
+        dest: "/usr/local/bin"
+        owner: root
+        group: root
+        mode: "0755"
+        remote_src: true
+        force: true
+
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: "chainlink-afn.service.j2"
+    dest: "/etc/systemd/system/chainlink-afn.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart chainlink_afn
+
+- name: Enable chainlink service
+  become: true
+  ansible.builtin.systemd:
+    name: "chainlink-afn"
+    daemon_reload: true
+    enabled: true
