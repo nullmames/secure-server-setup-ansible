@@ -10,7 +10,7 @@ minimum_gas_price: ""
 custom_port_prefix: 216
 
 # StateSync
-snap_rpc: https://rpc-ojo-devnet.mzonder.com:443
+snap_rpc: https://ojo-testnet-rpc.polkachu.com:443
 # [Optional] Prep for upgrade in cosmovisor
 # upgrade_name:
 
