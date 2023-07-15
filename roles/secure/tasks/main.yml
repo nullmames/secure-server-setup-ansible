@@ -8,13 +8,21 @@
 - name: Open RHINO subnets
   community.general.ufw:
     rule: allow
-    src: "{{ item }}"
+    src: "{{ item.subnet }}"
+    comment: "{{ item.comment }}"
   loop:
-    - 10.0.0.0/8 # Internal - RHINOMgmt
-    - 192.168.0.0/16 # Internal - RemoteMgmt
-    - 38.32.16.56/29 # External - TroyMgmt
-    - 38.146.3.0/24 # External - Troy /24
-    - 104.244.208.240/29 # External - SouthfieldMgmt
+    - subnet: 10.0.0.0/8
+      comment: Internal - RHINOMgmtVRF
+    - subnet: 100.100.0.0/22
+      comment: Internal - Nebula
+    - subnet: 192.168.0.0/16
+      comment: Internal - RemoteMgmt
+    - subnet: 38.32.16.56/29
+      comment: External - TroyMgmt
+    - subnet: 38.146.3.0/24
+      comment: External - Troy /24
+    - subnet: 104.244.208.240/29
+      comment: External - SouthfieldMgmt
 
 - name: Remove outdated ufw rules
   community.general.ufw:

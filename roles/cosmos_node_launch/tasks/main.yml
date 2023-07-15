@@ -35,6 +35,7 @@
     rule: allow
     proto: tcp
     port: "{{ custom_port_prefix }}56"
+    comment: p2p port for {{ network }}
 
 - name: Install cosmovisor
   ansible.builtin.shell: "go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@{{ cosmovisor_version }}"

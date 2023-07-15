@@ -37,12 +37,13 @@
     group: root
     mode: "0644"
 
-- name: Open network port
+- name: Open network port in ufw
   become: true
   community.general.ufw:
     rule: allow
     proto: tcp
     port: "{{ custom_port_prefix }}56"
+    comment: p2p port for {{ network }}
 
 - name: Stop tenderseed service (if started)
   become: true

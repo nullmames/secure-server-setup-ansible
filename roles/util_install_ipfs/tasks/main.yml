@@ -86,6 +86,7 @@
     rule: allow
     proto: tcp
     port: "4001"
+    comment: External - ipfs p2p
 
 - name: Increase UDP Receive Buffer Size
   become: true

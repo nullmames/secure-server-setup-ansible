@@ -30,6 +30,7 @@
     rule: allow
     proto: tcp
     port: "{{ item }}"
+    comment: External - Caddy
   loop:
     - 80
     - 443

@@ -64,6 +64,7 @@
     rule: allow
     proto: tcp
     port: "{{ p2p_port }}"
+    comment: Aptos Validator p2p port
   when: (aptos_role == "validator") or (aptos_role == "pfn")
 
 - name: Open p2p port for vfn
@@ -72,6 +73,7 @@
     rule: allow
     proto: tcp
     port: "{{ p2p_port_vfn }}"
+    comment: Aptos VFN p2p port
   when: aptos_role == "vfn"
 
 - name: Open api port
@@ -80,4 +82,5 @@
     rule: allow
     proto: tcp
     port: "{{ api_port }}"
+    comment: Aptos Full Node API port
   when: (aptos_role == "vfn") or (aptos_role == "pfn")

@@ -71,6 +71,7 @@
     rule: allow
     proto: tcp
     port: "9096"
+    comment: External - ipfs-cluster p2p
 
 - name: Copy service file
   become: true

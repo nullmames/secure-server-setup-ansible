@@ -36,6 +36,7 @@
     rule: allow
     proto: tcp
     port: "{{ item }}"
+    comment: External - haproxy
   loop:
     - 80
     - 443
