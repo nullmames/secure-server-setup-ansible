@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "atlantic-2"
-node_version: dba16898f6db5a3289de3de9b05f044d7e0ae72d #3.0.4
+node_version: cb5277c87599a6ff768b887cec9889b40d128e46 #3.0.6
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
@@ -13,7 +13,7 @@ minimum_gas_price: "0.01usei,0.001ibc/6D45A5CD1AADE4B527E459025AC1A5AEF41AE99091
 # Tendermint config version
 tendermint_config_version: 37
 
-upgrade_name: 3.0.4
+upgrade_name: 3.0.6
 
 # StateSync
 snap_rpc: "https://rpc-testnet.sei-apis.com:443"
