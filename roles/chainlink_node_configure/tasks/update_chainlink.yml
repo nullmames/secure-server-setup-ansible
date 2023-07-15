@@ -16,3 +16,11 @@
   notify:
     - Restart chainlink
     - Grafana chainlink update
+
+- name: Open p2p port for node
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "32451"
+    comment: Chainlink p2p port
