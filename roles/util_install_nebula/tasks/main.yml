@@ -1,0 +1,18 @@
+---
+- name: Nebula Install
+  when: inventory_hostname in groups['nebula_lighthouse'] or nebula_internal_ip_addr is defined
+  block:
+    - name: Uninstall Nebula (clean install)
+      when: nebula_clean_install|bool
+      ansible.builtin.include_tasks: uninstall.yml
+
+    - name: Install Nebula on all hosts
+      ansible.builtin.include_tasks: install.yml
+
+    - name: Deploy Lighthouse
+      when: inventory_hostname in groups['nebula_lighthouse']
+      ansible.builtin.include_tasks: configure_lighthouse.yml
+
+    - name: Deploy Nebula Node
+      when: inventory_hostname not in groups['nebula_lighthouse']
+      ansible.builtin.include_tasks: configure_node.yml

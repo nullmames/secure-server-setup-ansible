@@ -1,0 +1,45 @@
+---
+- name: Ensure CA cert/key exists
+  ansible.builtin.command:
+    chdir: /etc/nebula
+    cmd: ./nebula-cert ca -name "{{ nebula_network_name }}" -duration "{{ nebula_ca_cert_duration }}"
+    creates: /etc/nebula/ca.crt
+
+- name: Ensure lighthouse cert/key exists
+  ansible.builtin.command:
+    chdir: /etc/nebula
+    cmd: ./nebula-cert sign -name "{{ nebula_lighthouse_hostname }}" -ip "{{ nebula_lighthouse_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
+    creates: "/etc/nebula/{{ nebula_lighthouse_hostname }}.crt"
+
+- name: Add client key directory
+  ansible.builtin.file:
+    path: /etc/nebula/client-certs
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+
+- name: Ensure lighthouse is configured
+  ansible.builtin.template:
+    src: lighthouse_config.yml.j2
+    dest: /etc/nebula/config.yml
+    owner: root
+    group: root
+    mode: "0400"
+  notify: Restart nebula
+
+- name: Ensure lighthouse service exists
+  ansible.builtin.template:
+    src: lighthouse.service.j2
+    dest: /etc/systemd/system/lighthouse.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nebula
+
+- name: Ensure lighthouse service is enabled and running
+  ansible.builtin.systemd:
+    name: lighthouse
+    daemon_reload: true
+    enabled: true
+    state: started

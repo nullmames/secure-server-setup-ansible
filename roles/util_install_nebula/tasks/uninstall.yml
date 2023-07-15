@@ -1,0 +1,37 @@
+---
+- name: Remove Nebula Lighthouse
+  when: inventory_hostname in groups['nebula_lighthouse']
+  block:
+    - name: Stop lighthouse service
+      ansible.builtin.systemd:
+        name: lighthouse
+        state: stopped
+        daemon_reload: true
+        enabled: false
+      ignore_errors: true
+
+    - name: Remove lighthouse systemd service
+      ansible.builtin.file:
+        path: /etc/systemd/system/lighthouse.service
+        state: absent
+
+- name: Remove Nebula nodes
+  when: inventory_hostname not in groups['nebula_lighthouse']
+  block:
+    - name: Stop nebula service
+      ansible.builtin.systemd:
+        name: nebula
+        state: stopped
+        daemon_reload: true
+        enabled: false
+      ignore_errors: true
+
+    - name: Remove nebula systemd service
+      ansible.builtin.file:
+        path: /etc/systemd/system/nebula.service
+        state: absent
+
+- name: Remove Nebula installation directory
+  ansible.builtin.file:
+    path: /etc/nebula
+    state: absent

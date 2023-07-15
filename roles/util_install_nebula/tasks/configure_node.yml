@@ -1,0 +1,74 @@
+- name: Ensure a cert/key exists for node on lighthouse
+  ansible.builtin.command:
+    chdir: /etc/nebula
+    cmd: ./nebula-cert sign -name "{{ inventory_hostname }}" -ip "{{ nebula_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
+    creates: "/etc/nebula/{{ inventory_hostname }}.crt"
+  delegate_to: "{{ groups.nebula_lighthouse[0] }}"
+
+- name: Read cert/key from lighthouse
+  ansible.builtin.slurp:
+    src: "/etc/nebula/{{ item }}"
+  register: lighthouse_files
+  delegate_to: "{{ groups.nebula_lighthouse[0] }}"
+  with_items:
+    - "{{ inventory_hostname }}.crt"
+    - "{{ inventory_hostname }}.key"
+    - ca.crt
+
+- name: Archive client cert/key on lighthouse
+  ansible.builtin.copy:
+    src: "/etc/nebula/{{ item }}"
+    dest: "/etc/nebula/client-certs/{{ item }}"
+    owner: root
+    group: root
+    mode: "0600"
+    remote_src: true
+  with_items:
+    - "{{ inventory_hostname }}.crt"
+    - "{{ inventory_hostname }}.key"
+  delegate_to: "{{ groups.nebula_lighthouse[0] }}"
+
+- name: Remove duplicate client cert/keys on lighthouse
+  ansible.builtin.file:
+    path: "/etc/nebula/{{ item }}"
+    state: absent
+  with_items:
+    - "{{ inventory_hostname }}.crt"
+    - "{{ inventory_hostname }}.key"
+  delegate_to: "{{ groups.nebula_lighthouse[0] }}"
+
+- name: Ensure Cert, Key, CA files exist on node
+  ansible.builtin.copy:
+    dest: "/etc/nebula/{{ item['item'] }}"
+    content: "{{ item['content'] | b64decode }}"
+    owner: root
+    group: root
+    mode: "0600"
+  loop: "{{ lighthouse_files.results }}"
+  loop_control:
+    label: "{{ item['item'] }}"
+  notify: Restart nebula
+
+- name: Ensure Nebula is configured
+  ansible.builtin.template:
+    src: node_config.yml.j2
+    dest: /etc/nebula/config.yml
+    owner: root
+    group: root
+    mode: "0400"
+  notify: Restart nebula
+
+- name: Ensure Nebula service exists
+  ansible.builtin.template:
+    src: node.service.j2
+    dest: /etc/systemd/system/nebula.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure Nebula service is enabled and running
+  ansible.builtin.systemd:
+    name: nebula
+    daemon_reload: true
+    enabled: true
+    state: started
