@@ -1,7 +1,7 @@
 network: loyal
 folder: ".loyal"
 daemon: loyald
-chain_id: loyal-testnet-001
+chain_id: loyal-1
 node_version: "v0.25.1"
 repo: https://github.com/LoyalLabs/loyal.git
 genesis: https://raw.githubusercontent.com/LoyalLabs/net/main/testnet/genesis.json
