@@ -1,0 +1,28 @@
+version: '3.2'
+
+networks:
+  monitor:
+    driver: bridge
+
+volumes:
+  home:
+
+services:
+  tenderduty:
+    image: ghcr.io/blockpane/tenderduty:latest
+    command: ""
+    ports:
+      - "{{ ansible_host }}:8888:8888" # Dashboard
+      - "{{ ansible_host }}:28686:28686" # Prometheus exporter
+    volumes:
+      - home:/var/lib/tenderduty
+      - {{ user_dir }}/docker-compose/{{ tenderduty_dir }}/config.yml:/var/lib/tenderduty/config.yml
+      - {{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d:/var/lib/tenderduty/chains.d
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    restart: unless-stopped
+    networks:
+      - monitor

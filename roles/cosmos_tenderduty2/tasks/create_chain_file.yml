@@ -1,0 +1,49 @@
+- name: Set var file for chain
+  ansible.builtin.include_vars:
+    file: "{{ var_file }}"
+
+- name: Recreate Mainnet individual chain files
+  when: "'Testnet' not in group_names"
+  delegate_to: "{{ tenderduty_host }}"
+  block:
+    - name: Delete existing chain files
+      ansible.builtin.file:
+        state: "{{ item }}"
+        path: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      with_items:
+        - absent
+        - directory
+
+    - name: Create chain file
+      ansible.builtin.template:
+        src: chain.yml.j2
+        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+
+- name: Create Testnet individual chain files
+  when: "'Testnet' in group_names"
+  delegate_to: "{{ testnet_tenderduty_host }}"
+  block:
+    - name: Delete existing chain files
+      ansible.builtin.file:
+        state: "{{ item }}"
+        path: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      with_items:
+        - absent
+        - directory
+
+    - name: Create chain file
+      ansible.builtin.template:
+        src: chain.yml.j2
+        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"

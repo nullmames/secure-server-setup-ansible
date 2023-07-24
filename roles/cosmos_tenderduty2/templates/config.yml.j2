@@ -1,0 +1,29 @@
+---
+enable_dashboard: yes
+listen_port: 8888
+hide_logs: yes
+node_down_alert_minutes: 15
+node_down_alert_severity: critical
+
+prometheus_enabled: yes
+prometheus_listen_port: 28686
+
+pagerduty:
+  enabled: true
+  api_key: '{{ tenderduty_pagerduty_key }}'
+  default_severity: '{{ tenderduty_default_pagerduty_severity }}'
+
+slack:
+  enabled: true
+  webhook: '{{ tenderduty_slack_webhook }}'
+
+discord:
+  enabled: false
+
+telegram:
+  enabled: false
+
+healthcheck:
+  enabled: true
+  ping_url: '{{ tenderduty_healthcheck_url }}'
+  ping_rate: 60

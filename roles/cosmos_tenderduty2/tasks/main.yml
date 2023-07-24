@@ -1,0 +1,39 @@
+---
+- name: Install Tenderduty and Configure
+  when: inventory_hostname == tenderduty_host or inventory_hostname == testnet_tenderduty_host
+  ansible.builtin.include_tasks: install.yml
+
+- name: Create Chain Files
+  when: valoper is defined
+  ansible.builtin.include_tasks: create_chain_file.yml
+
+- name: Restart Tenderduty
+  when: inventory_hostname == tenderduty_host or inventory_hostname == testnet_tenderduty_host
+  block:
+    - name: Shutdown containers
+      ansible.builtin.command:
+        cmd: "docker compose down"
+      args:
+        chdir: "{{ user_dir }}/docker-compose"
+      environment:
+        PATH: "{{ path }}"
+
+    - name: Update and launch containers
+      ansible.builtin.command:
+        cmd: "docker compose up -d"
+      args:
+        chdir: "{{ user_dir }}/docker-compose"
+      environment:
+        PATH: "{{ path }}"
+
+    - name: Prune everything
+      community.docker.docker_prune:
+        containers: true
+        images: true
+        images_filters:
+          dangling: false
+      register: prune_output
+
+    - name: Review prune output
+      ansible.builtin.debug:
+        var: prune_output
