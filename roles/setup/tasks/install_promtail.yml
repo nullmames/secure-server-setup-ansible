@@ -1,6 +1,7 @@
 ---
 - name: Install Promtail
   when: promtail == "true"
+  notify: Restart promtail
   block:
     - name: Create Promtail user
       ansible.builtin.user:

@@ -7,6 +7,14 @@
     enabled: true
     state: restarted
 
+- name: Restart promtail
+  become: true
+  ansible.builtin.systemd:
+    name: promtail
+    daemon_reload: true
+    enabled: true
+    state: restarted
+
 - name: Restart journald
   become: true
   ansible.builtin.systemd:

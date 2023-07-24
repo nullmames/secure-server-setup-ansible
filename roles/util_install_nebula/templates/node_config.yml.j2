@@ -89,7 +89,16 @@ firewall:
       host: any
 
 {% if 'management' in group_names %}
-  # All inbound denied
+
+  inbound:
+    - port: 3100 # Loki metrics port
+      proto: tcp
+      host: any
+    
+    - port: any
+      proto: icmp
+      host: any
+
 {% else %}
 
   inbound:
