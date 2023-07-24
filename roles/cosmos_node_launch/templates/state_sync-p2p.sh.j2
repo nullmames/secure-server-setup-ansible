@@ -2,8 +2,8 @@
 # State_sync node via p2p
 # Block height will subtract BUFFER amount, then SYNC_BLOCK_HEIGHT will be round up or down to the nearest DENOM interval
 
-SNAP_HEIGHT_BUFFER=100000
-SNAP_HEIGHT_DENOM=1000
+SNAP_HEIGHT_BUFFER=300000
+SNAP_HEIGHT_DENOM=2000
 STATE_SYNC_RPC="{{ snap_rpc }}"
 
 LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
