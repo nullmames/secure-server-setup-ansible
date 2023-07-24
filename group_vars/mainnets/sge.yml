@@ -1,0 +1,12 @@
+network: sge
+folder: ".sge"
+daemon: sged
+chain_id: sge-network-3
+node_version: v1.0.1
+repo: https://github.com/sge-network/sge
+genesis: ""
+seeds: ""
+custom_port_prefix: 172
+
+# Forcing go
+go_release: "go1.18.10"
