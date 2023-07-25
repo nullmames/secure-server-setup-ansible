@@ -1,9 +1,5 @@
 version: '3.2'
 
-networks:
-  monitor:
-    driver: bridge
-
 volumes:
   home:
 
@@ -24,5 +20,3 @@ services:
         max-size: "20m"
         max-file: "10"
     restart: unless-stopped
-    networks:
-      - monitor
