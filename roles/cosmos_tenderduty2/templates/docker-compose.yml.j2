@@ -1,5 +1,14 @@
 version: '3.2'
 
+networks:
+  compose:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.0.31.0/24"
+          gateway: "172.0.31.1"
+
 volumes:
   home:
 
@@ -20,3 +29,5 @@ services:
         max-size: "20m"
         max-file: "10"
     restart: unless-stopped
+    networks:
+      - compose
