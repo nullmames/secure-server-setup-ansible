@@ -1,7 +1,7 @@
 network: chainlink
 folder: .chainlink
 repo: https://github.com/smartcontractkit/chainlink.git
-node_version: d6793cc4b8ce3c00a1d1f087d191b668c7612b75 # 2.2.0
+node_version: 7680667f309b13ba1d336bd1680026ff6f6d575f # 2.3.0
 p2p_port: 32451
 
 # Grafana dashboard
