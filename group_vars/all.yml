@@ -9,8 +9,9 @@ cosmovisor_version: "v1.0.0"
 
 # promtail
 promtail: false
-promtail_version: "v2.6.1"
+promtail_version: "v2.8.2"
 promtail_monitor: "http://10.254.100.13:3100"
+promtail_monitor_nebula: "http://100.100.0.13:3100"
 
 # ipfs
 ipfs_release: "0.21.0"
