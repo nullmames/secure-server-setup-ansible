@@ -37,6 +37,14 @@
     password: "{{ ecr_token.stdout }}"
     reauthorize: true
 
+- name: Pull containers
+  ansible.builtin.command:
+    cmd: "docker compose pull"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+  environment:
+    PATH: "{{ path }}"
+
 - name: Update and launch containers
   ansible.builtin.command:
     cmd: "docker compose up -d"
