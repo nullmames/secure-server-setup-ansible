@@ -2,6 +2,9 @@
 - name: Nebula Install
   when: inventory_hostname in groups['nebula_lighthouse'] or nebula_internal_ip_addr is defined
   block:
+    - name: Gather facts
+      ansible.builtin.gather_facts:
+
     - name: Uninstall Nebula (clean install)
       when: nebula_clean_install|bool
       ansible.builtin.include_tasks: uninstall.yml
