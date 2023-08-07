@@ -7,7 +7,7 @@ node_version: 626555101fdc9dfbc9dce7f0244bd7d46b8782bb #3.0.7
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
-peers: "9ca7ee1fd6a24f59aacd45ff2b47e7d5644b46cc@p2p.db-sync.atlantic-2.seinetwork.io:26656,1d3e3c08e5a39e7f211a1b256739aa2a3704e9e1@sei-testnet.nodejumper.io:26656"
+peers: "94b63fddfc78230f51aeb7ac34b9fb86bd042a77@sei-testnet-2.p2p.brocha.in:30588,de06b69a806e4df2f41ca011ba6e36795408ba1c@35.158.109.187:26656,5c34181454a371267d28fa546a4f91453417220f@136.243.70.112:11956,9ca7ee1fd6a24f59aacd45ff2b47e7d5644b46cc@p2p.db-sync.atlantic-2.seinetwork.io:26656,1d3e3c08e5a39e7f211a1b256739aa2a3704e9e1@sei-testnet.nodejumper.io:26656"
 minimum_gas_price: "0.01usei,0.001ibc/6D45A5CD1AADE4B527E459025AC1A5AEF41AE99091EF3069F3FEAACAFCECCD21"
 
 # Tendermint config version
