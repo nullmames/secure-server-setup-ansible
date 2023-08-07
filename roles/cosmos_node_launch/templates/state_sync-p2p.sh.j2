@@ -2,8 +2,8 @@
 # State_sync node via p2p
 # Block height will subtract BUFFER amount, then SYNC_BLOCK_HEIGHT will be round up or down to the nearest DENOM interval
 
-SNAP_HEIGHT_BUFFER=300000
-SNAP_HEIGHT_DENOM=2000
+SNAP_HEIGHT_BUFFER=200000
+SNAP_HEIGHT_DENOM=10000
 STATE_SYNC_RPC="{{ snap_rpc }}"
 
 LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .block.header.height)
@@ -25,6 +25,7 @@ echo -e "Trust Hash:           $SYNC_BLOCK_HASH"
 
 sed -i.bak -e "s|^enable *=.*|enable = true|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^use-p2p *=.*|use-p2p = true|" $HOME/{{ folder }}/config/config.toml
-sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"\"|" $HOME/{{ folder }}/config/config.toml
+# sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"\"|" $HOME/{{ folder }}/config/config.toml
+sed -i.bak -e "s|^rpc_servers *=.*|rpc_servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/{{ folder }}/config/config.toml
