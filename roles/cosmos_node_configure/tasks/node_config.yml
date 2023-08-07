@@ -8,8 +8,8 @@
 - name: Set external address in config.toml
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: 'external-address = "'
-    line: 'external-address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
+    regexp: 'external_address = "'
+    line: 'external_address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
     state: present
 
 - name: Adjust config.toml port settings
