@@ -36,7 +36,7 @@ pruning_rpc:
 pruning_archive:
   'pruning = "': 'pruning = "nothing"'
   "snapshot-interval = ": "snapshot-interval = 2000"
-  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
+  "snapshot-keep-recent = ": "snapshot-keep-recent= 8"
 #
 ## Tendermint 37+
 config_port_changes_37:
