@@ -1,4 +1,8 @@
 {
   "tabWidth": 2,
-  "useTabs": false
+  "useTabs": false,
+  "files.associations": {
+    "**/*.yml": "ansible",
+    "**/*.yaml": "ansible"
+  }
 }
