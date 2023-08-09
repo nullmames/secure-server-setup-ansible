@@ -3,14 +3,14 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: 626555101fdc9dfbc9dce7f0244bd7d46b8782bb #3.0.7
+node_version: 605ce0378a0429f04032f095e64ddca014a7128b #3.0.8
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
 peers: "8be334f6e1a9ca4af7ceeb8c256e1ae2182415d1@136.243.67.44:26656,380c732671cec070a9a7b979d277e26325f26d61@136.243.67.189:11956,3c25b0d230f0364124282c5222e50feb23a83501@sei-validator.nodes.guru:51656,957474f346a88b7ba43536b410febb6bf3b8a212@51.195.60.49:26656"
 
 # Upgrade
-upgrade_name: 3.0.7
+upgrade_name: 3.0.8
 
 # Tendermint config version
 tendermint_config_version: 37
