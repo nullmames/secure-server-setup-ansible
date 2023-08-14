@@ -1,5 +1,10 @@
 ---
 # Configure for Tendermint 0.37+
+- name: Read vars
+  ansible.builtin.include_vars:
+    file: ../vars/main.yml
+    name: config_changes
+
 - name: Register public ip
   ansible.builtin.uri:
     url: https://ipv4.icanhazip.com/
@@ -13,87 +18,156 @@
     line: 'external-address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
     state: present
 
-- name: Adjust max p2p connections (peers)
+- name: Adjust config.toml for generic items (config_toml_37)
+  block:
+    - name: Adjust null section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml_37["no_section"] | dict2items }}'
+
+    - name: Adjust rpc section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: rpc
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml_37["rpc"] | dict2items }}'
+
+    - name: Adjust p2p section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: p2p
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml_37["p2p"] | dict2items }}'
+
+    - name: Adjust instrumentation section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: instrumentation
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml_37["instrumentation"] | dict2items }}'
+
+- name: Adjust app.toml for generic items
+  block:
+    - name: Adjust api section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: api
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["api"] | dict2items }}'
+
+    - name: Adjust grpc section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: grpc
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["grpc"] | dict2items }}'
+
+    - name: Adjust grpc-web section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: grpc-web
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["grpc-web"] | dict2items }}'
+
+- name: Adjust pruning and state-sync settings for default pruning
+  when: (rpc is undefined) and (archive is undefined)
+  block:
+    - name: Update pruning (default)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_default["no_section"] | dict2items }}'
+
+    - name: Update state-sync (default)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_default["state-sync"] | dict2items }}'
+
+- name: Adjust pruning and state-sync settings for rpc pruning
+  when: (rpc is defined) and (archive is undefined)
+  block:
+    - name: Update pruning (rpc)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_custom_rpc["no_section"] | dict2items }}'
+
+    - name: Update state-sync (rpc)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_custom_rpc["state-sync"] | dict2items }}'
+
+- name: Adjust pruning and state-sync settings for archive
+  when: archive is defined
+  block:
+    - name: Update pruning (archive)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_nothing["no_section"] | dict2items }}'
+
+    - name: Update state-sync (archive)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_nothing["state-sync"] | dict2items }}'
+
+- name: Set indexer to null for validator nodes
+  when: (rpc is undefined) and (archive is undefined)
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "max-connections"
-    line: "max-connections = 200"
-
-- name: Adjust config.toml port settings
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ config_port_changes_37 | dict2items }}"
-
-- name: Adjust app.toml port settings
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ app_port_changes_37 | dict2items }}"
-
-- name: Adjust pruning settings for fast chains
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ pruning_37 | dict2items }}"
-
-- name: Enable CORS origins
-  when: rpc is defined
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^cors-allowed-origins "
-    insertafter: "# Use"
-    line: 'cors-allowed-origins = ["*"]'
-
-- name: Enable CORS Headers
-  when: rpc is defined
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^cors-allowed-headers"
-    insertafter: "# A list"
-    line: 'cors-allowed-headers = ["*"]'
-
-- name: Increase RPC Connections
-  when: rpc is defined
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "max-open-connections = 900"
-    line: "max-open-connections = 9000"
+    regexp: "^indexer ="
+    line: 'indexer = ["null"]'
     state: present
+    backrefs: true
 
-- name: Ensure kv indexer
+- name: Set indexer to kv for RPC and archive nodes
+  when: (rpc is defined) or (archive is defined)
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^indexer"
-    insertafter: '# When "kv"'
+    regexp: "^indexer ="
     line: 'indexer = ["kv"]'
     state: present
-
-- name: Bind RPC port to 0.0.0.0
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "{{ custom_port_prefix }}57"
-    line: 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-    state: present
-
-- name: Enable Prometheus in config.toml
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^prometheus ="
-    line: "prometheus = true"
-    state: present
-
-- name: Force Prometheus namespace to tendermint
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^namespace ="
-    line: 'namespace = "tendermint"'
-    state: present
+    backrefs: true
 
 - name: Add Skip configuration
+  when: sentinel_peer_string is defined
   ansible.builtin.blockinfile:
     insertafter: EOF
     dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
@@ -104,16 +178,19 @@
       sentinel_peer_string = "{{ sentinel_peer_string }}"
       sentinel_rpc_string = "{{ sentinel_rpc_string }}"
       api_key = "{{ skip_api_key }}"
-  when: sentinel_peer_string is defined
 
-- name: Enable API
-  ansible.builtin.replace:
+- name: Set IAVL and related items (if present)
+  ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "# Enable defines if the API(.*)\\senable = false"
-    replace: "# Enable defines if the API server should be enabled.\\nenable = true"
-
-- name: Increase API connections
-  ansible.builtin.replace:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "# MaxOpenConnections defines the number of maximum open connections.\\nmax-open-connections = 1000"
-    replace: "# MaxOpenConnections defines the number of maximum open connections.\\nmax-open-connections = 10000"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backrefs: true
+  with_items:
+    - { regexp: "^iavl-cache-size", line: "iavl-cache-size = 3906250" }
+    - { regexp: "^memory_cache_size", line: "memory_cache_size = 8000" }
+    - { regexp: "^query_gas_limit", line: "query_gas_limit = 5000000" }
+    - {
+        regexp: "^simulation_gas_limit",
+        line: "simulation_gas_limit = 50000000",
+      }

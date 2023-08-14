@@ -1,56 +1,82 @@
----
-# Default
-config_port_changes:
-  'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
-  'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-  'proxy_app = "tcp://127.0.0.1:26658"': 'proxy_app = "tcp://127.0.0.1:{{ custom_port_prefix }}58"'
-  'pprof_laddr = "localhost:6060"': 'pprof_laddr = "localhost:{{ custom_port_prefix }}60"'
-  'prometheus_listen_addr = ":26660"': 'prometheus_listen_addr = ":{{ custom_port_prefix }}61"'
-  ## Horcrux
-  # 'priv_validator_laddr = ""': 'priv_validator_laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}59"'
-app_port_changes:
-  'address = "tcp://0.0.0.0:1317"': 'address = "tcp://0.0.0.0:{{ custom_port_prefix }}17"'
-  'address = ":8080"': 'address = ":{{ custom_port_prefix }}80"'
-  'address = "0.0.0.0:9090"': 'address = "0.0.0.0:{{ custom_port_prefix }}90"'
-  'address = "0.0.0.0:9091"': 'address = "0.0.0.0:{{ custom_port_prefix }}91"'
-pruning:
-  'pruning = "': 'pruning = "custom"'
-  'pruning-keep-recent = "': 'pruning-keep-recent = "101"'
-  'pruning-keep-every = "': 'pruning-keep-every = "0"'
-  'pruning-interval = "': 'pruning-interval = "13"'
-  "snapshot-interval = ": "snapshot-interval = 0"
-pruning_rpc:
-  "pruning = ": 'pruning = "custom"'
-  "pruning-keep-recent = ": 'pruning-keep-recent = "20000"'
-  "pruning-keep-every = ": 'pruning-keep-every = "0"'
-  "pruning-interval = ": 'pruning-interval = "17"'
-  "iavl-cache-size = ": "iavl-cache-size = 3906250"
-  "enabled = ": "enabled = true"
-  "max-open-connections = ": "max-open-connections = 10000"
-  "enabled-unsafe-cors = ": "enabled-unsafe-cors = true"
-  "snapshot-interval = ": "snapshot-interval = 2000"
-  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
-  "query_gas_limit = ": "query_gas_limit = 5000000"
-  "simulation_gas_limit = ": "simulation_gas_limit = 50000000"
-  "memory_cache_size = ": "memory_cache_size = 8000"
-pruning_archive:
-  'pruning = "': 'pruning = "nothing"'
-  "snapshot-interval = ": "snapshot-interval = 2000"
-  "snapshot-keep-recent = ": "snapshot-keep-recent= 8"
-#
-## Tendermint 37+
-config_port_changes_37:
-  'proxy-app = "tcp://127.0.0.1:26658"': 'proxy-app = "tcp://127.0.0.1:{{ custom_port_prefix }}58"'
-  'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-  'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
-  'pprof-laddr = "localhost:6060"': 'pprof-laddr = "localhost:{{ custom_port_prefix }}60"'
-  'prometheus-listen-addr = ":26660"': 'prometheus-listen-addr = ":{{ custom_port_prefix }}61"'
-app_port_changes_37:
-  'address = "tcp://0.0.0.0:1317"': 'address = "tcp://0.0.0.0:{{ custom_port_prefix }}17"'
-  'address = ":8080"': 'address = ":{{ custom_port_prefix }}80"'
-  'address = "0.0.0.0:9090"': 'address = "0.0.0.0:{{ custom_port_prefix }}90"'
-  'address = "0.0.0.0:9091"': 'address = "0.0.0.0:{{ custom_port_prefix }}91"'
-pruning_37:
-  'pruning = "': 'pruning = "nothing"'
-  "snapshot-interval = ": "snapshot-interval = 0"
-  "snapshot-keep-recent = ": "snapshot-keep-recent= 4"
+config_toml:
+  no_section:
+    proxy_app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+  rpc:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+    cors_allowed_origins: '''["*"]'''
+    cors-allowed-headers: '''["*"]'''
+    max_open_connections: 10000
+    max_body_bytes: 2000000
+    max_header_bytes: 1048576
+    pprof_laddr: '"localhost:{{ custom_port_prefix }}60"'
+  p2p:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
+    max_num_inbound_peers: 27
+    max_num_outbound_peers: 34
+  instrumentation:
+    prometheus: "true"
+    prometheus_listen_addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
+    namespace: '"tendermint"'
+
+config_toml_37:
+  no_section:
+    proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+  rpc:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+    cors-allowed-origins: '''["*"]'''
+    cors-allowed-headers: '''["*"]'''
+    max-open-connections: 10000
+    max-body-bytes: 2000000
+    max-header-bytes: 1048576
+    pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
+  p2p:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
+    max-connections: 61
+  instrumentation:
+    prometheus: "true"
+    prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
+    namespace: '"tendermint"'
+
+app_toml:
+  api:
+    enable: "true"
+    swagger: "false"
+    address: '"tcp://0.0.0.0:{{ custom_port_prefix }}17"'
+    max-open-connections: 10000
+    rpc-max-body-bytes: 1000000
+    enabled-unsafe-cors: "true"
+  grpc:
+    enable: "true"
+    address: '"0.0.0.0:{{ custom_port_prefix }}90"'
+  grpc-web:
+    enable: "true"
+    address: '"0.0.0.0:{{ custom_port_prefix }}91"'
+  evm-rpc:
+    enable: "true"
+    address: '"0.0.0.0:{{ custom_port_prefix }}28"'
+    ws-address: '"0.0.0.0:{{ custom_port_prefix }}29"'
+
+# Pruning
+pruning_default:
+  no_section:
+    pruning: '"custom"'
+    pruning-keep-recent: "113"
+    pruning-interval: "19"
+  state-sync:
+    snapshot-interval: 0
+
+pruning_custom_rpc:
+  no_section:
+    pruning: '"custom"'
+    pruning-keep-recent: "40000"
+    pruning-interval: "171"
+  state-sync:
+    snapshot-interval: "{{ custom_snapshot_interval | default('2000', true) }}"
+    snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"
+
+pruning_nothing:
+  no_section:
+    pruning: '"nothing"'
+  state-sync:
+    snapshot-interval: "{{ custom_snapshot_interval | default('4000', true) }}"
+    snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"

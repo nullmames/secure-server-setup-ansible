@@ -1,4 +1,9 @@
----
+# ---
+- name: Read vars
+  ansible.builtin.include_vars:
+    file: ../vars/main.yml
+    name: config_changes
+
 - name: Register public ip
   ansible.builtin.uri:
     url: https://ipv4.icanhazip.com/
@@ -12,100 +17,173 @@
     line: 'external_address = "{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"'
     state: present
 
-- name: Adjust config.toml port settings
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ config_port_changes | dict2items }}"
+- name: Adjust config.toml for generic items
+  block:
+    - name: Adjust null section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml["no_section"] | dict2items }}'
 
-- name: Adjust number of inbound peers
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "max_num_inbound_peers"
-    line: "max_num_inbound_peers = 27"
+    - name: Adjust rpc section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: rpc
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml["rpc"] | dict2items }}'
 
-- name: Adjust number of outbound peers
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "max_num_outbound_peers"
-    line: "max_num_outbound_peers = 34"
+    - name: Adjust p2p section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: p2p
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml["p2p"] | dict2items }}'
 
-- name: Adjust app.toml port settings
+    - name: Adjust instrumentation section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: instrumentation
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.config_toml["instrumentation"] | dict2items }}'
+
+- name: Adjust app.toml for generic items
+  block:
+    - name: Adjust api section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: api
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["api"] | dict2items }}'
+
+    - name: Adjust grpc section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: grpc
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["grpc"] | dict2items }}'
+
+    - name: Adjust grpc-web section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: grpc-web
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["grpc-web"] | dict2items }}'
+
+- name: Verify if evm-rpc exists
   ansible.builtin.lineinfile:
+    dest: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    line: "[evm-rpc]"
+  check_mode: true
+  register: evmrpcrequired
+
+- name: Adjust evm-rpc section
+  when: evmrpcrequired.changed is false
+  community.general.ini_file:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ app_port_changes | dict2items }}"
+    section: "evm-rpc"
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: false
+  loop: '{{ config_changes.app_toml["evm-rpc"] | dict2items }}'
 
-- name: Adjust pruning settings for validator
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ pruning | dict2items }}"
+- name: Adjust pruning and state-sync settings for default pruning
   when: (rpc is undefined) and (archive is undefined)
+  block:
+    - name: Update pruning (default)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_default["no_section"] | dict2items }}'
 
-- name: Adjust pruning settings for rpc nodes
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ pruning_rpc | dict2items }}"
-  when: rpc is defined
+    - name: Update state-sync (default)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_default["state-sync"] | dict2items }}'
 
-- name: Adjust pruning settings for archive
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "{{ item.key }}"
-    line: "{{ item.value }}"
-  loop: "{{ pruning_archive | dict2items }}"
+- name: Adjust pruning and state-sync settings for rpc pruning
+  when: (rpc is defined) and (archive is undefined)
+  block:
+    - name: Update pruning (rpc)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_custom_rpc["no_section"] | dict2items }}'
+
+    - name: Update state-sync (rpc)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_custom_rpc["state-sync"] | dict2items }}'
+
+- name: Adjust pruning and state-sync settings for archive
   when: archive is defined
+  block:
+    - name: Update pruning (archive)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: null
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_nothing["no_section"] | dict2items }}'
 
-- name: Enable API in app.toml
-  ansible.builtin.replace:
-    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
-    regexp: "# Enable defines if the API(.*)\\senable = false"
-    replace: "# Enable defines if the API server should be enabled.\\nenable = true"
+    - name: Update state-sync (archive)
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-sync
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.pruning_nothing["state-sync"] | dict2items }}'
 
 - name: Set indexer to null for validator nodes
+  when: (rpc is undefined) and (archive is undefined)
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: 'indexer = "'
+    regexp: "indexer ="
     line: 'indexer = "null"'
     state: present
-  when: (rpc is undefined) and (archive is undefined)
+    backrefs: true
 
-- name: Ensure indexer to kv for RPC and archive nodes
+- name: Set indexer to kv for RPC and archive nodes
+  when: (rpc is defined) or (archive is defined)
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: 'indexer = "'
+    regexp: "indexer ="
     line: 'indexer = "kv"'
     state: present
-  when: (rpc is defined) or (archive is defined)
-
-- name: Bind RPC port to 0.0.0.0
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "{{ custom_port_prefix }}57"
-    line: 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-    state: present
-
-- name: Enable Prometheus in config.toml
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^prometheus ="
-    line: "prometheus = true"
-    state: present
-
-- name: Force Prometheus namespace to tendermint
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^namespace ="
-    line: 'namespace = "tendermint"'
-    state: present
+    backrefs: true
 
 - name: Add Skip configuration
+  when: sentinel_peer_string is defined
   ansible.builtin.blockinfile:
     insertafter: EOF
     dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
@@ -116,4 +194,20 @@
       sentinel_peer_string = "{{ sentinel_peer_string }}"
       sentinel_rpc_string = "{{ sentinel_rpc_string }}"
       api_key = "{{ skip_api_key }}"
-  when: sentinel_peer_string is defined
+
+- name: Set IAVL and related items (if present)
+  when: rpc is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backrefs: true
+  with_items:
+    - { regexp: "^iavl-cache-size", line: "iavl-cache-size = 3906250" }
+    - { regexp: "^memory_cache_size", line: "memory_cache_size = 8000" }
+    - { regexp: "^query_gas_limit", line: "query_gas_limit = 5000000" }
+    - {
+        regexp: "^simulation_gas_limit",
+        line: "simulation_gas_limit = 50000000",
+      }
