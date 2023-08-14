@@ -11,21 +11,22 @@ RAW_SYNC_BLOCK_HEIGHT=$(($LATEST_HEIGHT - $SNAP_HEIGHT_BUFFER))
 SYNC_BLOCK_HEIGHT=$(( ( ( $RAW_SYNC_BLOCK_HEIGHT + ( $SNAP_HEIGHT_DENOM / 2) ) / $SNAP_HEIGHT_DENOM ) * $SNAP_HEIGHT_DENOM ))
 SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .block_id.hash)
 
-if [ "$SYNC_BLOCK_HASH" = "" ]; then
-    echo -e "Error capturing Block Hash. Check RPC. Exiting..."
-    exit 1
-fi
 
 echo -e "Modifying $HOME/{{ folder }}/config/config.toml based on the following values:"
-echo -e "RPC Address:          <none>"
+echo -e "RPC Address:          $STATE_SYNC_RPC"
 echo -e "Use p2p:              true"
 echo -e "Latest Block Height:  $LATEST_HEIGHT"
 echo -e "Sync Block Height:    $SYNC_BLOCK_HEIGHT"
 echo -e "Trust Hash:           $SYNC_BLOCK_HASH"
 
+if [ "$SYNC_BLOCK_HASH" = "" ]; then
+    echo -e "Error capturing Block Hash. Check RPC. Exiting..."
+    exit 1
+fi
+
 sed -i.bak -e "s|^enable *=.*|enable = true|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^use-p2p *=.*|use-p2p = true|" $HOME/{{ folder }}/config/config.toml
 # sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"\"|" $HOME/{{ folder }}/config/config.toml
-sed -i.bak -e "s|^rpc_servers *=.*|rpc_servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
+sed -i.bak -e "s|^rpc-servers *=.*|rpc_servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/{{ folder }}/config/config.toml
