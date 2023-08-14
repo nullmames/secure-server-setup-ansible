@@ -72,6 +72,14 @@
     remote_src: true
     force: true
 
+- name: Ensure state-sync is disabled
+  community.general.ini_file:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    section: statesync
+    option: "enable"
+    value: "false"
+    create: false
+
 - name: Start cosmovisor
   become: true
   ansible.builtin.systemd:
