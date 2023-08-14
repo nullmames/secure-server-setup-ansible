@@ -24,3 +24,17 @@
     src: "/tmp/{{ daemon }}"
     dest: "{{ user_dir }}/go/bin/{{ daemon }}"
     mode: "0755"
+
+- name: Stat /tmp/libwasmvm.x86_64.so
+  ansible.builtin.stat:
+    path: "/tmp/libwasmvm.x86_64.so"
+  register: libwasm
+
+- name: Copy libwasmvm if exists
+  become: true
+  when: libwasm.stat.exists
+  ansible.builtin.copy:
+    src: "/tmp/libwasmvm.x86_64.so"
+    dest: "/usr/lib/libwasmvm.x86_64.so"
+    mode: "0644"
+    remote_src: true
