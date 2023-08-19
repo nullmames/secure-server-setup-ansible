@@ -3,8 +3,8 @@ config_toml:
     proxy_app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-    cors_allowed_origins: '''["*"]'''
-    cors-allowed-headers: '''["*"]'''
+    cors_allowed_origins: "'[]'"
+    cors-allowed-headers: "'[]'"
     max_open_connections: 10000
     max_body_bytes: 2000000
     max_header_bytes: 1048576
@@ -23,15 +23,15 @@ config_toml_37:
     proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-    cors-allowed-origins: '''["*"]'''
-    cors-allowed-headers: '''["*"]'''
+    cors-allowed-origins: "'[]'"
+    cors-allowed-headers: "'[]'"
     max-open-connections: 10000
     max-body-bytes: 2000000
     max-header-bytes: 1048576
     pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
   p2p:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
-    max-connections: 61
+    max-connections: 161
   instrumentation:
     prometheus: "true"
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
@@ -78,5 +78,5 @@ pruning_nothing:
   no_section:
     pruning: '"nothing"'
   state-sync:
-    snapshot-interval: "{{ custom_snapshot_interval | default('4000', true) }}"
+    snapshot-interval: "{{ custom_snapshot_interval | default('4000') }}"
     snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"
