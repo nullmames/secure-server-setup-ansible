@@ -52,10 +52,19 @@
     remote_src: true
     force: true
 
-- name: Reset data folder
-  ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
-  environment:
-    PATH: "{{ path }}"
+- name: Remove and create data folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/data"
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
+# - name: Reset data folder
+#   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
+#   environment:
+#     PATH: "{{ path }}"
 
 - name: Extract archive
   ansible.builtin.shell: "lz4 -c -d {{ user_dir }}/{{ network }}-snapshot.tar.lz4 | tar -x -C {{ user_dir }}/{{ folder }}"
