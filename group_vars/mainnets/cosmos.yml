@@ -2,7 +2,7 @@ network: cosmos
 folder: ".gaia"
 daemon: gaiad
 chain_id: cosmoshub-4
-node_version: v10.0.2
+node_version: v11.0.0
 repo: "https://github.com/cosmos/gaia"
 genesis: "https://github.com/cosmos/mainnet/blob/master/genesis/genesis.cosmoshub-4.json.gz?raw=true"
 genesis_processing: gz
@@ -11,6 +11,8 @@ seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14956"
 custom_port_prefix: 149
 
 snap_rpc: https://cosmos-rpc.polkachu.com:443
+
+upgrade_name: v11
 
 # [Optional] Snapshot
 snapshot_hour: 0

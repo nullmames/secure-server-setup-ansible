@@ -2,11 +2,13 @@ network: osmosis
 folder: ".osmosisd"
 daemon: osmosisd
 chain_id: osmosis-1
-node_version: v16.1.0
+node_version: v17.0.0
 repo: https://github.com/osmosis-labs/osmosis
 genesis: "https://github.com/osmosis-labs/networks/raw/main/osmosis-1/genesis.json"
 seeds: "f515a8599b40f0e84dfad935ba414674ab11a668@osmosis.blockpane.com:26656,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:12556"
 peers: "38ab18cb2ea1dfeb6232b429e1508f56b6ae5031@peer-osmosis-01.stakeflow.io:65535"
 custom_port_prefix: 125
+
+upgrade_name: v17
 
 snap_rpc: https://osmosis-rpc.polkachu.com:443

@@ -13,6 +13,6 @@ minimum_gas_price: "0.001utlore"
 custom_port_prefix: 113
 
 # StateSync
-snap_rpc:
+snap_rpc: "https://gitopia-rpc.polkachu.com:443"
 # [Optional] Prep for upgrade in cosmovisor
 # upgrade_name:

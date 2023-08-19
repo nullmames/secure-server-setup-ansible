@@ -7,8 +7,11 @@ node_version: 605ce0378a0429f04032f095e64ddca014a7128b #3.0.8
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
-peers: "8be334f6e1a9ca4af7ceeb8c256e1ae2182415d1@136.243.67.44:26656,380c732671cec070a9a7b979d277e26325f26d61@136.243.67.189:11956,3c25b0d230f0364124282c5222e50feb23a83501@sei-validator.nodes.guru:51656,957474f346a88b7ba43536b410febb6bf3b8a212@51.195.60.49:26656"
+peers: "6417b681556d466f110e99ed592e63e062572f55@136.243.36.60:11956,42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb@136.243.71.227:11956,d7ad900ff4bd1cdb37b69ce0ae631b98ef2506e7@p2p.state-sync.pacific-1.seinetwork.io:26656"
 
+unconditional_peers: "a63f079983460e7463c69a48693d42fbddfeba3d,daa895c5e18d1dc55c71656bdc26ecbb6c4a17e8,42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb,27bd417659368d6950ecc840cedec3a922ee97c8,2cc393c17a17d6c7b039125ecfa15de915194327,777f7c5f18bb76965bd557e3181ce0e3d3b68641,1454638b16d2be9508eb7f08a1547fc01fbbe97a,e62eef1df8f97304839bc676b94e02fab0550a79"
+
+bootstrap_peers: ""
 # Upgrade
 upgrade_name: 3.0.8
 
@@ -17,8 +20,11 @@ tendermint_config_version: 37
 
 # StateSync
 # snap_rpc: "https://rpc.sei-apis.com"
-snap_rpc: "https://sei-rpc.polkachu.com"
+snap_rpc: "http://statesync-sei.rhinostake.com:11957"
 p2p_state_sync: true
 
 # Tenderduty High
 threshold_type: "high"
+
+# No snapshots on Sei
+custom_snapshot_interval: 0
