@@ -16,7 +16,8 @@ tendermint_config_version: 37
 upgrade_name: 3.0.8
 
 # StateSync
-snap_rpc: "https://rpc-testnet.sei-apis.com:443"
+snap_rpc: "http://statesync-testnet-sei.rhinostake.com:11957"
+
 p2p_state_sync: true
 custom_snapshot_interval: 50000
 
