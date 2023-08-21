@@ -1,0 +1,43 @@
+---
+- name: Get current block height
+  ansible.builtin.shell: "curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r .sync_info.latest_block_height"
+  register: currentheight
+
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Pause for 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Create archive
+  ansible.builtin.shell:
+    cmd: "tar --exclude=wasm/wasm/cache -cf - data wasm | lz4 > {{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    chdir: "{{ user_dir }}/{{ folder }}"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Start cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted
+
+- name: Copy files to snapshot
+  ansible.builtin.command:
+    cmd: "rsync -av --progress {{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4 rsync://10.254.110.101/share/"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Cleanup temporary files
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    state: absent
+
+- name: Print path
+  ansible.builtin.debug:
+    msg: "Snapshot uploaded to: https://share.rhinostake.com/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
