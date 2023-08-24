@@ -1,7 +1,7 @@
 ---
 - name: Force uniform sources.list
   ansible.builtin.template:
-    src: sources.list.j2
+    src: sources.list_{{ ansible_distribution_release }}.j2
     dest: "/etc/apt/sources.list"
     owner: "root"
     group: "root"
