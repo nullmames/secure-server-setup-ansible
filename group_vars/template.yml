@@ -6,6 +6,7 @@ node_version:
 repo:
 genesis:
 seeds: ""
+peers:
 minimum_gas_price: ""
 custom_port_prefix:
 
