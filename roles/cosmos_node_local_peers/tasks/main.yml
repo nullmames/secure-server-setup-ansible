@@ -1,0 +1,89 @@
+---
+- name: Capturing node-id of node
+  ansible.builtin.command: "{{ daemon }} tendermint show-node-id"
+  register: nodeid
+  environment:
+    PATH: "{{ path }}"
+    GOPATH: "{{ user_dir }}/go"
+
+- name: Create dictionary object of each node
+  ansible.builtin.set_fact:
+    node_dict:
+      {
+        "hostname": "{{ inventory_hostname }}",
+        "nodeid": "{{ nodeid.stdout }}",
+        "peerid": "{{ nodeid.stdout }}@{{ ansible_default_ipv4.address }}:{{ custom_port_prefix }}56",
+      }
+
+- name: Append to create dictionary of all nodes
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.set_fact:
+    chain_dict: "{{ chain_dict | default({}) | combine({item: hostvars[item]['node_dict']}) }}"
+    node_combined_dict: {}
+  loop: "{{ ansible_play_hosts }}"
+
+- name: For each node, remove their own peer information from peer list
+  ansible.builtin.set_fact:
+    node_combined_dict: "{{ node_combined_dict | combine({item.key: item.value}) }}"
+  when: item.key not in inventory_hostname
+  with_dict: "{{ chain_dict }}"
+
+- name: Create unconditional string
+  ansible.builtin.set_fact:
+    unconditional_nodeids: "{{ node_combined_dict | dict2items | map(attribute='value') | map(attribute='nodeid') | join(',') }}"
+
+- name: Create persistent peer string of local nodes
+  ansible.builtin.set_fact:
+    private_persistent_peerids: "{{ node_combined_dict | dict2items | map(attribute='value') | map(attribute='peerid') | join(',') }}"
+
+- name: Build complete peering list with both local and public peers
+  when: (peers is defined) and (private_persistent_peerids | length > 1)
+  ansible.builtin.set_fact:
+    persistent_peerids: "{{ private_persistent_peerids + ',' + peers }}"
+
+- name: Build complete peering list with public peers only
+  when: (peers is defined) and (private_persistent_peerids | length == 0)
+  ansible.builtin.set_fact:
+    persistent_peerids: "{{ peers }}"
+
+- name: Build complete peering list with local nodes only
+  when: (peers is undefined) and (private_persistent_peerids is defined)
+  ansible.builtin.set_fact:
+    persistent_peerids: "{{ private_persistent_peerids }}"
+
+- name: Update peers in config.toml
+  when: persistent_peerids is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ persistent_peerids }}"'
+    state: present
+    backrefs: true
+  loop:
+    - persistent_peers
+    - persistent-peers
+
+- name: Update seeds in config.toml
+  when: seeds is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ seeds }}"'
+    state: present
+    backrefs: true
+  loop:
+    - seeds
+    - bootstrap-peers
+
+- name: Update unconditionals in config.toml
+  when: unconditional_nodeids is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ unconditional_nodeids }}"'
+    state: present
+    backrefs: true
+  loop:
+    - unconditional_peer_ids
+    - unconditional-peer-ids

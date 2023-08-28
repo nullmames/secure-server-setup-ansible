@@ -1,0 +1,8 @@
+---
+- name: Automatically add persistent peer info on all network nodes
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "{{ var_file }}"
+  roles:
+    - cosmos_node_local_peers
