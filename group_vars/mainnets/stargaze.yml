@@ -2,7 +2,7 @@ network: stargaze
 folder: ".starsd"
 daemon: starsd
 chain_id: stargaze-1
-node_version: v11.0.0
+node_version: v12.0.0
 repo: "https://github.com/public-awesome/stargaze"
 genesis: "https://raw.githubusercontent.com/public-awesome/mainnet/main/stargaze-1/genesis.tar.gz"
 genesis_processing: targz
@@ -11,4 +11,7 @@ custom_port_prefix: 137
 snap_rpc: "https://stargaze-rpc.polkachu.com:443"
 
 # Upgrade name
-upgrade_name: v11
+upgrade_name: v12
+
+# go
+go_release: "go1.21.0"
