@@ -7,15 +7,19 @@
     update_cache: true
     cache_valid_time: 3600
 
-- name: Copy certificate
+- name: Copy certificates
   become: true
   ansible.builtin.copy:
-    src: "templates/rhinossl.pem"
-    dest: "/etc/ssl/rhinossl.pem"
+    src: "templates/{{ item }}"
+    dest: "/etc/ssl/{{ item }}"
     owner: root
     group: root
     mode: "0644"
   notify: Restart haproxy
+  loop:
+    - rhinossl.pem
+    - origin.sei-apis.pem
+    - origin.stargaze-apis.pem
 
 - name: Copy haproxy config
   become: true
