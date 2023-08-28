@@ -1,4 +1,4 @@
-# ---
+---
 - name: Read vars
   ansible.builtin.include_vars:
     file: ../vars/main.yml
