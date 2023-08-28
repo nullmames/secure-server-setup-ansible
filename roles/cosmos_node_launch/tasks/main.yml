@@ -1,33 +1,39 @@
 ---
 - name: Update peers in config.toml
+  when: peers is defined
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^persistent_peers ="
-    line: 'persistent_peers = "{{ peers }}"'
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ peers }}"'
     state: present
-  when:
-    - peers is defined
-    - tendermint_config_version is undefined
-
-- name: Update peers in config.toml
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^persistent-peers ="
-    line: 'persistent-peers = "{{ peers }}"'
-    state: present
-  when:
-    - peers is defined
-    - tendermint_config_version is defined
+    backrefs: true
+  loop:
+    - persistent_peers
+    - persistent-peers
 
 - name: Update seeds in config.toml
+  when: seeds is defined
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^seeds ="
-    line: 'seeds = "{{ seeds }}"'
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ seeds }}"'
     state: present
-  when:
-    - seeds is defined
-    - tendermint_config_version is undefined
+    backrefs: true
+  loop:
+    - seeds
+    - bootstrap-peers
+
+- name: Update unconditionals in config.toml
+  when: unconditional_nodeids is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ unconditional_nodeids }}"'
+    state: present
+    backrefs: true
+  loop:
+    - unconditional_peer_ids
+    - unconditional-peer-ids
 
 - name: Open p2p port in ufw
   become: true
