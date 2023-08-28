@@ -5,7 +5,8 @@ chain_id: injective-1
 genesis: https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/master/10001/genesis.json
 binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.6-1688984159/linux-amd64.zip
 binary_processing: zip
-seeds: "38c18461209694e1f667ff2c8636ba827cc01c86@176.9.143.252:11751,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14356,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:14356"
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14356,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:14356"
+peers: "d0041f67df63b4145022134b13185d49b51d9812@65.108.204.225:14356"
 app_file: https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/master/10001/app.toml
 minimum_gas_price: "500000000inj"
 custom_port_prefix: 143
