@@ -1,12 +1,12 @@
 network: sge
 folder: ".sge"
 daemon: sged
-chain_id: sge-network-3
-node_version: v1.0.1
+chain_id: sgenet-1
+node_version: v1.1.0
 repo: https://github.com/sge-network/sge
-genesis: "https://raw.githubusercontent.com/sge-network/networks/master/sge-network-3/genesis.json"
-seeds: "20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:17756,babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:17756,df949a46ae6529ae1e09b034b49716468d5cc7e9@testnet-seeds.stakerhouse.com:11156,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:17756"
+genesis: "https://raw.githubusercontent.com/sge-network/networks/master/mainnet/sgenet-1/pre-genesis.json"
+seeds: ""
 custom_port_prefix: 177
 
 # Forcing go
-go_release: "go1.18.10"
+go_release: "go1.19.12"
