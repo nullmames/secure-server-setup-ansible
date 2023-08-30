@@ -10,7 +10,7 @@
       - runc
     state: absent
 
-- name: pip3 install
+- name: Install pip3
   become: true
   ansible.builtin.apt:
     name:
@@ -62,3 +62,53 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: true
+
+- name: Add docker-compose and docker-data folders
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose"
+    state: directory
+    mode: "0755"
+
+- name: Stat default docker folder
+  become: true
+  ansible.builtin.stat:
+    path: /var/lib/docker
+  register: defaultdocker
+
+- name: Move docker folder block
+  when: defaultdocker.stat.isdir is defined and defaultdocker.stat.isdir
+  block:
+    - name: Stop Docker service
+      become: true
+      ansible.builtin.systemd:
+        name: docker
+        daemon_reload: false
+        state: stopped
+
+    - name: Move default docker folder if exists
+      become: true
+      ansible.builtin.command:
+        cmd: "mv /var/lib/docker {{ user_dir }}/docker-compose/docker-data"
+        creates: "{{ user_dir }}/docker-compose/docker-data"
+
+    - name: Copy daemon.json
+      become: true
+      ansible.builtin.template:
+        src: daemon.json.j2
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Start Docker service
+      become: true
+      ansible.builtin.systemd:
+        name: docker
+        daemon_reload: false
+        state: started
+
+    - name: Delete default docker file location
+      become: true
+      ansible.builtin.file:
+        path: /var/lib/docker
+        state: absent
