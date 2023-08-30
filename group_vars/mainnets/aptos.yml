@@ -13,5 +13,4 @@ build_profile: release
 
 # Grafana dashboard
 dashboardUID: bz8kPr673
-
-hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/aptos-node-v1.5.2/aptos-node-v1.5.2-ubuntu-20.04.tgz"
+#hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/adhoc_20230829/aptos-node-adhoc_20230829-ubuntu-20-04.tgz"
