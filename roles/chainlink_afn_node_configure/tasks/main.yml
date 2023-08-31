@@ -36,7 +36,7 @@
 - name: Copy keystore-file
   notify: Restart chainlink_afn
   ansible.builtin.copy:
-    src: "templates/keystore-file.json"
+    src: "templates/keystore-file"
     dest: "{{ user_dir }}/{{ folder }}/keystore-file"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
