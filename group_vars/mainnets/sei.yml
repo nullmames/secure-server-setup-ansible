@@ -3,22 +3,23 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: 605ce0378a0429f04032f095e64ddca014a7128b #3.0.8
+node_version: 6baf4dda89d5c5200883d86813cbfa6796fe09ef #3.0.9
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
 peers: "6417b681556d466f110e99ed592e63e062572f55@136.243.36.60:11956,42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb@136.243.71.227:11956,d7ad900ff4bd1cdb37b69ce0ae631b98ef2506e7@p2p.state-sync.pacific-1.seinetwork.io:26656"
+# unconditionals: Kucoin, Binance, Binance, Upbit, MEXC
+unconditionals: "88e3ee13856c223230ca7e417d807619977fef2d,76024d489c971fa3ff5d74962a182f59c92b10ec,f3037201b3d2dd1dfaeab779b02b2586ae0ee342,c5a0c3802c167951d6b6168781422273de9653dd,4d5f70d796bde7b754087536cf4cbbb5ece11851"
 
-bootstrap_peers: ""
 # Upgrade
-upgrade_name: 3.0.8
+upgrade_name: v3.0.9
 
 # Tendermint config version
 tendermint_config_version: 37
 
 # StateSync
-# snap_rpc: "https://rpc.sei-apis.com"
 snap_rpc: "http://statesync-sei.rhinostake.com:11957"
+snap_rpc_height_buffer: 12000
 p2p_state_sync: true
 
 # Tenderduty High

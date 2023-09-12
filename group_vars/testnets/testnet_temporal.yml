@@ -2,7 +2,7 @@ network: temporal
 folder: ".temporal"
 daemon: temporald
 chain_id: temporal-test-1
-node_version: v0.2.1
+node_version: v0.3.0
 repo: https://github.com/temporal-zone/temporal.git
 genesis: https://raw.githubusercontent.com/temporal-zone/temporal-testnet/main/genesis/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:24156"
@@ -15,4 +15,4 @@ snap_rpc:
 p2p_state_sync: false
 
 # [Optional] Prep for upgrade in cosmovisor
-upgrade_name:
+upgrade_name: v0.3.0

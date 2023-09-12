@@ -19,6 +19,7 @@ upgrade_name: "v3.0.9"
 snap_rpc: "http://statesync-testnet-sei.rhinostake.com:11957"
 
 p2p_state_sync: true
+snap_rpc_height_buffer: 80000
 custom_snapshot_interval: 50000
 
 # Tenderduty High
