@@ -1,0 +1,38 @@
+---
+# Install imgproxy for Stargaze API image management
+# - name: Install Docker
+#   ansible.builtin.import_role:
+#     name: util_install_docker
+
+- name: Login to imgproxy registry
+  community.docker.docker_login:
+    registry_url: "docker.imgproxy.pro"
+    username: "imgproxy"
+    password: "{{ imgproxy_docker_password }}"
+
+- name: Run docker container
+  community.docker.docker_container:
+    name: imgproxy
+    image: "docker.imgproxy.pro/imgproxy:latest"
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    env:
+      # Base
+      IMGPROXY_LICENSE_KEY: "{{ imgproxy_prolicense_key }}"
+      IMGPROXY_KEY: "{{ imgproxy_image_key }}"
+      IMGPROXY_SALT: "{{ imgproxy_image_salt }}"
+      IMGPROXY_BIND: ":8081"
+      IMGPROXY_CONCURRENCY: "{{ imgproxy_workers }}"
+      IMGPROXY_URL_REPLACEMENTS: "ipfs://=http://{{ imgproxy_ipfs_host }}:8080/ipfs/"
+      IMGPROXY_ALLOW_SECURITY_OPTIONS: "true"
+      IMGPROXY_DOWNLOAD_TIMEOUT: "15"
+      # Monitoring
+      IMGPROXY_PROMETHEUS_NAMESPACE: "imgproxy"
+      IMGPROXY_PROMETHEUS_BIND: ":28081"
+      # Image Specific
+      IMGPROXY_MAX_SRC_RESOLUTION: "60"
+      # Video Specific
+      IMGPROXY_MAX_ANIMATION_FRAMES: "120"
+      IMGPROXY_MAX_ANIMATION_FRAME_RESOLUTION: "300"
+      IMGPROXY_ENABLE_VIDEO_THUMBNAILS: "true"
