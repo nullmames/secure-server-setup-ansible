@@ -31,24 +31,25 @@
 
 - name: Create unconditional string
   ansible.builtin.set_fact:
-    unconditional_nodeids: "{{ node_combined_dict | dict2items | map(attribute='value') | map(attribute='nodeid') | join(',') }}"
+    private_unconditional_nodeids: "{{ node_combined_dict | dict2items | map(attribute='value') | map(attribute='nodeid') | join(',') }}"
 
 - name: Create persistent peer string of local nodes
   ansible.builtin.set_fact:
     private_persistent_peerids: "{{ node_combined_dict | dict2items | map(attribute='value') | map(attribute='peerid') | join(',') }}"
 
+# Create complete peer list with internal & defined public peers
 - name: Build complete peering list with both local and public peers
-  when: (peers is defined) and (private_persistent_peerids | length > 1)
+  when: ((peers is defined) and (peers | length > 0)) and (private_persistent_peerids | length > 0)
   ansible.builtin.set_fact:
     persistent_peerids: "{{ private_persistent_peerids + ',' + peers }}"
 
 - name: Build complete peering list with public peers only
-  when: (peers is defined) and (private_persistent_peerids | length == 0)
+  when: ((peers is defined) and (peers | length > 0)) and (private_persistent_peerids | length == 0)
   ansible.builtin.set_fact:
     persistent_peerids: "{{ peers }}"
 
 - name: Build complete peering list with local nodes only
-  when: (peers is undefined) and (private_persistent_peerids is defined)
+  when: ((peers is undefined) or (peers | length == 0)) and (private_persistent_peerids | length > 0)
   ansible.builtin.set_fact:
     persistent_peerids: "{{ private_persistent_peerids }}"
 
@@ -64,17 +65,21 @@
     - persistent_peers
     - persistent-peers
 
-- name: Update seeds in config.toml
-  when: seeds is defined
-  ansible.builtin.lineinfile:
-    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    regexp: "^{{ item }} ="
-    line: '{{ item }} = "{{ seeds }}"'
-    state: present
-    backrefs: true
-  loop:
-    - seeds
-    - bootstrap-peers
+# Create complete unconditional list with internal & defined unconditionals
+- name: Build complete unconditional list with both local and public unconditional
+  when: ((unconditionals is defined) and (unconditionals | length > 0)) and (private_unconditional_nodeids | length > 0)
+  ansible.builtin.set_fact:
+    unconditional_nodeids: "{{ private_unconditional_nodeids + ',' + unconditionals }}"
+
+- name: Build complete unconditional list with public unconditionals only
+  when: ((unconditionals is defined) and (unconditionals | length > 0)) and (private_unconditional_nodeids | length == 0)
+  ansible.builtin.set_fact:
+    unconditional_nodeids: "{{ unconditionals }}"
+
+- name: Build complete unconditional list with local unconditional only
+  when: ((unconditionals is undefined) or (unconditionals | length == 0)) and (private_unconditional_nodeids | length > 0)
+  ansible.builtin.set_fact:
+    unconditional_nodeids: "{{ private_unconditional_nodeids }}"
 
 - name: Update unconditionals in config.toml
   when: unconditional_nodeids is defined
@@ -87,3 +92,16 @@
   loop:
     - unconditional_peer_ids
     - unconditional-peer-ids
+
+# Add public seeds
+- name: Update seeds in config.toml
+  when: seeds is defined
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^{{ item }} ="
+    line: '{{ item }} = "{{ seeds }}"'
+    state: present
+    backrefs: true
+  loop:
+    - seeds
+    - bootstrap-peers
