@@ -65,6 +65,23 @@
     remote_src: true
     mode: "0755"
 
+# Check to see if upgrade folder variable is defined and create that directory as well
+- name: Create upgrade directories in Cosmosvisor folder
+  when: upgrade_name is defined
+  block:
+    - name: Create appropriate folder
+      ansible.builtin.file:
+        path: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
+        state: directory
+        mode: "0755"
+  
+    - name: Copy binary into cosmovisor upgrade directory
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/go/bin/{{ daemon }}"
+        dest: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
+        remote_src: true
+        mode: "0755"
+
 - name: Copy cosmovisor systemctl service file for binary
   become: true
   ansible.builtin.template:
