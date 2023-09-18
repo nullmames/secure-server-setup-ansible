@@ -1,0 +1,72 @@
+- name: Deploy Zabbix
+  hosts: all
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: util_install_zabbix
+
+    - role: community.zabbix.zabbix_agent
+      throttle: 1
+      zabbix_agent2: true
+      zabbix_agent2_server: "{{ zabbix_server_agent_addresses }}"
+      zabbix_agent2_serveractive: "{{ zabbix_server_agent_addresses }}"
+      zabbix_agent_ip: "{{ ansible_host }}"
+      zabbix_agent2_listenport: 10050
+      zabbix_agent2_tlsconnect: unencrypted
+      zabbix_api_server_host: "{{ zabbix_server_host }}"
+      zabbix_api_use_ssl: true
+      zabbix_api_server_port: 443
+      zabbix_api_validate_certs: true
+      ansible_zabbix_url_path: /
+      zabbix_useuip: 1
+      zabbix_api_login_user: "{{ zabbix_login_user }}"
+      zabbix_api_login_pass: "{{ zabbix_login_pass }}"
+      zabbix_api_create_hosts: true
+      zabbix_api_create_hostgroup: true
+      zabbix_agent_host_update: true
+      zabbix_agent_host_state: present
+      zabbix_agent_become_on_localhost: false
+      zabbix_agent_inventory_mode: automatic
+      zabbix_agent_inventory_zabbix:
+        alias: "{{ inventory_hostname }}"
+        software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+        location: "{{ node_info.json.org }}"
+        location_lat: "{{ latlong.0 }}"
+        location_lon: "{{ latlong.1 }}"
+        site_city: "{{ node_info.json.city }}"
+        site_state: "{{ node_info.json.region }}"
+        site_country: "{{ node_info.json.country }}"
+      zabbix_host_groups:
+        - Linux servers
+        - "{{ node_info.json.org }}"
+      zabbix_agent_link_templates:
+        - Linux by Zabbix agent
+        - SMART by Zabbix agent 2
+        - "{% if 'haproxy' in ansible_facts.services %}HAProxy by Zabbix agent{% endif %}"
+        - "{% if 'docker' in ansible_facts.services %}Docker by Zabbix agent 2{% endif %}"
+      zabbix_agent_tags: "{{ inventory_group_dict }}"
+
+  post_tasks:
+    - name: Allow zabbix user to monitor smart
+      ansible.builtin.copy:
+        content: "zabbix ALL=(ALL) NOPASSWD:/usr/sbin/smartctl"
+        dest: "/etc/sudoers.d/zabbix"
+        owner: "root"
+        group: "root"
+        mode: "0440"
+
+    - name: Add zabbix user to docker group
+      when: "'docker.service' in services"
+      ansible.builtin.user:
+        name: zabbix
+        groups: docker
+        append: true
+
+    - name: Force restart zabbix agent
+      become: true
+      ansible.builtin.systemd:
+        name: zabbix-agent2
+        enabled: true
+        state: restarted
+

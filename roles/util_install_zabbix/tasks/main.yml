@@ -1,0 +1,28 @@
+---
+# Prep machine for zabbix agent
+- name: Get service facts
+  ansible.builtin.service_facts:
+
+- name: Install smart monitoring
+  ansible.builtin.apt:
+    name:
+      - smartmontools
+    state: present
+
+- name: Get node location specifics
+  ansible.builtin.uri:
+    url: http://ipinfo.io/json
+    method: GET
+    return_content: true
+  register: node_info
+
+- name: Split lat long
+  ansible.builtin.set_fact:
+    latlong: "{{ node_info.json.loc | split(',') }}"
+
+- name: Parse list of ansible inventory items to tag zabbix
+  ansible.builtin.set_fact: 
+    inventory_group_dict: "{{ inventory_group_dict | default([]) + [{ 'tag': 'inv', 'value': item }] }}"
+  with_items:
+    - "{{ group_names }}"
+
