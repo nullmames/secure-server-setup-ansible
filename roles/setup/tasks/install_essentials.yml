@@ -62,6 +62,13 @@
     state: present
     reload: true
 
+- name: Set vm.vfs_cache_pressure to 50
+  ansible.posix.sysctl:
+    name: vm.vfs_cache_pressure
+    value: "50"
+    state: present
+    reload: true
+
 - name: Add TOML vim plugin
   become: false
   ansible.builtin.git:
