@@ -28,7 +28,8 @@
     msg: "Downloading snapshot {{ snapshot_url }}"
 
 - name: Download snapshot
-  ansible.builtin.shell: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
+  ansible.builtin.shell:
+    cmd: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
   environment:
     PATH: "{{ path }}"
 
@@ -60,11 +61,6 @@
   with_items:
     - absent
     - directory
-
-# - name: Reset data folder
-#   ansible.builtin.command: "{{ daemon }} tendermint unsafe-reset-all --home {{ user_dir }}/{{ folder }} --keep-addr-book"
-#   environment:
-#     PATH: "{{ path }}"
 
 - name: Extract archive
   ansible.builtin.shell: "lz4 -c -d {{ user_dir }}/{{ network }}-snapshot.tar.lz4 | tar -x -C {{ user_dir }}/{{ folder }}"
