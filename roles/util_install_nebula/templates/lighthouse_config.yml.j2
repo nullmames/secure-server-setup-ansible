@@ -94,3 +94,21 @@ firewall:
     - port: any
       proto: any
       host: any
+
+stats:
+  type: prometheus
+  listen: 0.0.0.0:9961
+  path: /metrics
+  namespace: nebula
+  interval: 30s
+
+sshd:
+  enabled: true
+  listen: 0.0.0.0:2222
+  host_key: /etc/nebula/nebula_host_ed25519_key
+  authorized_users:
+    - user: "{{ ansible_user }}"
+      keys:
+        - "{{ ssh_pubkey1 }}"
+        - "{{ ssh_pubkey2 }}"
+
