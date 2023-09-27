@@ -1,0 +1,15 @@
+signMode: threshold
+thresholdMode:
+  threshold: {{ threshold }}
+  cosigners:
+{% for peer in horcrux_peers %}
+  - shardID: {{ peer.share_id }}
+    p2pAddr: tcp://{{ peer.p2p_addr }}:2{{ custom_port_prefix }}
+{% endfor %}
+  grpcTimeout: {{ rpc_timeout }}
+  raftTimeout: {{ raft_timeout }}
+chainNodes:
+{% for sentry in sentries %}
+  - privValAddr: tcp://{{ sentry }}:{{ custom_port_prefix }}59
+{% endfor %}
+debugAddr: ""

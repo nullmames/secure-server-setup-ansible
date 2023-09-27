@@ -1,3 +1,4 @@
+---
 - name: Clone horcrux repo
   ansible.builtin.git:
     repo: "{{ horcrux_repo }}"
@@ -6,7 +7,7 @@
     update: true
   register: horcrux
 
-- name: Install horcrux
+- name: Build horcrux
   ansible.builtin.command: "{{ item }}"
   args:
     chdir: "{{ user_dir }}/source/horcrux"
@@ -15,4 +16,13 @@
   environment:
     PATH: "{{ path }}"
     GOPATH: "{{ user_dir }}/go"
-  when: horcrux.changed
+
+- name: Move to /usr/local/bin
+  become: true
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/go/bin/horcrux"
+    dest: /usr/local/bin/horcrux
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true

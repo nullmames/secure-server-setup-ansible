@@ -1,0 +1,12 @@
+---
+- name: Pause restart to miss a few blocks
+  ansible.builtin.pause:
+    seconds: 7
+
+- name: Restart Horcrux
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ service_file }}"
+    state: restarted
+    enabled: true

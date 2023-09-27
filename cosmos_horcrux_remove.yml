@@ -1,0 +1,28 @@
+---
+- name: Define hosts
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - "group_vars/mainnets/{{ target }}.yml"
+  tasks:
+    - name: Add single signer
+      when: shares == 1
+      ansible.builtin.add_host:
+        hostname: signer-01
+        group: signers
+
+    - name: Add all signers
+      when: shares > 1
+      ansible.builtin.add_host:
+        hostname: "{{ item }}"
+        group: signers
+      loop: '{{ groups["horcrux"] }}'
+
+- name: Remove Horcrux for chain
+  hosts: signers
+  become: true
+  gather_facts: false
+  vars_files:
+    - "group_vars/mainnets/{{ target }}.yml"
+  roles:
+    - cosmos_horcrux_remove

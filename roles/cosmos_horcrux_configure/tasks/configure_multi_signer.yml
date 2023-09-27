@@ -1,0 +1,31 @@
+---
+- name: Copy config
+  ansible.builtin.template:
+    backup: true
+    src: config.yaml.j2
+    dest: "{{ horcrux_dir }}/config.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  tags: configs
+  register: config_multi
+
+- name: Delete raft
+  when: config_multi.changed
+  block:
+    - name: Stop horcrux service
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: "{{ service_file }}"
+        state: stopped
+        enabled: true
+
+    - name: Delete raft directory
+      ansible.builtin.file:
+        path: "{{ horcrux_dir }}/raft/"
+        state: absent
+
+    - name: Delete horcrux process
+      ansible.builtin.file:
+        path: "{{ horcrux_dir }}/horcrux.pid"
+        state: absent

@@ -1,0 +1,24 @@
+---
+# Remove horcrux signer for chain
+- name: Shutdown Signers
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ service_file }}"
+    state: stopped
+    enabled: false
+
+- name: Pause for service completion
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Delete service file
+  become: true
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ service_file }}"
+    state: absent
+
+- name: Delete horcrux directory for chain
+  ansible.builtin.file:
+    path: "{{ horcrux_dir }}"
+    state: absent

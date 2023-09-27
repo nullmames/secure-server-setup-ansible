@@ -1,0 +1,48 @@
+---
+- name: Check if horcrux has already been setup
+  ansible.builtin.stat:
+    path: "{{ horcrux_dir }}/state"
+  register: dir
+
+- name: Create horcrux directory and initial state files
+  when: not dir.stat.exists
+  block:
+    - name: Create horcrux directory
+      ansible.builtin.file:
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory
+        path: "{{ horcrux_dir }}/state"
+        mode: "0750"
+
+    - name: Create state files
+      ansible.builtin.template:
+        src: priv_validator_state.json
+        dest: "{{ horcrux_dir }}/state/{{ chain_id }}_{{ item }}"
+        mode: "0600"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        force: false
+      with_items:
+        - priv_validator_state.json
+        - share_sign_state.json
+
+- name: Copy horcrux service file
+  become: true
+  ansible.builtin.template:
+    src: "horcrux.service.j2"
+    dest: "/etc/systemd/system/{{ service_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: systemdunit
+
+- name: Configure horcrux
+  block:
+    - name: Configure multi-signer horcrux
+      ansible.builtin.import_tasks: configure_multi_signer.yml
+      when: shares > 1
+
+    - name: Configure single-signer horcrux
+      ansible.builtin.import_tasks: configure_single_signer.yml
+      when: shares == 1

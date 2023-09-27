@@ -1,0 +1,18 @@
+[Unit]
+Description={{ chain_id }} Signer node {{ my_share }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+WorkingDirectory={{ horcrux_dir }}
+ExecStart=/usr/local/bin/horcrux start --home {{ horcrux_dir }} {% if shares == 1 %}--accept-risk{% endif %} 
+ExecStartPre=/bin/sleep 7
+ExecStartPre=rm -f {{ horcrux_dir }}/horcrux.pid
+ExecStartPost=rm -f {{ horcrux_dir }}/horcrux.pid
+Restart=on-failure
+RestartSec=7
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target

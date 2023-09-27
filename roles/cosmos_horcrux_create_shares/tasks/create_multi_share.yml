@@ -1,0 +1,28 @@
+---
+- name: Generate and move keys
+  block:
+    - name: Generate key shards
+      become: false
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.shell: |
+        cd {{ playbook_dir }}/keys
+        {{ item }}
+      loop:
+        - "../hostbin/horcrux create-ecies-shards --shards {{ shares }}"
+        - "../hostbin/horcrux create-ed25519-shards --chain-id {{ chain_id }} --key-file ./priv_validator_key.json --threshold {{ threshold }} --shards {{ shares }}"
+
+    - name: Move keys to remote host
+      ansible.builtin.include_tasks: move_multi_share.yml
+      loop:
+        - "{{ chain_id }}_shard.json"
+        - "ecies_keys.json"
+
+    - name: Delete priv_validator_key.json
+      become: false
+      delegate_to: localhost
+      when: share_moved.stat.exists
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/keys/priv_validator_key.json"
+        state: absent
+      run_once: true

@@ -1,0 +1,29 @@
+---
+- name: Find local key share
+  delegate_to: localhost
+  become: false
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/keys/cosigner_{{ my_share }}/{{ item }}"
+  register: has_share
+
+- name: Copy key to remote host
+  ansible.builtin.copy:
+    src: "keys/cosigner_{{ my_share }}/{{ item }}"
+    dest: "{{ horcrux_dir }}/{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0400"
+  when: has_share.stat.isreg is defined and has_share.stat.isreg
+
+- name: Verify remote key share
+  ansible.builtin.stat:
+    path: "{{ horcrux_dir }}/{{ item }}"
+  register: share_moved
+
+- name: Delete local share
+  become: false
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/keys/cosigner_{{ my_share }}/{{ item }}"
+    state: absent
+  when: share_moved.stat.exists

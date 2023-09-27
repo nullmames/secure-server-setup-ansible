@@ -1,0 +1,18 @@
+---
+- name: Find priv_validator_key.json
+  delegate_to: localhost
+  become: false
+  ansible.builtin.stat:
+    path: "{{ playbook_dir }}/keys/priv_validator_key.json"
+  register: key_exists
+
+- name: Move shares
+  when: key_exists.stat.exists
+  block:
+    - name: Move multi-signer shares
+      ansible.builtin.import_tasks: create_multi_share.yml
+      when: shares > 1
+
+    - name: Move single-signer shares
+      ansible.builtin.import_tasks: create_single_share.yml
+      when: shares == 1

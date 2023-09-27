@@ -1,0 +1,46 @@
+---
+- name: Define hosts
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - "group_vars/mainnets/{{ target }}.yml"
+  tasks:
+    - name: Add single signer
+      when: shares == 1
+      ansible.builtin.add_host:
+        hostname: signer-01
+        group: signers
+
+    - name: Add all signers
+      when: shares > 1
+      ansible.builtin.add_host:
+        hostname: "{{ item }}"
+        group: signers
+      loop: '{{ groups["horcrux"] }}'
+
+- name: Install Horcrux
+  hosts: signers
+  become: true
+  gather_facts: false
+  vars_files:
+    - "group_vars/mainnets/{{ target }}.yml"
+
+  pre_tasks:
+    - name: Check for key
+      become: true
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/keys/priv_validator_key.json"
+      register: key_exists
+
+    - name: There is no file
+      when: not key_exists.stat.exists
+      ansible.builtin.pause:
+        prompt: There is no priv_validator key to process.  Continue? Press return to continue. Press Ctrl+c and then "a" to abort
+
+  roles:
+    - util_install_go
+    - cosmos_horcrux_install
+    - cosmos_horcrux_configure
+    - cosmos_horcrux_create_shares
+    - cosmos_horcrux_restart

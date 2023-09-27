@@ -1,0 +1,5 @@
+signMode: single
+chainNodes:
+{% for sentry in sentries %}
+  - privValAddr: tcp://{{ sentry }}:{{ custom_port_prefix }}59
+{% endfor %}
