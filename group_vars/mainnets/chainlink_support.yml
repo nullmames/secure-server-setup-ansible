@@ -1,0 +1,18 @@
+# Node versions supporting CL rmn and ocr
+
+# Ethereum L1 Address
+ethereum_l1: "http://10.254.105.10:5000"
+
+# Ethereum versions
+geth_version: v1.13.1
+nethermind_version: 1.20.4
+lighthouse_version: v4.5.0
+
+# Nethermind versions
+
+# Arbitrum version
+nitro_version: v2.0.14-2baa834
+
+# Optimism versions
+op_geth_version: v1.101200.1
+op_node_version: v1.1.4
