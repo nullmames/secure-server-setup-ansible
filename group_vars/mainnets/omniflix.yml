@@ -9,7 +9,7 @@ seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:16956,20e10
 minimum_gas_price: ""
 custom_port_prefix: 169
 
-snap_rpc: https://omniflix-rpc.lavenderfive.com:443
+snap_rpc: https://rpc.cosmos.directory:443/omniflixhub
 
 # [Optional] Snapshot
 # snapshot_hour: 1

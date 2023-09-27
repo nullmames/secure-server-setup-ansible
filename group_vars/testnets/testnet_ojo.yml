@@ -14,6 +14,7 @@ snap_rpc: https://ojo-testnet-rpc.polkachu.com:443
 # [Optional] Prep for upgrade in cosmovisor
 # upgrade_name:
 
+snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/ojo/ojo_3249907.tar.lz4
 # Skip configuration
 # skip_version:
 # sentinel_peer_string:

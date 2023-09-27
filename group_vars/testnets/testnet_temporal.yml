@@ -1,18 +1,20 @@
 network: temporal
 folder: ".temporal"
 daemon: temporald
-chain_id: temporal-test-1
-node_version: v0.3.0
+chain_id: temporal-test-2
+node_version: v0.4.0
 repo: https://github.com/temporal-zone/temporal.git
-genesis: https://raw.githubusercontent.com/temporal-zone/temporal-testnet/main/genesis/genesis.json
-seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:24156"
-peers: "2c239039aeb88f68d66d0c068cbdacd9a0127302@148.251.177.108:24156,6a1ad60b577de36d096cf9aba7440166551ac670@148.251.2.19:55896,851a2d085224e9188abb9bb7c0573f5ca9acfbc4@142.132.157.153:24156"
-minimum_gas_price: ""
+genesis: https://github.com/temporal-zone/temporal-testnet/raw/main/temporal-test-2/genesis/genesis.json
+seeds: "20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:24156,babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:24156"
+peers: "c6dcd28460d1c3003e640b9eb98b5ee5f835ab91@95.216.204.185:26656,851a2d085224e9188abb9bb7c0573f5ca9acfbc4@142.132.157.153:24156"
+# minimum_gas_price: ""
 custom_port_prefix: 241
 
 # StateSync
-snap_rpc:
+snap_rpc: "http://142.132.157.153:24157"
 p2p_state_sync: false
-
 # [Optional] Prep for upgrade in cosmovisor
-upgrade_name: v0.3.0
+# upgrade_name: v0.3.0
+
+# Custom snapshot_url:
+#snapshot_url: https://snapshots.lavenderfive.com/testnet-snapshots/temporal/latest.tar.lz4
