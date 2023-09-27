@@ -7,7 +7,7 @@
     - role: util_install_zabbix
 
     - role: community.zabbix.zabbix_agent
-      throttle: 1
+      # throttle: 1
       zabbix_agent2: true
       zabbix_agent2_server: "{{ zabbix_server_agent_addresses }}"
       zabbix_agent2_serveractive: "{{ zabbix_server_agent_addresses }}"
@@ -69,4 +69,3 @@
         name: zabbix-agent2
         enabled: true
         state: restarted
-
