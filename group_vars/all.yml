@@ -14,20 +14,21 @@ promtail_monitor: "http://10.254.100.13:3100"
 promtail_monitor_nebula: "http://100.100.0.13:3100"
 
 # ipfs
-ipfs_release: "0.21.0"
+ipfs_release: "0.22.0"
 ipfs_cluster_release: "1.0.6"
 ipfs_cluster_ctl_release: "1.0.6"
 
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"
-horcrux_version: "v2.1.1"
+horcrux_version: "v3.1.0"
 
 # horcrux vars
 rpc_timeout: "1000ms"
+raft_timeout: "1000ms"
 threshold: 2
 shares: 3
-horcrux_dir: "{{ user_dir }}/.horcrux/{{ network }}"
-service_file: "horcrux_{{ network }}.service"
+horcrux_dir: "{{ user_dir }}/.horcrux/{{ chain_id }}"
+service_file: "horcrux_{{ chain_id }}.service"
 
 horcrux_peers:
   - share_id: 1
