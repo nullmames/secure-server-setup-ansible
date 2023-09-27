@@ -21,6 +21,9 @@ p2p_state_sync: false
 snapshot_hour: 1
 snapshot_minute: 30
 
+# Custom snapshot url
+snapshot_url:
+
 # [Optional] Prep for upgrade in cosmovisor
 upgrade_name:
 
