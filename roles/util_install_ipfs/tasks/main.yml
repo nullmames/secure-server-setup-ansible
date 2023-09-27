@@ -78,7 +78,7 @@
   environment:
     PATH: "{{ path }}"
   with_items:
-    - "ipfs config Datastore.StorageMax 4000GB"
+    - "ipfs config Datastore.StorageMax 6000GB"
 
 - name: Open ipfs p2p port in ufw
   become: true
