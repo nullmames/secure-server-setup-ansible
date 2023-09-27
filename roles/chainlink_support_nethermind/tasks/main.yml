@@ -1,0 +1,65 @@
+---
+# Nethermind/Lighthouse support structure with host networking
+
+- name: Open p2p ports for Nethermind and lighthouse_version
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 30303
+      comment: External - nethermind p2p
+    - port: 9000
+      comment: External - lighthouse p2p
+
+- name: Add docker-compose and docker-data folders
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Run nethermind container
+  community.docker.docker_container:
+    name: nethermind
+    image: nethermind/nethermind:{{ nethermind_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    volumes:
+      - "{{ user_dir }}/docker-compose/nethermind/nethermind_db/:/nethermind/nethermind_db/"
+      - "{{ user_dir }}/docker-compose/nethermind/keystore/:/nethermind/keystore/"
+      - "{{ user_dir }}/docker-compose/nethermind/logs/:/nethermind/logs/"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/nethermind/jwtsecret"
+    env:
+      NETHERMIND_INITCONFIG_WEBSOCKETSENABLED: "true"
+      NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES: "[Web3,Eth,Subscribe,Net]"
+      NETHERMIND_JSONRPCCONFIG_ENABLED: "true"
+      NETHERMIND_JSONRPCCONFIG_HOST: "0.0.0.0"
+      NETHERMIND_JSONRPCCONFIG_PORT: "8545"
+      NETHERMIND_JSONRPCCONFIG_WEBSOCKETSPORT: "8546"
+      NETHERMIND_JSONRPCCONFIG_JWTSECRETFILE: "/nethermind/jwtsecret"
+      NETHERMIND_METRICSCONFIG_ENABLED: "true"
+      NETHERMIND_HEALTHCHECKSCONFIG_ENABLED: "true"
+
+- name: Run lighthouse container
+  community.docker.docker_container:
+    name: lighthouse
+    image: sigp/lighthouse:{{ lighthouse_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    volumes:
+      - "{{ user_dir }}/docker-compose/lighthouse:/root/.lighthouse"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/root/.lighthouse/jwtsecret"
+    command:
+      - /usr/local/bin/lighthouse
+      - beacon
+      - --network=mainnet
+      - --http
+      - --http-address=0.0.0.0
+      - --execution-endpoint=http://localhost:8551
+      - --execution-jwt=/root/.lighthouse/jwtsecret
+      - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
+      - --disable-deposit-contract-sync
