@@ -15,7 +15,7 @@
     mode: "0700"
   when:
     - snap_rpc is defined
-    - p2p_state_sync is undefined
+    - (p2p_state_sync is undefined) or (p2p_state_sync is false)
 
 - name: Copy state_sync file for p2p sync
   ansible.builtin.template:
@@ -26,7 +26,7 @@
     mode: "0700"
   when:
     - snap_rpc is defined
-    - p2p_state_sync is defined
+    - p2p_state_sync is true
 
 - name: Run state_sync script on node
   ansible.builtin.shell: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
