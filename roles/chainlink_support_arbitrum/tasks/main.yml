@@ -1,0 +1,25 @@
+---
+# Arbitrum support structure with host networking
+
+- name: Run nitro container
+  community.docker.docker_container:
+    name: arbitrum
+    image: offchainlabs/nitro-node:{{ nitro_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    volumes:
+      - "{{ user_dir }}/docker-compose/arbitrum:/home/user/.arbitrum"
+      - "{{ user_dir }}/docker-compose/tmp:/tmp"
+    command:
+      - --l1.url={{ ethereum_l1 }}
+      - --l2.chain-id=42161
+      - --http.port=8547
+      - --http.addr=0.0.0.0
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      - --http.api=net,web3,eth,debug
+      - --ws.port=8548
+      - --ws.addr=0.0.0.0
+      - --ws.origins=*
+      - --init.url=https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
