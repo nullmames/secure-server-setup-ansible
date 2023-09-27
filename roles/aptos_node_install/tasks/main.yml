@@ -28,7 +28,21 @@
       environment:
         PATH: "{{ path }}"
 
-    - name: Copy binaries
+    - name: Archive exiting binaries
+      become: true
+      ansible.builtin.copy:
+        src: "/usr/local/bin/{{ item }}"
+        dest: "/usr/local/bin/{{ item }}-{{ aptos_version.stdout }}"
+        owner: root
+        group: root
+        mode: "0755"
+        remote_src: true
+        force: true
+      loop:
+        - aptos
+        - aptos-node
+
+    - name: Copy new binaries
       become: true
       ansible.builtin.copy:
         src: "{{ user_dir }}/source/{{ network }}/target/{{ build_profile }}/{{ item }}"
