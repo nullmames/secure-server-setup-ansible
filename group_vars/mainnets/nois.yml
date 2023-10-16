@@ -10,3 +10,5 @@ peers: ""
 custom_port_prefix: 173
 
 snap_rpc: https://nois-rpc.polkachu.com:443
+
+snapshot_url: https://share.rhinostake.com/nois-snapshot.7187033.tar.lz4
