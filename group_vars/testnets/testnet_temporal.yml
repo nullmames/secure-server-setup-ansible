@@ -17,4 +17,4 @@ p2p_state_sync: false
 # upgrade_name: v0.3.0
 
 # Custom snapshot_url:
-#snapshot_url: https://snapshots.lavenderfive.com/testnet-snapshots/temporal/latest.tar.lz4
+#snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/temporal/temporal_332050.tar.lz4
