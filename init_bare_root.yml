@@ -1,0 +1,9 @@
+---
+- name: Initial init of bare machines with root-only login
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ user_file }}"
+  become: true
+  roles:
+    - init_bare_root
