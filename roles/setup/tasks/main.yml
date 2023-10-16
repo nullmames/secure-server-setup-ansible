@@ -1,15 +1,15 @@
 ---
 - name: Update machine
-  import_tasks: update_machine.yml
+  ansible.builtin.import_tasks: update_machine.yml
 
 - name: Create users
-  include_tasks: create_users.yml
+  ansible.builtin.include_tasks: create_users.yml
 
-- name: Configure Machine
-  import_tasks: configure_machine.yml
+- name: Configure machine
+  ansible.builtin.import_tasks: configure_machine.yml
 
 - name: Install essentials
-  import_tasks: install_essentials.yml
+  ansible.builtin.import_tasks: install_essentials.yml
 
 - name: Install promtail
-  import_tasks: install_promtail.yml
+  ansible.builtin.import_tasks: install_promtail.yml
