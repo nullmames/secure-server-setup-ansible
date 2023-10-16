@@ -1,5 +1,5 @@
 ---
-- name: Create users
+- name: Create ansible user, password
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     password: "{{ password }}"
