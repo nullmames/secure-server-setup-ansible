@@ -17,11 +17,3 @@ full_node_networks:
 api:
   enabled: true
   address: "0.0.0.0:8080"
-
-state_sync:
-  data_streaming_service:
-    max_concurrent_requests: 10
-  storage_service:
-    max_transaction_output_chunk_size: 5000
-  state_sync_driver:
-    bootstrapping_mode: DownloadLatestStates
