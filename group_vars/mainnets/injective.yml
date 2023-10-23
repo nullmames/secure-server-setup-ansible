@@ -6,7 +6,6 @@ genesis: https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/master/1
 binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.6-1688984159/linux-amd64.zip
 binary_processing: zip
 seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14356,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:14356"
-peers: "38c18461209694e1f667ff2c8636ba827cc01c86@176.9.143.252:11751,4f9025feca44211eddc26cd983372114947b2e85@176.9.140.49:11751,7f3473ddab10322b63789acb4ac58647929111ba@15.235.13.116:11751"
 app_file: https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/master/10001/app.toml
 minimum_gas_price: "500000000inj"
 custom_port_prefix: 143
