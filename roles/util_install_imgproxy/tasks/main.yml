@@ -14,6 +14,7 @@
   community.docker.docker_container:
     name: imgproxy
     image: "docker.imgproxy.pro/imgproxy:latest"
+    pull: true
     restart_policy: unless-stopped
     state: started
     network_mode: host
@@ -36,3 +37,5 @@
       IMGPROXY_MAX_ANIMATION_FRAMES: "120"
       IMGPROXY_MAX_ANIMATION_FRAME_RESOLUTION: "300"
       IMGPROXY_ENABLE_VIDEO_THUMBNAILS: "true"
+      # Logging
+      IMGPROXY_LOG_LEVEL: "info"
