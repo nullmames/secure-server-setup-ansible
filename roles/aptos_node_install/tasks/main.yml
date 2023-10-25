@@ -18,18 +18,19 @@
         recursive: true
 
     - name: Build aptos and aptos-node
-      ansible.builtin.command: "{{ item }}"
+      ansible.builtin.command: "nice -n 15 cargo {{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
-      with_items:
-        - "nice -n 15 cargo clean"
-        - "nice -n 15 cargo build --package aptos --profile {{ build_profile }}"
-        - "nice -n 15 cargo build --package aptos-node --profile {{ build_profile }}"
+      loop:
+        - "clean"
+        - "build --package aptos --profile {{ build_profile }}"
+        - "build --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
 
     - name: Archive exiting binaries
       become: true
+      when: aptos_version.stdout | length > 0
       ansible.builtin.copy:
         src: "/usr/local/bin/{{ item }}"
         dest: "/usr/local/bin/{{ item }}-{{ aptos_version.stdout }}"
