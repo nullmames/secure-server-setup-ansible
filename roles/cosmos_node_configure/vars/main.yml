@@ -62,7 +62,7 @@ app_toml:
 pruning_default:
   no_section:
     pruning: '"custom"'
-    pruning-keep-recent: "113"
+    pruning-keep-recent: "{{ pruninginterval.stdout }}" # prime between 100 and 200
     pruning-interval: "19"
   state-sync:
     snapshot-interval: 0
@@ -71,7 +71,7 @@ pruning_custom_rpc:
   no_section:
     pruning: '"custom"'
     pruning-keep-recent: "40000"
-    pruning-interval: "171"
+    pruning-interval: "{{ pruninginterval.stdout }}" # prime between 100 and 200
   state-sync:
     snapshot-interval: "{{ custom_snapshot_interval | default('0', true) }}"
     snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"

@@ -1,4 +1,11 @@
 ---
+- name: Determine random value for pruning interval
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && echo 101 103 107 109 113 127 131 137 139 149 151 157 163 167 173 179 181 191 193 197 199 | xargs shuf -n1 -e"
+  args:
+    executable: /bin/bash
+  register: pruninginterval
+
 - name: Update Config
   ansible.builtin.import_tasks: node_config.yml
   when: tendermint_config_version is undefined
