@@ -1,0 +1,12 @@
+network: celestia
+folder: ".celestia-app"
+daemon: celestia-appd
+chain_id: celestia
+node_version: v1.3.0
+repo: https://github.com/celestiaorg/celestia-app
+genesis: https://raw.githubusercontent.com/celestiaorg/networks/master/celestia/genesis.json
+seeds: "e6116822e1a5e283d8a85d3ec38f4d232274eaf3@consensus-full-seed-1.celestia-bootstrap.net:26656,cf7ac8b19ff56a9d47c75551bd4864883d1e24b5@consensus-full-seed-1.celestia-bootstrap.net:26656"
+minimum_gas_price: "0utia"
+custom_port_prefix: 116
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/celestia/celestia_123.tar.lz4

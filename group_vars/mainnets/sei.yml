@@ -17,7 +17,8 @@ upgrade_name: v3.2.1
 tendermint_config_version: 37
 
 # StateSync
-snap_rpc: "http://statesync-sei.rhinostake.com:11957"
+#snap_rpc: "http://statesync-sei.rhinostake.com:11957"
+snap_rpc: "https://sei-state-sync-rpc.brocha.in:443"
 snap_rpc_height_buffer: 12000
 p2p_state_sync: true
 

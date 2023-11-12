@@ -2,7 +2,7 @@ network: juno
 folder: .juno
 daemon: junod
 chain_id: uni-6
-node_version: v17.0.0-alpha.1
+node_version: v18.0.0-alpha.2
 repo: https://github.com/CosmosContracts/juno
 genesis: https://github.com/CosmosContracts/testnets/raw/main/uni-6/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:12656"
@@ -10,7 +10,7 @@ peers: ""
 minimum_gas_price: "0.025ujunox"
 custom_port_prefix: 126
 
-upgrade_name: v17
+upgrade_name: v1800alpha2
 # Skip configuration
 # skip_version: v0.34.26-mev.16
 # sentinel_peer_string: f18d6e226545b348aa37c86cc735d0620838fcd8@uni-6-sentinel.skip.money:26656

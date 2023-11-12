@@ -2,7 +2,7 @@ network: whitewhale
 folder: ".migalood"
 daemon: migalood
 chain_id: migaloo-1
-node_version: v3.0.1-hotfix
+node_version: v3.0.2
 repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
 genesis: https://raw.githubusercontent.com/White-Whale-Defi-Platform/migaloo-chain/release/v1.0.x/networks/mainnet/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:20756,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:20756"
@@ -10,15 +10,7 @@ minimum_gas_price: "0uwhale"
 custom_port_prefix: 207
 
 # StateSync
-snap_rpc:
-# # [Optional] Snapshot
-# snapshot_hour: 1
-# snapshot_minute: 30
+snap_rpc: https://rpc.cosmos.directory:443/migaloo
 
 # # [Optional] Prep for upgrade in cosmovisor
-upgrade_name: v3.0.0
-# # Skip configuration
-# skip_version:
-# sentinel_peer_string:
-# sentinel_rpc_string:
-# skip_api_key:
+upgrade_name: v3.0.2

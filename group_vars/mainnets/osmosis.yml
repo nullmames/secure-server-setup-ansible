@@ -11,3 +11,5 @@ custom_port_prefix: 125
 upgrade_name: v20
 
 snap_rpc: https://osmosis-rpc.polkachu.com:443
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/osmosis/osmosis_12051140.tar.lz4
