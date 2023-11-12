@@ -1,0 +1,22 @@
+---
+- name: Allow zabbix user to monitor smart
+  ansible.builtin.copy:
+    content: "zabbix ALL=(ALL) NOPASSWD:/usr/sbin/smartctl"
+    dest: "/etc/sudoers.d/zabbix"
+    owner: "root"
+    group: "root"
+    mode: "0440"
+
+- name: Add zabbix user to docker group
+  when: "'docker.service' in services"
+  ansible.builtin.user:
+    name: zabbix
+    groups: docker
+    append: true
+
+- name: Force restart zabbix agent
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: restarted

@@ -4,10 +4,9 @@
   become: true
 
   roles:
-    - role: util_install_zabbix
+    - role: util_zabbix_prepare
 
     - role: community.zabbix.zabbix_agent
-      # throttle: 1
       zabbix_agent2: true
       zabbix_agent2_server: "{{ zabbix_server_agent_addresses }}"
       zabbix_agent2_serveractive: "{{ zabbix_server_agent_addresses }}"
@@ -15,9 +14,9 @@
       zabbix_agent2_listenport: 10050
       zabbix_agent2_tlsconnect: unencrypted
       zabbix_api_server_host: "{{ zabbix_server_host }}"
-      zabbix_api_use_ssl: true
-      zabbix_api_server_port: 443
-      zabbix_api_validate_certs: true
+      zabbix_api_use_ssl: false
+      zabbix_api_server_port: 8080
+      zabbix_api_validate_certs: false
       ansible_zabbix_url_path: /
       zabbix_useuip: 1
       zabbix_api_login_user: "{{ zabbix_login_user }}"
@@ -47,25 +46,4 @@
         - "{% if 'docker' in ansible_facts.services %}Docker by Zabbix agent 2{% endif %}"
       zabbix_agent_tags: "{{ inventory_group_dict }}"
 
-  post_tasks:
-    - name: Allow zabbix user to monitor smart
-      ansible.builtin.copy:
-        content: "zabbix ALL=(ALL) NOPASSWD:/usr/sbin/smartctl"
-        dest: "/etc/sudoers.d/zabbix"
-        owner: "root"
-        group: "root"
-        mode: "0440"
-
-    - name: Add zabbix user to docker group
-      when: "'docker.service' in services"
-      ansible.builtin.user:
-        name: zabbix
-        groups: docker
-        append: true
-
-    - name: Force restart zabbix agent
-      become: true
-      ansible.builtin.systemd:
-        name: zabbix-agent2
-        enabled: true
-        state: restarted
+    - role: util_zabbix_configure

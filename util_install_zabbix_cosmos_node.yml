@@ -1,0 +1,10 @@
+- name: Deploy Zabbix
+  hosts: all
+  gather_facts: true
+  become: true
+  vars_files:
+    - "{{ var_file }}"
+
+  roles:
+    - util_zabbix_prepare
+    - util_zabbix_cosmos_node

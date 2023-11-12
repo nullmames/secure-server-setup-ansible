@@ -21,8 +21,7 @@
     latlong: "{{ node_info.json.loc | split(',') }}"
 
 - name: Parse list of ansible inventory items to tag zabbix
-  ansible.builtin.set_fact: 
+  ansible.builtin.set_fact:
     inventory_group_dict: "{{ inventory_group_dict | default([]) + [{ 'tag': 'inv', 'value': item }] }}"
   with_items:
     - "{{ group_names }}"
-

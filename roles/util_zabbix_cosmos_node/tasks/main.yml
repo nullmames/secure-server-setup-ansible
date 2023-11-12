@@ -1,0 +1,81 @@
+---
+- name: Install required zabbix plugin
+  become: true
+  ansible.builtin.template:
+    src: "zab.userparameters.cosmos.conf.j2"
+    dest: "/etc/zabbix/zabbix_agent2.d/zab.userparameters.cosmos.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: Create host groups
+  delegate_to: "{{ zabbix_server_host }}"
+  run_once: true
+  vars:
+    ansible_network_os: community.zabbix.zabbix
+    ansible_connection: httpapi
+    ansible_httpapi_port: 8080
+    ansible_httpapi_use_ssl: false
+    ansible_user: "{{ zabbix_login_user }}"
+    ansible_httpapi_pass: "{{ zabbix_login_pass }}"
+    ansible_zabbix_url_path: "/"
+  community.zabbix.zabbix_group:
+    state: present
+    host_groups:
+      - Cosmos
+      - Cosmos node
+      - "{{ network }}"
+
+- name: Create node monitoring host
+  throttle: 1
+  delegate_to: "{{ zabbix_server_host }}"
+  vars:
+    ansible_network_os: community.zabbix.zabbix
+    ansible_connection: httpapi
+    ansible_httpapi_port: 8080
+    ansible_httpapi_use_ssl: false
+    ansible_user: "{{ zabbix_login_user }}"
+    ansible_httpapi_pass: "{{ zabbix_login_pass }}"
+    ansible_zabbix_url_path: "/"
+  community.zabbix.zabbix_host:
+    host_name: "node-{{ inventory_hostname }}"
+    visible_name: "node-{{ inventory_hostname }}"
+    description: "{{ network }} node"
+    host_groups:
+      - Cosmos
+      - Cosmos node
+      - "{{ network }}"
+    link_templates:
+      - Cosmos Nodes
+    status: enabled
+    state: present
+    inventory_mode: manual
+    inventory_zabbix:
+      alias: "{{ inventory_hostname }}"
+      software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+      location: "{{ node_info.json.org }}"
+      location_lat: "{{ latlong.0 }}"
+      location_lon: "{{ latlong.1 }}"
+      site_city: "{{ node_info.json.city }}"
+      site_state: "{{ node_info.json.region }}"
+      site_country: "{{ node_info.json.country }}"
+    tags: "{{ inventory_group_dict }}"
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 1
+        ip: "{{ ansible_host }}"
+        dns: ""
+        port: "10050"
+    macros:
+      - macro: "{$NODE_DAEMON}"
+        value: "{{ daemon }}"
+      - macro: "{$RPC_LOCAL_PORT}"
+        value: "{{ custom_port_prefix }}57"
+
+- name: Force restart zabbix agent
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: restarted
