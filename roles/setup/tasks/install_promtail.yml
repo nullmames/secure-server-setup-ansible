@@ -61,7 +61,7 @@
         dest: "/etc/systemd/system/promtail.service"
         owner: root
         group: root
-        mode: "0600"
+        mode: "0644"
 
     - name: Start promtail service
       ansible.builtin.systemd:
