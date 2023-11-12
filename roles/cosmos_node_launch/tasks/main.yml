@@ -74,7 +74,7 @@
         path: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
         state: directory
         mode: "0755"
-  
+
     - name: Copy binary into cosmovisor upgrade directory
       ansible.builtin.copy:
         src: "{{ user_dir }}/go/bin/{{ daemon }}"
