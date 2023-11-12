@@ -7,15 +7,14 @@
     force: true
 
 - name: Unarchive binary file
-  ansible.builtin.unarchive:
-    src: "/tmp/binary.tar.gz"
-    dest: "/tmp/"
-    mode: "0755"
-    remote_src: true
+  ansible.builtin.command:
+    cmd: "tar -zxf binary.tar.gz"
+  args:
+    chdir: /tmp/
 
 - name: Copy binary
   ansible.builtin.copy:
     remote_src: true
-    src: "/tmp/{{ daemon }}"
+    src: "/tmp/build/{{ binary_name }}"
     dest: "{{ user_dir }}/go/bin/{{ daemon }}"
     mode: "0755"
