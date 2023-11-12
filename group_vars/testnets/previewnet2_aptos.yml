@@ -1,0 +1,15 @@
+network: aptos
+folder: previewnet2
+repo: https://github.com/aptos-labs/aptos-core
+node_version: c5dd12a66d4500470bed1690ca54c55c419da4bd # 11/10/2023
+genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/previewnet2/genesis.blob
+waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/previewnet2/waypoint.txt
+p2p_port: 6180
+p2p_port_vfn: 6182
+api_port: 8080
+
+# Build profile
+build_profile: performance
+
+# Grafana dashboard
+dashboardUID: bz8kPr673
