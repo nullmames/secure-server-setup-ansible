@@ -1,0 +1,111 @@
+---
+# Optimism structure with host networking
+
+- name: Open p2p ports for op-geth and op-node
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 30303
+      comment: External - op-geth p2p
+    - port: 9000
+      comment: External - op-node p2p
+
+- name: Add docker-compose and docker-data folders
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+#LinkRiver Config
+name: op-geth
+services:
+  base-geth:
+    container_name: base-geth
+    volumes:
+      - /var/rpcnode/data/base-geth/geth:/geth
+      - /var/rpcnode/token/jwtsecret:/tmp/jwtsecret
+      - /var/rpcnode/scripts/base-genesis-l2.json:/tmp/genesis-l2.json
+      - /var/rpcnode/scripts/base-entrypoint.sh:/tmp/entrypoint.sh
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:v1.101106.0
+    restart: always
+    network_mode: host
+    environment:
+      - LOG_LEVEL=info
+      - LEGACY=false
+    command:
+      ## General
+      - --datadir=/geth
+      - --syncmode=full
+      - --snapshot=true
+      ## Interfaces
+      # Consensus Layer Engine API
+      - --authrpc.addr=127.0.0.1
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/tmp/jwtsecret
+      # HTTP/RPC
+      - --http
+      - --http.addr=%INT_IP%
+      - --http.port=%RPC_PORT%
+      - --http.vhosts=*
+      - --http.api=eth,web3,net
+      # Websocket
+      - --ws
+      - --ws.addr=%INT_IP%
+      - --ws.port=%WS_PORT%
+      - --ws.origins=*
+      - --ws.api=eth
+      # P2P
+      - --nat=extip:%EXT_IP%
+      - --port=%P2P_PORT%
+      - --nodiscover
+      # Metrics
+      - --metrics
+      - --metrics.addr=127.0.0.1
+      - --metrics.port=6060
+      - --metrics.expensive
+      # Transaction & Chain Specific
+      - --maxpeers=0
+      - --rollup.sequencerhttp=https://mainnet-sequencer.base.org
+      - --rollup.disabletxpoolgossip
+      - --networkid=8453
+      - --rpc.gascap=0
+      - --rpc.txfeecap=0
+
+# NWN config:
+exec ./geth \
+        --datadir="$GETH_DATA_DIR" \
+        --verbosity="3" \
+        --http \
+        --http.corsdomain="*" \
+        --http.vhosts="*" \
+        --http.addr=10.17.0.4 \
+        --http.port="$RPC_PORT" \
+        --http.api=web3,debug,eth,txpool,net,engine \
+        --authrpc.addr=10.17.0.4 \
+        --authrpc.port="$AUTHRPC_PORT" \
+        --authrpc.vhosts="*" \
+        --authrpc.jwtsecret="$OP_NODE_L2_ENGINE_AUTH" \
+        --ws \
+        --ws.addr=10.17.0.4 \
+        --ws.port="$WS_PORT" \
+        --ws.origins="*" \
+        --ws.api=debug,eth,txpool,net,engine \
+        --metrics \
+        --metrics.addr=10.17.0.4 \
+        --metrics.port="$METRICS_PORT" \
+        --syncmode=full \
+        --gcmode=archive \
+        --nodiscover \
+        --snapshot=false \
+        --maxpeers=32 \
+        --nat=extip:$HOST_IP \
+        --networkid="$CHAIN_ID" \
+        --rollup.sequencerhttp="$OP_GETH_SEQUENCER_HTTP" \
+        --rpc.gascap=0 \
+        --rpc.txfeecap=0 \
+        $ADDITIONAL_ARGS # intentionally unquoted
