@@ -2,10 +2,13 @@
 # For now this uses Polkachu's snapshot urls.  This will eventually need to be replaced
 - name: Set URLs for retrieving items
   ansible.builtin.set_fact:
-    snapshotpage_url: "{{ snapshotpage_url }}/{{ network }}"
-    addrbookpage_url: "{{ addrbookpage_url }}/{{ network }}/addrbook.json"
+    snapshotpage_url: "{{ snapshot_url }}/{{ network }}"
+
+- debug:
+    msg: "{{ snapshotpage_url }}"
 
 - name: Parse Snapshot URL
+  delegate_to: localhost
   when: snapshot_url is not defined
   block:
     - name: Parse snapshot url from snapshot
