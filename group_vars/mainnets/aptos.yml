@@ -1,7 +1,7 @@
 network: aptos
 folder: mainnet
 repo: https://github.com/aptos-labs/aptos-core
-node_version: 14758a1e2c846ae37126fc5de7fc30d59408c40d
+node_version: 1a6c75841119dcd2856ed32a42694b1582f094f6 # 1.8.1
 genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/genesis.blob
 waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/waypoint.txt
 p2p_port: 6180
@@ -13,4 +13,4 @@ build_profile: release
 
 # Grafana dashboard
 dashboardUID: bz8kPr673
-#hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/adhoc_20230829/aptos-node-adhoc_20230829-ubuntu-20-04.tgz"
+hotfix_binary_url: "https://github.com/aptos-labs/aptos-core/releases/download/adhoc-20231120/aptos-node-ubuntu-20-04.tgz"
