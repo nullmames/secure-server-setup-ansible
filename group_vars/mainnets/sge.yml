@@ -13,3 +13,5 @@ upgrade_name: v1.1.1
 
 # Forcing go
 go_release: "go1.19.12"
+
+snap_rpc: https://sge-rpc.polkachu.com:443

@@ -2,7 +2,7 @@ network: empower
 folder: ".empowerchain"
 daemon: empowerd
 chain_id: circulus-1
-node_version: v1.0.0-rc3
+node_version: v2.0.0-rc1
 repo: https://github.com/EmpowerPlastic/empowerchain
 genesis: "https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json"
 seeds: "d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656,babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:17456"
@@ -12,3 +12,8 @@ custom_port_prefix: 174
 snap_rpc: "http://164.68.119.233:36657"
 
 make_args: "-C /home/rhino/source/empower/chain"
+
+upgrade_name: v2
+
+# Force to 1.20
+go_release: "go1.20.11"
