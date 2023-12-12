@@ -160,7 +160,7 @@
     dest: /home/{{ ansible_user }}/source/cosmprund
     single_branch: true
     force: true
-    version: master
+    version: "{{ cosmprund_version }}"
 
 - name: Build cosmprund
   ansible.builtin.command: "{{ item }}"
