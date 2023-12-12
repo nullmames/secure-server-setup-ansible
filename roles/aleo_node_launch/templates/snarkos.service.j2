@@ -1,0 +1,31 @@
+[Unit]
+Description=snarkos
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+User={{ ansible_user }}
+
+WorkingDirectory={{ user_dir }}/{{ folder }}
+
+ExecStart=/usr/local/bin/snarkos start --nodisplay --logfile /dev/null --verbosity 2 --private-key-file {{ user_dir }}/{{ folder }}/validator.key --validator --validators "{{ seeds }}"
+ExecStop=/bin/kill -s INT ${MAINPID}
+Restart=on-failure
+RestartSec=5
+
+# Systemd scheduling
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=20
+IOSchedulingClass=best-effort
+IOSchedulingPriority=0
+# LogNamespace
+LogNamespace=noisy
+# Open files
+LimitNOFILE=infinity
+# Memlock
+LimitMEMLOCK=infinity
+
+[Install]
+WantedBy=multi-user.target

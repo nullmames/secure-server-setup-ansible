@@ -1,0 +1,26 @@
+---
+- name: Create chain folder if it does not exist
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy private key
+  ansible.builtin.copy:
+    src: "files/{{ folder }}/validator.txt"
+    dest: "{{ user_dir }}/{{ folder }}/validator.key"
+    mode: "0400"
+  Notify: Restart snarkos
+
+- name: Open p2p ports for snarkos
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: "{{ p2p_port }}"
+      comment: "{{ network }} p2p port"
+    - port: "{{ peering_port }}"
+      comment: "{{ network }} peering port"

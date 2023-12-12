@@ -1,0 +1,16 @@
+---
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: "snarkos.service.j2"
+    dest: "/etc/systemd/system/snarkos.service"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable snarkos service
+  become: true
+  ansible.builtin.systemd:
+    name: "snarkos"
+    daemon_reload: true
+    enabled: true

@@ -1,0 +1,23 @@
+---
+- name: Restart snarkos
+  become: true
+  ansible.builtin.systemd:
+    name: snarkos
+    state: restarted
+    daemon_reload: true
+# - name: Pause for node to start
+#   ansible.builtin.pause:
+#     seconds: 15
+# - name: Add annotation
+#   ansible.builtin.uri:
+#     url: "{{ grafana_url }}/api/annotations"
+#     method: POST
+#     body_format: json
+#     headers:
+#       Authorization: Bearer {{ grafana_api }}
+#       Accept: application/json
+#     body:
+#       dashboardUID: bz8kPr673
+#       tags: ["aptos:upgrade", "aptos:restart", "chain:{{ folder }}"]
+#       text: "Upgrade {{ aptos_role }} to version `{{ node_version }}`"
+#   delegate_to: 127.0.0.1

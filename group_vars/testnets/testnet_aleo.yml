@@ -1,0 +1,15 @@
+network: aleo
+folder: testnet3
+repo: https://github.com/AleoHQ/snarkOS.git
+node_version: testnet3
+# genesis_blob: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/genesis.blob
+# waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/waypoint.txt
+seeds: "135.181.228.130:5000,160.202.128.199:5000,195.201.8.101:5000,65.21.197.228:5000"
+p2p_port: 5000
+peering_port: 4133
+api_port: 3033
+
+# Build profile
+build_profile: release
+# Grafana dashboard
+# dashboardUID: bz8kPr673
