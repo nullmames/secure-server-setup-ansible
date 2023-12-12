@@ -5,7 +5,7 @@
   vars_files:
     - "group_vars/mainnets/chainlink.yml"
   roles:
-    - util_install_go
+    - util_go_install
     - util_install_node
     - util_install_docker
     - chainlink_node_install

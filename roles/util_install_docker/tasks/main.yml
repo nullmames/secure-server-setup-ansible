@@ -72,6 +72,16 @@
     state: directory
     mode: "0755"
 
+- name: Copy daemon.json
+  notify: Restart docker
+  become: true
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Stat default docker folder
   become: true
   ansible.builtin.stat:
@@ -93,15 +103,6 @@
       ansible.builtin.command:
         cmd: "mv /var/lib/docker {{ user_dir }}/docker-compose/docker-data"
         creates: "{{ user_dir }}/docker-compose/docker-data"
-
-    - name: Copy daemon.json
-      become: true
-      ansible.builtin.template:
-        src: daemon.json.j2
-        dest: /etc/docker/daemon.json
-        owner: root
-        group: root
-        mode: "0644"
 
     - name: Start Docker service
       become: true
