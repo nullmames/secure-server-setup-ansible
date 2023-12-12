@@ -38,9 +38,9 @@
     ansible_httpapi_pass: "{{ zabbix_login_pass }}"
     ansible_zabbix_url_path: "/"
   community.zabbix.zabbix_host:
-    host_name: "node-{{ inventory_hostname }}"
-    visible_name: "node-{{ inventory_hostname }}"
-    description: "{{ network }} node"
+    host_name: "NODE-{{ network}}-{{ inventory_hostname }}"
+    visible_name: "NODE-{{ network}}-{{ inventory_hostname }}"
+    description: "{{ network }} node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})"
     host_groups:
       - Cosmos
       - Cosmos node
