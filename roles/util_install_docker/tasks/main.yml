@@ -85,11 +85,11 @@
 - name: Stat default docker folder
   become: true
   ansible.builtin.stat:
-    path: /var/lib/docker
-  register: defaultdocker
+    path: "{{ user_dir }}/docker-compose/docker-data/plugins"
+  register: dockerfolder
 
 - name: Move docker folder block
-  when: defaultdocker.stat.isdir is defined and defaultdocker.stat.isdir
+  when: not dockerfolder.stat.exists
   block:
     - name: Stop Docker service
       become: true
