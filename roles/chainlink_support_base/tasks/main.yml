@@ -1,0 +1,71 @@
+---
+# Base chain utilizing .env file from local
+# Ports:
+#  - geth: 8545 (rpc), 8546 (ws), 30303 (p2p-unused), 7301 (metrics)
+#  - node: 7545 (rpc), 9222 (p2p public), 7300 (metrics), 6060 (pprof)
+
+- name: Ensure base-data exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/base-data"
+    state: directory
+    mode: "0755"
+
+- name: Update base repo
+  ansible.builtin.git:
+    repo: "https://github.com/base-org/node.git"
+    dest: "{{ user_dir }}/docker-compose/base"
+    version: "{{ base_version }}"
+    update: true
+    force: true
+    recursive: true
+
+- name: Update env file
+  ansible.builtin.template:
+    src: env.mainnet.j2
+    dest: "{{ user_dir }}/docker-compose/base/.env.mainnet"
+    mode: "0644"
+
+- name: Update docker-compose
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ user_dir }}/docker-compose/base/docker-compose.yml"
+    mode: "0644"
+
+- name: Check if base data is populated
+  ansible.builtin.find:
+    paths: "{{ user_dir }}/docker-compose/base-data"
+    file_type: any
+    hidden: false
+  register: base_data
+
+- name: Download and extract snapshot
+  when: base_data.matched == 0
+  block:
+    - name: Download snapshot
+      ansible.builtin.shell:
+        cmd: "aria2c -x6 -d {{ user_dir }} -o base-snapshot.tar.gz https://base-mainnet-archive-snapshots.s3.us-east-1.amazonaws.com/$(curl https://base-mainnet-archive-snapshots.s3.us-east-1.amazonaws.com/latest)"
+
+    - name: Extract snapshot
+      ansible.builtin.shell: "tar -zxvf {{ user_dir }}/base-snapshot.tar.gz -C {{ user_dir }}/docker-compose/base-data/ --strip-components 1"
+      environment:
+        PATH: "{{ path }}"
+
+- name: Open appropriate firewall ports for base
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: "{{ item.proto }}"
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 9222
+      proto: any
+      comment: p2p port for base-node
+
+- name: Update and launch containers
+  ansible.builtin.command:
+    cmd: "docker compose up --build -d"
+  args:
+    chdir: "{{ user_dir }}/docker-compose/base"
+  environment:
+    PATH: "{{ path }}"

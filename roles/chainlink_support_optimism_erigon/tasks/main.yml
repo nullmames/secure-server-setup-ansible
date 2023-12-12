@@ -1,12 +1,12 @@
 ---
-# Optimism structure with host networking
+# Optimism Erigon structure with host networking
 # Ports:
 #  - Geth: 8545 (rpc), 8546 (ws), 8551 (authrpc)
 #  - Node: 9003 (p2p - public), 9545 (rpc)
 
-- name: Ensure op-geth-data exists
+- name: Ensure op-erigon-data exists
   ansible.builtin.file:
-    path: "{{ user_dir }}/docker-compose/op-geth-data"
+    path: "{{ user_dir }}/docker-compose/op-erigon-data"
     state: directory
     mode: "0755"
 
@@ -17,24 +17,27 @@
     creates: jwtsecret
     executable: /bin/bash
 
-- name: Check if op-geth-data is populated
+- name: Check if op-erigon-data is populated
   ansible.builtin.find:
-    paths: "{{ user_dir }}/docker-compose/op-geth-data"
+    paths: "{{ user_dir }}/docker-compose/op-erigon-data"
     file_type: any
     hidden: false
-  register: op_geth_data
+  register: op_erigon_data
 
 - name: Download and extract snapshot
-  when: op_geth_data.matched == 0
+  when: op_erigon_data.matched == 0
   block:
     - name: Download snapshot
       ansible.builtin.shell:
-        cmd: "aria2c -x6 -d {{ user_dir }} -o op-geth-snapshot.tar.zst https://datadirs.optimism.io/mainnet-bedrock.tar.zst"
+        cmd: "aria2c -x10 -d {{ user_dir }} -o op-erigon-snapshot.tar.gz https://op-erigon-backup.mainnet.testinprod.io/"
 
     - name: Extract snapshot
-      ansible.builtin.shell: "tar -xf {{ user_dir }}/op-geth-snapshot.tar.zst -C {{ user_dir }}/docker-compose/op-geth-data"
-      environment:
-        PATH: "{{ path }}"
+      ansible.builtin.unarchive:
+        src: "{{ user_dir }}/op-erigon-snapshot.tar.gz"
+        dest: "{{ user_dir }}/docker-compose/op-erigon-data"
+        remote_src: true
+        extra_opts:
+          - --strip-components 1
 
 - name: Open p2p ports for op-node
   become: true
@@ -48,23 +51,22 @@
       proto: any
       comment: External - op-node p2p
 
-- name: Run op-geth container
+- name: Run op-erigon container
   community.docker.docker_container:
-    name: op-geth
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ op_geth_version }}
+    name: op-erigon
+    image: testinprod/op-erigon:{{ op_erigon_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
     network_mode: host
     volumes:
-      - "{{ user_dir }}/docker-compose/op-geth-data:/op-geth-data"
+      - "{{ user_dir }}/docker-compose/op-erigon-data:/op-erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
-      - --datadir=/op-geth-data
-      - --syncmode=full
-      - --snapshot=false
+      - --datadir=/op-erigon-data
+      - --snapshots=false
       ## Interfaces
       # Consensus Layer Engine API
       - --authrpc.addr=127.0.0.1
@@ -77,28 +79,20 @@
       - --http.port=8545
       - --http.vhosts=*
       - --http.api=debug,eth,txpool,net,engine
-      # Websocket
-      - --ws
-      - --ws.addr=0.0.0.0
-      - --ws.port=8546
-      - --ws.origins=*
-      - --ws.api=debug,eth,txpool,net,engine
       # P2P
       - --port=30303
       - --nodiscover
+      - --maxpeers=0
       # Metrics
       - --metrics
       - --metrics.addr=0.0.0.0
       - --metrics.port=6060
-      - --metrics.expensive
       # Transaction & Chain Specific
-      - --maxpeers=0
       - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
-      - --rollup.disabletxpoolgossip
+      - --rollup.disabletxpoolgossip=true
       - --networkid=10 # Optimism
       - --rpc.gascap=0
       - --rpc.txfeecap=0
-      - --ipcdisable
 
 - name: Run op-node container
   community.docker.docker_container:

@@ -26,6 +26,7 @@
     image: ethereum/client-go:{{ geth_version }}
     restart_policy: unless-stopped
     state: started
+    stop_timeout: 600
     network_mode: host
     volumes:
       - "{{ user_dir }}/docker-compose/geth:/geth"
@@ -57,6 +58,7 @@
     image: sigp/lighthouse:{{ lighthouse_version }}
     restart_policy: unless-stopped
     state: started
+    stop_timeout: 600
     network_mode: host
     volumes:
       - "{{ user_dir }}/docker-compose/lighthouse:/root/.lighthouse"

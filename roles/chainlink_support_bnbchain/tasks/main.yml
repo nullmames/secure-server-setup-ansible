@@ -1,0 +1,131 @@
+---
+# BNBChain structure with host networking
+# https://github.com/bnb-chain/bsc/pkgs/container/bsc
+# Ports:
+#  - Geth: 12145 (rpc), 12146 (ws), 30311 (p2p - public), 12160 (metrics)
+
+- name: Get latest BNB Chain version
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/bnb-chain/bsc/releases/latest
+    return_content: true
+    body_format: json
+  register: bnbchain_version
+
+- name: Ensure bnb-geth-data and bnb-geth-config exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - bnb-geth-data
+    - bnb-geth-config
+
+- name: Check if bnb-geth-data is populated
+  ansible.builtin.find:
+    paths: "{{ user_dir }}/docker-compose/bnb-geth-data"
+    file_type: any
+    hidden: false
+  register: bnb_geth_data
+
+- name: Download and extract snapshot
+  when: bnb_geth_data.matched == 0
+  block:
+    - name: Download snapshot
+      ansible.builtin.shell:
+        cmd: "aria2c -x6 -d {{ user_dir }} -o bnb-geth-snapshot.tar.zst {{ bnbchain_snapshot_url }}"
+      async: 86400
+      poll: 0
+      register: file_download
+
+    - name: Check if download has completed
+      ansible.builtin.async_status:
+        jid: "{{ file_download.ansible_job_id }}"
+      register: file_download_result
+      until: file_download_result.finished
+      delay: 60 # Check once a minute
+      retries: 1440 # for 24 hours
+
+    - name: Extract snapshot
+      ansible.builtin.shell: "tar -xf {{ user_dir }}/bnb-geth-snapshot.tar.zst -C {{ user_dir }}/docker-compose/bnb-geth-data --strip-components 1"
+      environment:
+        PATH: "{{ path }}"
+
+- name: Download and extract mainnet.zip
+  ansible.builtin.get_url:
+    url: "https://github.com/bnb-chain/bsc/releases/download/{{ bnbchain_version.json.tag_name }}/mainnet.zip"
+    dest: "{{ user_dir }}/docker-compose/bnb-geth-config/mainnet.zip"
+    mode: "0644"
+  register: bnb_geth_config
+
+- name: Unzip mainnet.zip configuration
+  when: bnb_geth_config.changed
+  ansible.builtin.unarchive:
+    src: "{{ user_dir }}/docker-compose/bnb-geth-config/mainnet.zip"
+    dest: "{{ user_dir }}/docker-compose/bnb-geth-config/"
+    remote_src: true
+
+- name: Force HTTPPort change
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/docker-compose/bnb-geth-config/config.toml"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: "^HTTPHost ="
+      line: 'HTTPHost = "0.0.0.0"'
+    - regexp: "^HTTPVirtualHosts ="
+      line: 'HTTPVirtualHosts = ["*"]'
+    - regexp: "^HTTPPort ="
+      line: "HTTPPort = 12145"
+    - regexp: "^WSPort ="
+      line: "WSPort = 12146"
+
+- name: Open p2p ports for bnb-geth
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 30311
+      proto: any
+      comment: External - bnb-geth p2p
+
+- name: Run bnb-geth container
+  community.docker.docker_container:
+    name: bnb-geth
+    image: ghcr.io/bnb-chain/bsc:{{ bnbchain_version.json.tag_name[1:] }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    network_mode: host
+    pull: true
+    volumes:
+      - "{{ user_dir }}/docker-compose/bnb-geth-data:/bsc/node"
+      - "{{ user_dir }}/docker-compose/bnb-geth-config:/bsc/config"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      # General
+      - --datadir=/bsc/node
+      - --db.engine=pebble
+      - --syncmode=full
+      - --history.transactions=0
+      ## Interfaces
+      # HTTP/RPC
+      - --http
+      - --http.port=12145
+      - --http.addr=0.0.0.0
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      - --http.api=debug,eth,txpool,net,engine,web3
+      # Metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=12160
+      - --metrics.expensive
+      # Transaction & Chain Specific
+      - --cache=8000
+      - --txlookuplimit=0
+      - --tries-verify-mode=none
+      - --rpc.allow-unprotected-txs
+      - --ipcdisable

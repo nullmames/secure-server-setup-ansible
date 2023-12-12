@@ -1,0 +1,87 @@
+---
+# Polygon support structure with host networking.  This does not handle snapshots.
+# curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client bor --extract-dir bor_extract --validate-checksum false
+# curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client heimdall --extract-dir bor_extract --validate-checksum false
+# Ports:
+#  - Bor: 30303/tcp - public, 8545/tcp, 8546/tcp, 7071/tcp
+#  - Heimdall: 26656/tcp - public, 26657/tcp
+#  - HeimdallRest: 1317/tcp
+
+- name: Build folder structure
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "polygon"
+    - "polygon/bor"
+    - "polygon/heimdall"
+
+- name: Copy bor config
+  ansible.builtin.template:
+    src: "template/config.toml.j2"
+    dest: "{{ user_dir }}/docker-compose/polygon/bor/config.toml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Open appropriate firewall ports for bor and heimdall
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 30303
+      comment: p2p port for bor
+    - port: 26656
+      comment: p2p port for heimdall
+
+- name: Pull and run heimdall container
+  community.docker.docker_container:
+    name: heimdall
+    image: 0xpolygon/heimdall:{{ heimdall_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    stop_timeout: 600
+    pull: true
+    volumes:
+      - "{{ user_dir }}/docker-compose/polygon/heimdall:/heimdall-home"
+    command:
+      - "start"
+      - "--home=/heimdall-home"
+      - "--chain=mainnet"
+
+- name: Pull and run heimdallrest container
+  community.docker.docker_container:
+    name: heimdallrest
+    image: 0xpolygon/heimdall:{{ heimdall_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    stop_timeout: 600
+    pull: true
+    volumes:
+      - "{{ user_dir }}/docker-compose/polygon/heimdall:/heimdall-home"
+    command:
+      - "rest-server"
+      - "--home=/heimdall-home"
+      - "--node=tcp://localhost:26657"
+      - "--chain=mainnet"
+
+- name: Pull and run bor container
+  community.docker.docker_container:
+    name: bor
+    image: 0xpolygon/bor:{{ bor_version }}
+    restart_policy: unless-stopped
+    state: started
+    network_mode: host
+    stop_timeout: 600
+    pull: true
+    volumes:
+      - "{{ user_dir }}/docker-compose/polygon/bor:/bor-home"
+    command:
+      - "server"
+      - "--config=/bor-home/config.toml"

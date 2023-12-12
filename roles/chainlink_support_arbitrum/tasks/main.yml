@@ -1,5 +1,18 @@
 ---
 # Arbitrum support structure with host networking
+# Ports:
+#  - Nitro: 8547/tcp (rpc), 9642 (sequencer)
+
+- name: Create and adjust permissions on arbitrum data folder
+  become: true
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    state: directory
+    mode: "0777"
+    recurse: true
+  loop:
+    - "{{ user_dir }}/docker-compose/arbitrum"
+    - "{{ user_dir }}/docker-compose/tmp"
 
 - name: Pull and run nitro container
   community.docker.docker_container:
@@ -19,10 +32,13 @@
       - --http.addr=0.0.0.0
       - --http.vhosts=*
       - --http.corsdomain=*
-      - --http.api=net,web3,eth,debug
+      - --http.api=net,web3,eth,arb
       - --ws.port=8548
       - --ws.addr=0.0.0.0
       - --ws.origins=*
+      - --node.rpc.gas-cap=0
+      - --node.rpc.tx-fee-cap=0
       - --init.url=https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
       - --node.staker.enable=false # Remove watchtower mode
-      - --init.prune=full # Prune at startup
+      - --rpc.max-batch-response-size=200000000 # Per RMN Documentation
+      # - --init.prune=full # Prune at startup
