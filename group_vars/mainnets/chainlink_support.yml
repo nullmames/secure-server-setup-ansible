@@ -17,10 +17,10 @@ avalanchego_version: latest
 # Optimism versions
 op_geth_version: v1.101200.1
 op_erigon_version: latest
-op_node_version: v1.1.4
+op_node_version: v1.3.2
 
 # Polygon versions
-bor_version: 1.1.0
+bor_version: 1.2.0
 heimdall_version: 1.0.3
 
 # Base version
