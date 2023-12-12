@@ -1,18 +1,38 @@
 # Node versions supporting CL rmn and ocr
 
 # Ethereum L1 Address
-ethereum_l1: "http://10.254.105.10:5000"
+ethereum_l1: "http://100.100.3.110:5000"
+ethereum_l1_ws: "ws://100.100.3.110:5001"
 
 # Ethereum versions
 geth_version: v1.13.1
-nethermind_version: 1.20.4
 lighthouse_version: v4.5.0
 
-# Nethermind versions
-
 # Arbitrum version
-nitro_version: v2.1.1-e9d8842
+nitro_version: v2.1.3-e815395
+
+# Avalanche version
+avalanchego_version: latest
 
 # Optimism versions
 op_geth_version: v1.101200.1
+op_erigon_version: latest
 op_node_version: v1.1.4
+
+# Polygon versions
+bor_version: 1.1.0
+heimdall_version: 1.0.3
+
+# Base version
+base_version: v0.5.1
+
+# BNBChain
+# Versions pulled from https://api.github.com/repos/bnb-chain/bsc/releases/latest
+# Snapshot
+# https://github.com/48Club/bsc-snapshots
+# Using "full" snapshot with appropriate flags on binary
+bnbchain_snapshot_url: https://snapshots.48.club/geth.full.33620169.tar.zst
+
+# Kroma
+kroma_geth_version: v0.2.1
+kroma_node_version: v1.0.0
