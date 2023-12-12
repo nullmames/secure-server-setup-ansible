@@ -3,6 +3,7 @@
   "useTabs": false,
   "files.associations": {
     "**/*.yml": "ansible",
-    "**/*.yaml": "ansible"
+    "**/*.yaml": "ansible",
+    "**/haproxy*": "haproxy"
   }
 }
