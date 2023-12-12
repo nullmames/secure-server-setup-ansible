@@ -5,14 +5,32 @@
     state: directory
     mode: "0755"
 
+- name: Pull repo for shared.toml file
+  ansible.builtin.git:
+    repo: "git@github.com:{{ repo }}"
+    dest: "/tmp/chainlink_afn_temp"
+    version: "{{ shared_config_version }}"
+    key_file: "{{ user_dir }}/.ssh/github-ssh-key"
+    clone: true
+    accept_hostkey: true
+    update: true
+    force: true
+    recursive: true
+
 - name: Copy shared.toml
   notify: Restart chainlink_afn
   ansible.builtin.copy:
-    src: "templates/shared.toml.j2"
+    src: "/tmp/chainlink_afn_temp/configs/shared.toml"
     dest: "{{ user_dir }}/{{ folder }}/shared.toml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0644"
+    remote_src: true
+
+- name: Delete repo for shared.toml
+  ansible.builtin.file:
+    path: "/tmp/chainlink_afn_temp"
+    state: absent
 
 - name: Copy local-config.toml
   notify: Restart chainlink_afn
