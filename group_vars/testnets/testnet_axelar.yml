@@ -15,3 +15,5 @@ upgrade_name: v0.34
 # [Optional] Snapshot
 
 snap_rpc: "https://rpc-axelar-testnet.imperator.co:443"
+
+snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/axelar/axelar_10773807.tar.lz4

@@ -13,3 +13,5 @@ snap_rpc: "https://rpc.stargaze-apis.com:443"
 
 # Upgrade name
 upgrade_name: v12
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/stargaze/stargaze_11135286.tar.lz4

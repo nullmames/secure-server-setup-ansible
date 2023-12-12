@@ -2,18 +2,20 @@ network: juno
 folder: ".juno"
 daemon: junod
 chain_id: juno-1
-node_version: v17.1.1
+node_version: v18.0.0
 repo: "https://github.com/CosmosContracts/juno"
 genesis: "https://raw.githubusercontent.com/CosmosContracts/mainnet/main/juno-1/genesis.json"
-seeds: "22ee6e65e5e79cd0b970dd11e52761de8d1d6dfd@seeds.pupmos.network:2001,90b09362d9ce3845096c4938eea0dba682b0ad2c@juno-seed-new.blockpane.com:26656"
+seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:12656,90b09362d9ce3845096c4938eea0dba682b0ad2c@juno-seed-new.blockpane.com:26656,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:12656"
 minimum_gas_price: "0.0025ujuno"
 custom_port_prefix: 126
 
 # StateSync
-snap_rpc: "https://juno-rpc.polkachu.com:443"
+snap_rpc: "https://rpc.cosmos.directory:443/juno"
 
 # # [Optional] Snapshot
 # snapshot_hour: 0
 # snapshot_minute: 0
 
-upgrade_name: v17
+upgrade_name: v18
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/juno/juno_12279586.tar.lz4

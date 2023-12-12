@@ -14,3 +14,5 @@ snap_rpc: https://rpc.cosmos.directory:443/migaloo
 
 # # [Optional] Prep for upgrade in cosmovisor
 upgrade_name: v3.0.2
+
+snapshot_url: https://share.rhinostake.com/whitewhale-snapshot.4341810.tar.lz4

@@ -2,7 +2,7 @@ network: cosmos
 folder: ".gaia"
 daemon: gaiad
 chain_id: cosmoshub-4
-node_version: v13.0.0
+node_version: v14.1.0
 repo: "https://github.com/cosmos/gaia"
 genesis: "https://github.com/cosmos/mainnet/blob/master/genesis/genesis.cosmoshub-4.json.gz?raw=true"
 genesis_processing: gz
@@ -12,13 +12,15 @@ custom_port_prefix: 149
 
 snap_rpc: https://cosmos-rpc.polkachu.com:443
 
-upgrade_name: v13
+upgrade_name: v14
+
+# Force to 1.20
+go_release: "go1.20.11"
 
 # [Optional] Snapshot
 snapshot_hour: 0
 snapshot_minute: 0
-
-shares: 3
-sentries:
-  - "1.2.3.4"
-  - "1.2.3.5"
+# shares: 3
+# sentries:
+#   - "1.2.3.4"
+#   - "1.2.3.5"

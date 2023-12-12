@@ -10,3 +10,5 @@ minimum_gas_price: "0.025ulyl"
 custom_port_prefix: 172
 # [Optional] Prep for upgrade in cosmovisor
 #upgrade_name:
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/loyal/loyal_5331404.tar.lz4

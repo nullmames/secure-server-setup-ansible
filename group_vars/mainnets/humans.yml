@@ -12,3 +12,5 @@ custom_port_prefix: 184
 # [Optional] Snapshot
 # snapshot_hour: 0
 # snapshot_minute: 30
+
+snap_rpc: https://humans-rpc.anyvalid.com:26627

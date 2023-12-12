@@ -14,4 +14,4 @@ custom_port_prefix: 133
 # snapshot_hour: 3
 # snapshot_minute: 30
 
-snap_rpc: "https://konstellation-rpc.polkachu.com:443"
+snap_rpc: "https://rpc.cosmos.directory:443/konstellation"

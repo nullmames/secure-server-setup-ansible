@@ -17,3 +17,5 @@ snap_rpc: https://rpc-composable.nodeist.net:443
 
 # [Optional] Prep for upgrade in cosmovisor
 upgrade_name: v6
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/composable/composable_2641475.tar.lz4
