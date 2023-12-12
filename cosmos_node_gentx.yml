@@ -6,5 +6,5 @@
     - "{{ var_file }}"
     - "{{ user_file }}"
   roles:
-    - util_install_go
+    - util_go_install
     - cosmos_node_install

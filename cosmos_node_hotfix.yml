@@ -12,6 +12,6 @@
       ansible.builtin.pause:
         prompt: Please confirm that {{ network }} version {{ node_version }} will replace contents in current directory! Ensure this change is NON-BREAKING! Press return to continue. Press Ctrl+c and then "a" to abort
   roles:
-    - util_install_go
+    - util_go_install
     - cosmos_node_install
     - cosmos_node_hotfix
