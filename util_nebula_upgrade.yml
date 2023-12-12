@@ -1,0 +1,12 @@
+---
+- name: Upgrade Nebula Binary
+  hosts: all
+  gather_facts: false
+  become: true
+
+  vars_files:
+    - "group_vars/all.yml"
+    - "group_vars/users.yml"
+  roles:
+    - role: util_nebula_upgrade
+      when: inventory_hostname in groups['nebula_lighthouse'] or nebula_internal_ip_addr is defined
