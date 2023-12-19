@@ -33,7 +33,7 @@ config_toml_37:
     pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
   p2p:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
-    max-connections: 91
+    max-connections: 51
   instrumentation:
     prometheus: "true"
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
