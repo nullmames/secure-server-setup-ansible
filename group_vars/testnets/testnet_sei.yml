@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "atlantic-2"
-node_version: 4833c9e1c016f23e23c716e054c413fe0a031231 # v3.3.1
+node_version: f1ea25c40f4ab944a02e3607bc386cad380d2446 # v3.3.2 - hotfix
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119

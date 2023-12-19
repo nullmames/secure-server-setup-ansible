@@ -16,3 +16,5 @@ custom_port_prefix: 238
 # [Optional] Snapshot
 snapshot_hour: 1
 snapshot_minute: 0
+
+snap_rpc: https://rpc.cosmos.directory:443/dydx

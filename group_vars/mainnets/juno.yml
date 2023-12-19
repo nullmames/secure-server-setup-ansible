@@ -18,4 +18,4 @@ snap_rpc: "https://rpc.cosmos.directory:443/juno"
 
 upgrade_name: v18
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/juno/juno_12279586.tar.lz4
+snapshot_url: https://snapshots.lavenderfive.com/snapshots/juno/latest.tar.lz4

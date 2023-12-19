@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: v3.3.1
+node_version: f1ea25c40f4ab944a02e3607bc386cad380d2446 # v3.3.2 - hotfix
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
@@ -19,8 +19,8 @@ tendermint_config_version: 37
 # StateSync
 #snap_rpc: "http://statesync-sei.rhinostake.com:11957"
 snap_rpc: "https://sei-state-sync-rpc.brocha.in:443"
-snap_rpc_height_buffer: 12000
-p2p_state_sync: true
+#snap_rpc_height_buffer: 2000
+p2p_state_sync: false
 
 # Tenderduty High
 threshold_type: "high"

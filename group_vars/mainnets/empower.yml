@@ -2,15 +2,19 @@ network: empower
 folder: ".empowerchain"
 daemon: empowerd
 chain_id: empowerchain-1
-node_version: v1.0.0
+node_version: v2.0.0
 repo: https://github.com/EmpowerPlastic/empowerchain
 genesis: "https://github.com/EmpowerPlastic/empowerchain/raw/main/mainnet/empowerchain-1/genesis.tar.gz"
 genesis_processing: targz
-#
 seeds: "a1427b456513ab70967a2a5c618d347bc89e8848@seed.empowerchain.io:26656,6740fa259552a628266a85de8c2a3dee7702b8f9@empower-mainnet-seed.itrocket.net:14656,e16668ddd526f4e114ebb6c4714f0c18c0add8f8@empower-seed.zenscape.one:26656,f2ed98cf518b501b6d1c10c4a16d0dfbc4a9cc98@tenderseed.ccvalidators.com:27001"
 peers: ""
 custom_port_prefix: 174
 
+upgrade_name: v2
+
 snap_rpc: "http://164.68.119.233:36657"
 
 make_args: "-C /home/rhino/source/empower/chain"
+
+# Force to 1.20
+go_release: "go1.20.11"
