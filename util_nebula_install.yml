@@ -7,4 +7,4 @@
     - "group_vars/all.yml"
     - "group_vars/users.yml"
   roles:
-    - util_install_nebula
+    - util_nebula_install
