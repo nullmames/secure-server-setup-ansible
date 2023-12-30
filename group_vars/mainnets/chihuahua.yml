@@ -2,7 +2,6 @@ network: chihuahua
 folder: ".chihuahuad"
 daemon: chihuahuad
 chain_id: chihuahua-1
-node_version: v5.0.4
 repo: https://github.com/ChihuahuaChain/chihuahua.git
 genesis: "https://github.com/ChihuahuaChain/chihuahua/raw/main/mainnet/genesis.json"
 peers: ""
@@ -11,8 +10,9 @@ minimum_gas_price: "1uhuahua"
 custom_port_prefix: 129
 snap_rpc: "https://chihuahua-rpc.polkachu.com:443"
 
-# [Optional] Snapshot
-snapshot_hour: 0
-snapshot_minute: 0
+# Version Info
+node_version: v6
+upgrade_name: v6
 
-upgrade_name: v503
+# Go Version
+go_release: "go1.20.12"

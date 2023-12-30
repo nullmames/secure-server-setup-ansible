@@ -2,12 +2,12 @@ network: sge
 folder: ".sge"
 daemon: sged
 chain_id: sge-network-4
-node_version: v1.2.0
+node_version: v1.3.0
 repo: https://github.com/sge-network/sge
 genesis: https://github.com/sge-network/networks/raw/master/testnet/sge-network-4/genesis.json
 seeds: "3bd257f89d0f31614088373902eebc941c224236@rpc-t.sge.nodestake.top:666,babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:17756"
 custom_port_prefix: 177
 
-upgrade_name: v1.2.0
+upgrade_name: v1.3.0
 # Forcing go
 go_release: "go1.19.13"

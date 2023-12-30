@@ -1,10 +1,8 @@
 network: aleo
 folder: testnet3
 repo: https://github.com/AleoHQ/snarkOS.git
-node_version: testnet3
-# genesis_blob: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/genesis.blob
-# waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/waypoint.txt
-seeds: "135.181.228.130:5000,160.202.128.199:5000,195.201.8.101:5000,65.21.197.228:5000"
+node_version: testnet3 # Sure, why not.
+seeds: "95.217.231.107:5000,136.243.6.40:5000,167.235.163.202:5000,198.244.253.85:5000,160.202.128.199:5000,165.154.225.64:5000,103.168.52.222:5000,162.19.112.120:5000,15.235.41.104:5000,135.181.135.38:5000"
 p2p_port: 5000
 peering_port: 4133
 api_port: 3033
