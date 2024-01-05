@@ -6,11 +6,11 @@
     mode: "0755"
 
 - name: Copy private key
+  notify: Restart snarkos
   ansible.builtin.copy:
     src: "files/{{ folder }}/validator.txt"
     dest: "{{ user_dir }}/{{ folder }}/validator.key"
     mode: "0400"
-  Notify: Restart snarkos
 
 - name: Open p2p ports for snarkos
   become: true
