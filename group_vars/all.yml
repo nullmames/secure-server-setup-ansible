@@ -43,7 +43,7 @@ horcrux_peers:
     p2p_addr: "{{ signer3 }}"
 
 # Nebula
-nebula_version: 1.8.0
+nebula_version: 1.8.1
 nebula_network_name: "RHINO Nebula"
 nebula_network_cidr: 22
 nebula_ca_cert_duration: "87600h0m0s" # 10 years
