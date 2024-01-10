@@ -1,0 +1,7 @@
+---
+- name: Install tracing components
+  hosts: confio
+  gather_facts: true
+  roles:
+    # - util_install_docker
+    - tracing_install
