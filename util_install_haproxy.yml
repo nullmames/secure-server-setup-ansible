@@ -1,6 +1,6 @@
 ---
 - name: Install and configure haproxy
   hosts: all
-  gather_facts: false
+  gather_facts: true
   roles:
     - { role: util_install_haproxy, when: haproxy_config is defined }

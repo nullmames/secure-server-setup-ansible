@@ -1,11 +1,27 @@
+---
+- name: Install haproxy repository key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://haproxy.debian.net/bernat.debian.org.gpg"
+    dest: /usr/share/keyrings/haproxy.debian.net.asc
+    mode: "0644"
+    force: true
+
+- name: Install haproxy repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.asc] http://haproxy.debian.net/ {{ ansible_distribution_release }}-backports-2.8 main"
+    state: present
+    update_cache: true
+
 - name: Install haproxy
   become: true
   ansible.builtin.apt:
     name:
-      - haproxy
+      - haproxy=2.8.*
     state: present
     update_cache: true
-    cache_valid_time: 3600
+  notify: Restart haproxy
 
 - name: Copy certificates
   become: true
@@ -39,6 +55,7 @@
   loop:
     - eth_check.sh
     - sync_check.sh
+    - sei_check.sh
   notify: Restart haproxy
 
 - name: Stat local map file
