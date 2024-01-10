@@ -1,5 +1,5 @@
 ---
-- name: Cosmos Full Send
+- name: Cosmos Full Send with Snapshot
   hosts: all
   gather_facts: true
   vars_files:
@@ -9,10 +9,9 @@
 - name: Init
   ansible.builtin.import_playbook: cosmos_node_init.yml
 
-# - name: restart
-#   ansible.builtin.import_playbook: cosmos_node_restart_binary.yml
-# - name: Peer node
-#   ansible.builtin.import_playbook: cosmos_node_local_peers.yml
+- name: Prep upgrade for folders
+  ansible.builtin.import_playbook: cosmos_node_upgrade.yml
+  when: upgrade_name is defined
 
-- name: Statesync node
+- name: Snapshot node
   ansible.builtin.import_playbook: cosmos_node_reset_snapshot.yml

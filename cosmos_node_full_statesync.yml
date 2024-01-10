@@ -1,0 +1,17 @@
+---
+- name: Cosmos Full Send with statesync
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "{{ var_file }}"
+    - "{{ user_file }}"
+
+- name: Init
+  ansible.builtin.import_playbook: cosmos_node_init.yml
+
+- name: Prep upgrade for folders
+  ansible.builtin.import_playbook: cosmos_node_upgrade.yml
+  when: upgrade_name is defined
+
+- name: Statesync node
+  ansible.builtin.import_playbook: cosmos_node_reset_statesync.yml
