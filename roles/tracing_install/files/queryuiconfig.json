@@ -1,0 +1,32 @@
+{
+  "monitor": {
+    "menuEnabled": false
+  },
+  "menu": [
+    {
+      "label": "About Cosmwasm",
+      "items": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/CosmWasm/cosmwasm"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/channel/UCNslCTRZ0TrZg7rVDQFkMeQ"
+        },
+        {
+          "label": "Twitter",
+          "url": "https://twitter.com/CosmWasm"
+        },
+        {
+          "label": "Visit cosmwasm.com",
+          "url": "https://cosmwasm.com"
+        },
+        {
+          "label": "Provided by Confio",
+          "url": "https://confio.gmbh/"
+        }
+      ]
+    }
+  ]
+}

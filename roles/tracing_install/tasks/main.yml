@@ -1,0 +1,11 @@
+---
+# Stand up docker containers supporing Confio's tracing stack.
+#
+# Agent / Collector install
+- name: Install agent/collectors
+  when: '"jaeger_collector" in tracing_role'
+  ansible.builtin.include_tasks: collector.yml
+
+- name: Install Query/UI
+  when: '"jaeger_query" in tracing_role'
+  ansible.builtin.include_tasks: query.yml

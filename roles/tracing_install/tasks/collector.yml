@@ -1,0 +1,25 @@
+---
+# Run Jaeger Collector and Agent containers
+
+- name: Run Jaeger Collector
+  community.docker.docker_container:
+    name: jaeger-collector
+    image: jaegertracing/jaeger-collector:{{ jaeger_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 200
+    network_mode: host
+    env:
+      SPAN_STORAGE_TYPE: elasticsearch
+      ES_SERVER_URLS: http://100.100.1.221:9200,http://100.100.1.222:9200
+
+- name: Run Jaeger Agent
+  community.docker.docker_container:
+    name: jaeger-agent
+    image: jaegertracing/jaeger-agent:{{ jaeger_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 200
+    network_mode: host
+    env:
+      REPORTER_GRPC_HOST_PORT: localhost:14250
