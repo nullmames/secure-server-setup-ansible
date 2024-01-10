@@ -1,7 +1,7 @@
 network: chainlink_afn
 folder: chainlink_afn
 repo: smartcontractkit/risk-management-network-alpha.git
-node_version: 6967703e9ff66649374dc28456c35fb5a743e237 # 12/7/2023 wemix/kroma
+node_version: 39f9ed377c22181a708cd414cd00e90099724784 # 01/08/2024
 shared_config_version: 8e37135ef95ecced8e6647e386e8077c0acac0b1 # 12/20/2023 - aval gas
 
 # Grafana dashboard
