@@ -11,4 +11,4 @@ custom_port_prefix: 125
 upgrade_name: v21
 
 snap_rpc: https://osmosis-rpc.cosmos-apis.com:443
-snapshot_url: https://snapshots.polkachu.com/snapshots/osmosis/osmosis_13098915.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/osmosis/osmosis_13111234.tar.lz4
