@@ -3,11 +3,20 @@
   ansible.builtin.set_fact:
     ansible_user: "root"
 
+- name: Check for Python
+  ansible.builtin.raw: test -e /usr/bin/python
+  changed_when: false
+  failed_when: false
+  register: check_python
+
+- name: Install Python
+  ansible.builtin.raw: apt -y update && apt install -y python3-minimal
+  when: check_python.rc != 0
+
 - name: Install python, sudo
   ansible.builtin.apt:
     name:
       - python3
-      - python-is-python3
       - sudo
     state: present
     update_cache: false
