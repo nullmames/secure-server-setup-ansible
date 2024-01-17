@@ -59,6 +59,7 @@
     state: started
     stop_timeout: 600
     network_mode: host
+    pull: true
     volumes:
       - "{{ user_dir }}/docker-compose/op-erigon-data:/op-erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
@@ -90,10 +91,11 @@
       # Transaction & Chain Specific
       - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
       - --rollup.disabletxpoolgossip=true
-      - --networkid=10 # Optimism
+      #     - --networkid=10 # Optimism
       - --rpc.gascap=0
       - --rpc.txfeecap=0
       - --rpc.batch.limit=0
+      - --chain=optimism-mainnet
 
 - name: Run op-node container
   community.docker.docker_container:
@@ -103,6 +105,7 @@
     state: started
     stop_timeout: 600
     network_mode: host
+    pull: true
     volumes:
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
@@ -112,7 +115,7 @@
       - --l1={{ ethereum_l1 }}
       - --l2=http://127.0.0.1:8551
       - --l2.jwt-secret=/jwtsecret
-      - --network=mainnet
+      - --network=op-mainnet
       ## Interfaces
       - --rpc.addr=0.0.0.0
       - --rpc.port=9545
