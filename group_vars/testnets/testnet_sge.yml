@@ -8,6 +8,9 @@ genesis: https://github.com/sge-network/networks/raw/master/testnet/sge-network-
 seeds: "3bd257f89d0f31614088373902eebc941c224236@rpc-t.sge.nodestake.top:666,babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:17756"
 custom_port_prefix: 177
 
+snap_rpc: http://54.226.104.121:26657
+
 upgrade_name: v1.3.1
 # Forcing go
+
 go_release: "go1.19.13"

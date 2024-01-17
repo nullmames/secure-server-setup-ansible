@@ -2,7 +2,7 @@ network: omniflix
 folder: ".omniflixhub"
 daemon: omniflixhubd
 chain_id: omniflixhub-1
-node_version: v0.12.0
+node_version: v2.0.0
 repo: https://github.com/OmniFlix/omniflixhub
 genesis: https://raw.githubusercontent.com/OmniFlix/mainnet/main/omniflixhub-1/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:16956,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:16956"
@@ -15,6 +15,6 @@ snap_rpc: https://rpc.cosmos.directory:443/omniflixhub
 # snapshot_hour: 1
 # snapshot_minute: 30
 
-upgrade_name: v0.12.x
+upgrade_name: v2
 
 snapshot_url: https://share.rhinostake.com/omniflix-snapshot.8878125.tar.lz4
