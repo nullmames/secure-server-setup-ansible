@@ -1,8 +1,8 @@
 network: union
 folder: ".union"
 daemon: uniond
-chain_id: "union-testnet-4"
-node_version: "v0.14.0"
+chain_id: "union-testnet-5"
+node_version: v0.18.0
 repo: TBD
 binary:
 genesis: "https://snapshots.polkachu.com/testnet-genesis/union/genesis.json"
