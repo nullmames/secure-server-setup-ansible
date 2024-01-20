@@ -114,3 +114,10 @@
     owner: root
     group: root
     mode: "0644"
+
+- name: Enable ipfs.service
+  become: true
+  ansible.builtin.service:
+    daemon_reload: true
+    enabled: true
+    state: started

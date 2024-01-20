@@ -83,6 +83,14 @@
     mode: "0644"
   notify: Restart ipfs-cluster service
 
+- name: Enable ipfs-cluster.service
+  become: true
+  ansible.builtin.service:
+    name: ipfs-cluster
+    daemon_reload: true
+    enabled: true
+    state: started
+
 # ipfs-cluster-ctl block
 - name: Register installed ipfs-cluster-ctl version
   ansible.builtin.shell: "/usr/local/bin/ipfs-cluster-ctl version"
