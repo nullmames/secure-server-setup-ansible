@@ -3,10 +3,8 @@ folder: ".injectived"
 daemon: injectived
 chain_id: injective-1
 #
-#node_version: v1.11.6
 node_version: v1.12.0
 # BINARY
-#binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.11.6-1688984159/linux-amd64.zip
 binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.12.0-1704530206/linux-amd64.zip
 binary_processing: zip
 #
@@ -18,9 +16,8 @@ custom_port_prefix: 143
 
 snap_rpc: "https://injective-rpc.quickapi.com:443"
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_57102053.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_58180927.tar.lz4
 
-#upgrade_name: v1.11
 upgrade_name: v1.12.0
 
 # Forces LD path in systemd
