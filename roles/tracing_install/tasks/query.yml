@@ -6,15 +6,18 @@
     src: "queryuiconfig.json"
     dest: "{{ user_dir }}/docker-compose/queryuiconfig.json"
     mode: "0644"
+  register: queryuiconfig_changed
 
 - name: Run Jaeger Query
   community.docker.docker_container:
     name: jaeger-query
     image: jaegertracing/jaeger-query:{{ jaeger_version }}
     restart_policy: unless-stopped
+    restart: "{{ queryuiconfig_changed.changed | default(false) }}"
     state: started
     stop_timeout: 200
     network_mode: host
+    pull: true
     volumes:
       - "{{ user_dir }}/docker-compose/queryuiconfig.json:/queryuiconfig.json"
     env:
