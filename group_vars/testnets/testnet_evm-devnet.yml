@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "evm-devnet"
-node_version: origin/evm
+node_version: v4.0.4-evm-devnet
 repo: https://github.com/sei-protocol/sei-chain
 genesis: https://share.rhinostake.com/genesis.json
 custom_port_prefix: 119
@@ -15,9 +15,9 @@ tendermint_config_version: 37
 
 snap_rpc: https://evm-devnet.seinetwork.io:26657
 
+upgrade_name: v4.0.1-evm-devnet
+
 p2p_state_sync: true
-snap_rpc_height_buffer: 80000
-custom_snapshot_interval: 50000
 
 # Tenderduty High
 threshold_type: "high"

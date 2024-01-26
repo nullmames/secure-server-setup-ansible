@@ -2,7 +2,7 @@ network: neutron
 folder: ".neutrond"
 daemon: neutrond
 chain_id: neutron-1
-node_version: v2.0.0
+node_version: v2.0.2
 repo: "https://github.com/neutron-org/neutron"
 genesis: "https://raw.githubusercontent.com/neutron-org/mainnet-assets/main/neutron-1-genesis.json"
 seeds: "74f3a4a0423e72334f4439b438b29934e5f0dbbd@p2p-xyphion.neutron-1.neutron.org:26656,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:19156"
@@ -11,7 +11,7 @@ custom_port_prefix: 191
 
 snapshot_url: https://snapshots.polkachu.com/snapshots/neutron/neutron_6368157.tar.lz4
 
-upgrade_name: v2.0.0
+upgrade_name: v2.0.2
 
 # force
 go_release: "go1.20.12"
