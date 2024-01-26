@@ -2,7 +2,7 @@ network: teritori
 folder: ".teritorid"
 daemon: teritorid
 chain_id: teritori-1
-node_version: v1.4.0
+node_version: v2.0.6
 repo: https://github.com/TERITORI/teritori-chain
 genesis: https://media.githubusercontent.com/media/TERITORI/teritori-chain/v1.1.2/mainnet/teritori-1/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:15956,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:15956,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:15956"
@@ -10,6 +10,6 @@ minimum_gas_price: "0.0utori"
 custom_port_prefix: 159
 snap_rpc: "https://teritori-rpc.polkachu.com:443"
 
-upgrade_name: v1.4.0
+upgrade_name: v2.0.0
 
 snapshot_url: https://share.rhinostake.com/teritori-snapshot.5595337.tar.lz4

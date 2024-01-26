@@ -7,7 +7,6 @@ repo: https://github.com/sedaprotocol/seda-chain
 genesis: https://github.com/sedaprotocol/seda-networks/raw/main/testnet/genesis.json
 seeds: c24f01b4a897b37dd958633943c5b1d1ec5809f1@18.171.36.35:26656,cf332254c6b8aeedba4a716568458db742ecc79c@13.41.125.154:26656
 peers: ""
-# minimum_gas_price: "0.15uinit,0.01uusdc"
 custom_port_prefix: 258
 
 # StateSync
