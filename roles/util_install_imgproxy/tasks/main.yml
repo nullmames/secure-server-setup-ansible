@@ -9,6 +9,7 @@
     registry_url: "docker.imgproxy.pro"
     username: "imgproxy"
     password: "{{ imgproxy_docker_password }}"
+    reauthorize: true
 
 - name: Run docker container
   community.docker.docker_container:
