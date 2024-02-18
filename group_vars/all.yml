@@ -1,6 +1,6 @@
 # go
 # go_release: "go1.20.12"
-go_release: "go1.21.5"
+go_release: "go1.21.7"
 
 # node
 node_release: "node_18.x"
@@ -18,9 +18,9 @@ promtail_monitor: "http://10.254.100.13:3100"
 promtail_monitor_nebula: "http://100.100.0.13:3100"
 
 # ipfs
-ipfs_release: "0.24.0"
-ipfs_cluster_release: "1.0.6"
-ipfs_cluster_ctl_release: "1.0.6"
+ipfs_release: "0.26.0"
+ipfs_cluster_release: "1.0.8"
+ipfs_cluster_ctl_release: "1.0.8"
 
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"
