@@ -1,0 +1,20 @@
+---
+- name: Download binary
+  ansible.builtin.get_url:
+    url: "{{ binary }}"
+    dest: "/tmp/binary.tar"
+    mode: "0700"
+    force: true
+
+- name: Unarchive binary file
+  ansible.builtin.command:
+    cmd: "tar -xf binary.tar"
+  args:
+    chdir: /tmp/
+
+- name: Copy binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/{{ binary_name }}"
+    dest: "{{ user_dir }}/go/bin/{{ daemon }}"
+    mode: "0755"
