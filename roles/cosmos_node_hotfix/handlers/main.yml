@@ -1,4 +1,11 @@
 ---
+- name: Stop daemon
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+  listen: "restart node"
+
 - name: Remove wasm
   ansible.builtin.file:
     path: "{{ item }}"
@@ -12,5 +19,5 @@
   become: true
   ansible.builtin.systemd:
     name: "{{ daemon }}"
-    state: restarted
+    state: started
   listen: "restart node"
