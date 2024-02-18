@@ -21,6 +21,7 @@
     restart_policy: unless-stopped
     state: started
     network_mode: host
+    stop_timeout: 600
     pull: true
     volumes:
       - "{{ user_dir }}/docker-compose/arbitrum:/home/user/.arbitrum"
@@ -36,8 +37,8 @@
       - --ws.port=8548
       - --ws.addr=0.0.0.0
       - --ws.origins=*
-      - --node.rpc.gas-cap=0
-      - --node.rpc.tx-fee-cap=0
+      - --execution.rpc.gas-cap=0
+      - --execution.rpc.tx-fee-cap=0
       - --init.url=https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
       - --node.staker.enable=false # Remove watchtower mode
       - --rpc.max-batch-response-size=200000000 # Per RMN Documentation
