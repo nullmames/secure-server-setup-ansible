@@ -9,6 +9,7 @@
     mode: "0644"
 
 - name: Create host groups
+  throttle: 1
   delegate_to: "{{ zabbix_server_host }}"
   run_once: true
   vars:
