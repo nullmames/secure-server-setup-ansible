@@ -23,7 +23,7 @@
     update_cache: true
   notify: Restart haproxy
 
-- name: Copy certificates
+- name: Copy all certificates
   become: true
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -32,7 +32,18 @@
     group: root
     mode: "0644"
   notify: Restart haproxy
-  with_fileglob: "templates/*.pem"
+  with_fileglob: "templates/certs/*.pem"
+
+- name: Copy all check scripts
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/var/lib/haproxy/"
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart haproxy
+  with_fileglob: "templates/scripts/*.sh"
 
 - name: Copy haproxy config
   become: true
@@ -42,20 +53,6 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart haproxy
-
-- name: Copy check scripts
-  become: true
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "/var/lib/haproxy/{{ item }}"
-    owner: root
-    group: root
-    mode: "0755"
-  loop:
-    - eth_check.sh
-    - sync_check.sh
-    - sei_check.sh
   notify: Restart haproxy
 
 - name: Stat local map file
