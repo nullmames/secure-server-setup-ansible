@@ -117,6 +117,7 @@
       ## General
       - op-node
       - --l1={{ ethereum_l1 }}
+      - --l1.beacon={{ ethereum_l1_beacon }}
       - --l2=http://127.0.0.1:8551
       - --l2.jwt-secret=/jwtsecret
       - --network=op-mainnet
