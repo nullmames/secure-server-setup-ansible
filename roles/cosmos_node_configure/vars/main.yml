@@ -57,6 +57,8 @@ app_toml:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}28"'
     ws-address: '"0.0.0.0:{{ custom_port_prefix }}29"'
+  state-commit:
+    sc-enable: "true"
 
 # Pruning
 pruning_default:
@@ -82,3 +84,12 @@ pruning_nothing:
   state-sync:
     snapshot-interval: "{{ custom_snapshot_interval | default('0') }}"
     snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"
+
+state_store_enabled:
+  state-store:
+    ss-enable: "true"
+    ss-keep-recent: 100000
+
+state_store_disabled:
+  state-store:
+    ss-enable: "false"
