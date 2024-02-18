@@ -1,4 +1,5 @@
 #Basics for tenderduty
 network: nomic
+daemon: nomic
 chain_id: nomic-stakenet-3
 custom_port_prefix: 266

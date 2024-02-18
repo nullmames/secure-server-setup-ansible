@@ -12,6 +12,6 @@ custom_port_prefix: 177
 upgrade_name: v1.3.1
 
 # Forcing go
-go_release: "go1.19.12"
+go_release: "go1.19.13"
 
 snap_rpc: https://sge-rpc.polkachu.com:443

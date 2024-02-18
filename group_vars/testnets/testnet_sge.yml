@@ -1,6 +1,7 @@
 network: sge
 folder: ".sge"
 daemon: sged
+minimum_gas_price: "0.001usge"
 chain_id: sge-network-4
 node_version: v1.3.1
 repo: https://github.com/sge-network/sge

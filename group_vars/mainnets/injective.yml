@@ -16,7 +16,7 @@ custom_port_prefix: 143
 
 snap_rpc: "https://injective-rpc.quickapi.com:443"
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_58180927.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_59357553.tar.lz4
 
 upgrade_name: v1.12.0
 
