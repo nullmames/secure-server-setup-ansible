@@ -67,6 +67,7 @@
     command:
       ## General
       - --datadir=/op-erigon-data
+      - --db.size.limit=8TB
       - --snapshots=false
       ## Interfaces
       # Consensus Layer Engine API
@@ -91,11 +92,10 @@
       # Transaction & Chain Specific
       - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
       - --rollup.disabletxpoolgossip=true
-      #     - --networkid=10 # Optimism
       - --rpc.gascap=0
       - --rpc.txfeecap=0
       - --rpc.batch.limit=0
-      - --chain=optimism-mainnet
+      - --chain=op-mainnet
 
 - name: Run op-node container
   community.docker.docker_container:
@@ -113,9 +113,11 @@
       ## General
       - op-node
       - --l1={{ ethereum_l1 }}
+      - --l1.beacon={{ ethereum_l1_beacon }}
       - --l2=http://127.0.0.1:8551
       - --l2.jwt-secret=/jwtsecret
       - --network=op-mainnet
+      - --rollup.load-protocol-versions=true
       ## Interfaces
       - --rpc.addr=0.0.0.0
       - --rpc.port=9545
