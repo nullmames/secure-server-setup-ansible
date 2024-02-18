@@ -47,6 +47,10 @@
   ansible.builtin.include_tasks: binary_default.yml
   when: binary is defined and binary_processing is not defined
 
+- name: Install from binary tarred
+  ansible.builtin.include_tasks: binary_tar.yml
+  when: binary is defined and binary_processing is defined and binary_processing == 'tar'
+
 - name: Install from binary zipped
   ansible.builtin.include_tasks: binary_zip.yml
   when: binary is defined and binary_processing is defined and binary_processing == 'zip'
