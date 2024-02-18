@@ -66,7 +66,7 @@
     mode: "0755"
 
 # Check to see if upgrade folder variable is defined and create that directory as well
-- name: Create upgrade directories in Cosmosvisor folder
+- name: Create upgrade directories in Cosmovisor folder
   when: upgrade_name is defined
   block:
     - name: Create appropriate folder
