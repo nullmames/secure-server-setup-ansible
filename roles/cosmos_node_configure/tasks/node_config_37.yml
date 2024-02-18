@@ -85,6 +85,15 @@
         mode: "0644"
       loop: '{{ config_changes.app_toml["grpc-web"] | dict2items }}'
 
+    - name: Adjust state-commit section for Sei
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-commit
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.app_toml["state-commit"] | dict2items }}'
+
 - name: Adjust pruning and state-sync settings for default pruning
   when: (rpc is undefined) and (archive is undefined)
   block:
@@ -105,6 +114,15 @@
         value: "{{ item.value }}"
         create: false
       loop: '{{ config_changes.pruning_default["state-sync"] | dict2items }}'
+
+    - name: Disable state-store
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-store
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.state_store_disabled["state-store"] | dict2items }}'
 
 - name: Adjust pruning and state-sync settings for rpc pruning
   when: (rpc is defined) and (archive is undefined)
@@ -127,6 +145,15 @@
         create: false
       loop: '{{ config_changes.pruning_custom_rpc["state-sync"] | dict2items }}'
 
+    - name: Enable state-store
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-store
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.state_store_enabled["state-store"] | dict2items }}'
+
 - name: Adjust pruning and state-sync settings for archive
   when: archive is defined
   block:
@@ -148,6 +175,15 @@
         create: false
       loop: '{{ config_changes.pruning_nothing["state-sync"] | dict2items }}'
 
+    - name: Enable state-store
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        section: state-store
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop: '{{ config_changes.state_store_enabled["state-store"] | dict2items }}'
+
 - name: Set indexer to null for validator nodes
   when: (rpc is undefined) and (archive is undefined)
   ansible.builtin.lineinfile:
@@ -166,19 +202,6 @@
     state: present
     backrefs: true
 
-- name: Add Skip configuration
-  when: sentinel_peer_string is defined
-  ansible.builtin.blockinfile:
-    insertafter: EOF
-    dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    create: true
-    state: present
-    content: |
-      [sidecar]
-      sentinel_peer_string = "{{ sentinel_peer_string }}"
-      sentinel_rpc_string = "{{ sentinel_rpc_string }}"
-      api_key = "{{ skip_api_key }}"
-
 - name: Set IAVL and related items (if present)
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/app.toml"
@@ -189,7 +212,7 @@
   with_items:
     - { regexp: "^iavl-cache-size", line: "iavl-cache-size = 3906250" }
     - { regexp: "^memory_cache_size", line: "memory_cache_size = 8000" }
-    - { regexp: "^query_gas_limit", line: "query_gas_limit = 5000000" }
+    - { regexp: "^query_gas_limit", line: "query_gas_limit = 10000000" }
     - {
         regexp: "^simulation_gas_limit",
         line: "simulation_gas_limit = 50000000",
