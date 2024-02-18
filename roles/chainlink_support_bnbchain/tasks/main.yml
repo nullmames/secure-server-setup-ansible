@@ -107,9 +107,8 @@
     command:
       # General
       - --datadir=/bsc/node
-      - --db.engine=pebble
       - --syncmode=full
-      - --history.transactions=0
+      - --state.scheme=path # Move to PebbleDB
       ## Interfaces
       # HTTP/RPC
       - --http
@@ -125,7 +124,7 @@
       - --metrics.expensive
       # Transaction & Chain Specific
       - --cache=8000
-      - --txlookuplimit=0
+      - --history.transactions=0
       - --tries-verify-mode=none
       - --rpc.allow-unprotected-txs
       - --ipcdisable
