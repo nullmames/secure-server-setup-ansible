@@ -15,6 +15,25 @@
       proto: tcp
       comment: External - avalanchego
 
+- name: Create folder structure for data and config
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ user_dir }}/docker-compose/avalanchego-data"
+    - "{{ user_dir }}/docker-compose/avalanchego-config"
+    - "{{ user_dir }}/docker-compose/avalanchego-config/C"
+
+- name: Copy C-Chain config for use
+  become: true
+  ansible.builtin.copy:
+    src: files/C-config.json
+    dest: "{{ user_dir }}/docker-compose/avalanchego-config/C/config.json"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
 - name: Run avalanchego container
   community.docker.docker_container:
     name: avalanchego
@@ -23,12 +42,14 @@
     state: started
     stop_timeout: 600
     network_mode: host
+    pull: true
     volumes:
       - "{{ user_dir }}/docker-compose/avalanchego-data:/avalanchego-data"
+      - "{{ user_dir }}/docker-compose/avalanchego-config:/avalanchego-config"
       - /etc/localtime:/etc/localtime:ro
     command:
       - /avalanchego/build/avalanchego
       - --data-dir=/avalanchego-data
+      - --chain-config-dir=/avalanchego-config
       - --http-host=0.0.0.0
       - --log-level=info
-      - --state-sync-enabled=false # Per RMN Documentation
