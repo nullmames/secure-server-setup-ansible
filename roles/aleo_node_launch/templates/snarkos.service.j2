@@ -10,7 +10,8 @@ User={{ ansible_user }}
 
 WorkingDirectory={{ user_dir }}/{{ folder }}
 
-ExecStart=/usr/local/bin/snarkos start --nodisplay --logfile /dev/null --verbosity 2 --private-key-file {{ user_dir }}/{{ folder }}/validator.key --validator --validators "{{ seeds }}"
+# ExecStart=/usr/local/bin/snarkos start --nodisplay --logfile /dev/null --verbosity 2 --private-key-file {{ user_dir }}/{{ folder }}/validator.key --validator --validators "{{ seeds }}"
+ExecStart=/usr/local/bin/snarkos start --nodisplay --logfile /dev/null --verbosity 2 --client
 ExecStop=/bin/kill -s INT ${MAINPID}
 Restart=on-failure
 RestartSec=5
