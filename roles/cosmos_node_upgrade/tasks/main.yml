@@ -15,6 +15,19 @@
     remote_src: true
     mode: "0755"
 
+- name: Stat /tmp/libwasmvm.x86_64.so
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/go/bin/libwasmvm.x86_64.so"
+  register: libwasm
+
+- name: Copy libwasmvm if exists
+  when: libwasm.stat.exists
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/go/bin/libwasmvm.x86_64.so"
+    dest: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
+    mode: "0644"
+    remote_src: true
+
 - name: Save version
   ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin/{{ daemon }} version"
   register: version
