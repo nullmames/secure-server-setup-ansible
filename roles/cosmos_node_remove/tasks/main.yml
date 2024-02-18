@@ -1,0 +1,31 @@
+---
+# This role will remove the associated binary from target
+
+- name: Stop and disable service
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ daemon }}"
+    daemon_reload: true
+    state: stopped
+    enabled: false
+
+- name: Remove service file
+  become: true
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ daemon }}.service"
+    state: absent
+
+- name: Remove state_sync script
+  ansible.builtin.file:
+    path: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+    state: absent
+
+- name: Remove binary from go/bin
+  ansible.builtin.file:
+    path: "{{ user_dir }}/go/bin/{{ daemon }}"
+    state: absent
+
+- name: Remove chain folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/"
+    state: absent
