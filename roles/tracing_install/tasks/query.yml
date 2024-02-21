@@ -1,13 +1,6 @@
 ---
 # Run Jaeger Query/UI components
 
-- name: Copy config file
-  ansible.builtin.copy:
-    src: "queryuiconfig.json"
-    dest: "{{ user_dir }}/docker-compose/queryuiconfig.json"
-    mode: "0644"
-  register: queryuiconfig_changed
-
 - name: Docker login to ghcr.io
   community.docker.docker_login:
     registry_url: ghcr.io/confio/cosmwasm-tracing-ui
@@ -19,16 +12,13 @@
   community.docker.docker_container:
     name: jaeger-query
     image: ghcr.io/confio/cosmwasm-tracing-ui:{{ confio_version }}
-    #    image: jaegertracing/jaeger-query:{{ jaeger_version }}
     restart_policy: unless-stopped
-    #    restart: "{{ queryuiconfig_changed.changed | default(false) }}"
     state: started
     stop_timeout: 200
     network_mode: host
     pull: true
-    #    volumes:
-    #      - "{{ user_dir }}/docker-compose/queryuiconfig.json:/queryuiconfig.json"
     env:
       SPAN_STORAGE_TYPE: elasticsearch
       ES_SERVER_URLS: http://100.100.1.221:9200,http://100.100.1.222:9200
-#      QUERY_UI_CONFIG: /queryuiconfig.json
+      ES_USE_ALIASES: "false"
+      ES_MAX_SPAN_AGE: 168h0m0s
