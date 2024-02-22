@@ -2,11 +2,9 @@
 # Prep upgrade in cosmovisor
 - name: Create cosmovisor upgrade directory
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
     state: directory
     mode: "0755"
-  with_items:
-    - "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
 
 - name: Copy upgraded binary to upgrade directory
   ansible.builtin.copy:
@@ -15,18 +13,20 @@
     remote_src: true
     mode: "0755"
 
-- name: Stat /tmp/libwasmvm.x86_64.so
-  ansible.builtin.stat:
-    path: "{{ user_dir }}/go/bin/libwasmvm.x86_64.so"
-  register: libwasm
+- name: Check if libraries present
+  ansible.builtin.find:
+    path: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+    patterns: "*.so"
+  register: libraries
 
-- name: Copy libwasmvm if exists
-  when: libwasm.stat.exists
+- name: Copy libraries
+  when: libraries.matched != 0
   ansible.builtin.copy:
-    src: "{{ user_dir }}/go/bin/libwasmvm.x86_64.so"
+    src: "{{ item.path }}"
     dest: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
     mode: "0644"
     remote_src: true
+  loop: "{{ libraries.files }}"
 
 - name: Save version
   ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin/{{ daemon }} version"

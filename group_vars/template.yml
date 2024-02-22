@@ -27,8 +27,5 @@ snapshot_url:
 # [Optional] Prep for upgrade in cosmovisor
 upgrade_name:
 
-# Skip configuration
-skip_version:
-sentinel_peer_string:
-sentinel_rpc_string:
-skip_api_key:
+# If there's a library sidecar in binary downloads
+ib_sidecar: false

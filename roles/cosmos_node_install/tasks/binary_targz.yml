@@ -1,20 +1,66 @@
 ---
+- name: Remove and create temp directory
+  ansible.builtin.file:
+    path: /tmp/binary
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
 - name: Download binary
   ansible.builtin.get_url:
     url: "{{ binary }}"
-    dest: "/tmp/binary.tar.gz"
-    mode: "0700"
-    force: true
+    dest: "/tmp/binary/binary.tar.gz"
+    mode: "0644"
+    force: false
 
 - name: Unarchive binary file
-  ansible.builtin.command:
-    cmd: "tar -zxf binary.tar.gz"
-  args:
-    chdir: /tmp/
+  ansible.builtin.unarchive:
+    src: "/tmp/binary/binary.tar.gz"
+    remote_src: true
+    dest: "/tmp/binary"
+
+- name: Check if libraries present
+  ansible.builtin.find:
+    paths: /tmp/binary
+    patterns: "*.so"
+  register: libraries
 
 - name: Copy binary
   ansible.builtin.copy:
     remote_src: true
-    src: "/tmp/build/{{ binary_name }}"
+    src: "/tmp/binary/{{ binary_name | default(daemon, true) }}"
     dest: "{{ user_dir }}/go/bin/{{ daemon }}"
     mode: "0755"
+
+- name: Copy libraries
+  when: libraries.matched != 0
+  block:
+    - name: Create lib folder in home dir
+      ansible.builtin.file:
+        path: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+        state: directory
+        mode: "0755"
+
+    - name: Copy to home dir
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ libraries.files }}"
+
+    - name: Copy to /usr/lib
+      become: true
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "/usr/lib/"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ libraries.files }}"
+
+- name: Cleanup
+  ansible.builtin.file:
+    path: "/tmp/binary"
+    state: absent
