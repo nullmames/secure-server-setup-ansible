@@ -73,3 +73,16 @@
       - --execution-jwt=/root/.lighthouse/jwtsecret
       - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
       - --disable-deposit-contract-sync
+
+- name: Prune unused docker containers and images
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output

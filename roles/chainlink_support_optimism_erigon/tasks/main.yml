@@ -121,3 +121,16 @@
       ## Interfaces
       - --rpc.addr=0.0.0.0
       - --rpc.port=9545
+
+- name: Prune unused docker containers and images
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output
