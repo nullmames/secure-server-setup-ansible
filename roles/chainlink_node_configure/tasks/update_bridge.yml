@@ -53,12 +53,13 @@
   environment:
     PATH: "{{ path }}"
 
-- name: Prune everything
+- name: Prune unused docker containers and images
   community.docker.docker_prune:
     containers: true
     images: true
-    images_filters:
-      dangling: false
+    networks: true
+    volumes: true
+    builder_cache: true
   register: prune_output
 
 - name: Review prune output
