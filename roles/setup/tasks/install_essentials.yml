@@ -1,5 +1,5 @@
 ---
-- name: Install essentials
+- name: Install universal essentials
   ansible.builtin.apt:
     name:
       - logrotate
@@ -37,10 +37,23 @@
       - bwm-ng
       - iotop
       - zstd
-      - firmware-linux-nonfree
     state: present
     update_cache: true
     cache_valid_time: 3600
+
+- name: Install Debian essentials
+  when: ansible_distribution == "Debian"
+  ansible.builtin.apt:
+    name:
+      - firmware-linux-nonfree
+    state: present
+
+- name: Install Ubuntu essentials
+  when: ansible_distribution == "Ubuntu"
+  ansible.builtin.apt:
+    name:
+      - "linux-generic-hwe-{{ ansible_distribution_version }}"
+    state: present
 
 # Set timezone to UTC
 - name: Set timezone to UTC
