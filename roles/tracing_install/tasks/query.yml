@@ -8,10 +8,10 @@
     password: "{{ docker_token }}"
     reauthorize: true
 
-- name: Run Jaeger Query
+- name: Run Jaeger Query - Production
   community.docker.docker_container:
     name: jaeger-query
-    image: ghcr.io/confio/cosmwasm-tracing-ui:{{ confio_version }}
+    image: ghcr.io/confio/cosmwasm-tracing-ui:{{ confio_production_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 200
@@ -22,3 +22,34 @@
       ES_SERVER_URLS: http://100.100.1.221:9200,http://100.100.1.222:9200
       ES_USE_ALIASES: "false"
       ES_MAX_SPAN_AGE: 168h0m0s
+
+- name: Run Jaeger Query - Staging
+  community.docker.docker_container:
+    name: jaeger-query-staging
+    image: ghcr.io/confio/cosmwasm-tracing-ui:{{ confio_staging_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 200
+    network_mode: host
+    pull: true
+    env:
+      SPAN_STORAGE_TYPE: elasticsearch
+      ES_SERVER_URLS: http://100.100.1.221:9200,http://100.100.1.222:9200
+      ES_USE_ALIASES: "false"
+      ES_MAX_SPAN_AGE: 168h0m0s
+      QUERY_GRPC_SERVER_HOST_PORT: ":26685"
+      QUERY_HTTP_SERVER_HOST_PORT: ":26686"
+      ADMIN_HTTP_HOST_PORT: ":26687"
+
+- name: Prune unused docker containers and images
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output
