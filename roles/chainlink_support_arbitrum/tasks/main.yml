@@ -8,7 +8,7 @@
   ansible.builtin.file:
     dest: "{{ item }}"
     state: directory
-    mode: "0777"
+    mode: "0755"
     recurse: true
   loop:
     - "{{ user_dir }}/docker-compose/arbitrum"
@@ -28,6 +28,7 @@
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
     command:
       - --parent-chain.connection.url={{ ethereum_l1 }}
+      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_beacon }}
       - --chain.name=arb1
       - --http.port=8547
       - --http.addr=0.0.0.0
@@ -43,3 +44,16 @@
       - --node.staker.enable=false # Remove watchtower mode
       - --rpc.max-batch-response-size=200000000 # Per RMN Documentation
       # - --init.prune=full # Prune at startup
+
+- name: Prune unused docker containers and images
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output
