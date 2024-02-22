@@ -1,6 +1,7 @@
 {
   "files.associations": {
-    "*.yml": "ansible",
+    "*.yml": "ansible"
   },
   "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
+  "ansibleVault.executable": "/opt/homebrew/bin/ansible-vault"
 }
