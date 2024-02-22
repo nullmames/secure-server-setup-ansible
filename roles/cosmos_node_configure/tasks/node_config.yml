@@ -182,19 +182,6 @@
     state: present
     backrefs: true
 
-- name: Add Skip configuration
-  when: sentinel_peer_string is defined
-  ansible.builtin.blockinfile:
-    insertafter: EOF
-    dest: "{{ user_dir }}/{{ folder }}/config/config.toml"
-    create: true
-    state: present
-    content: |
-      [sidecar]
-      sentinel_peer_string = "{{ sentinel_peer_string }}"
-      sentinel_rpc_string = "{{ sentinel_rpc_string }}"
-      api_key = "{{ skip_api_key }}"
-
 - name: Set IAVL and related items (if present)
   when: rpc is defined
   ansible.builtin.lineinfile:
@@ -211,3 +198,11 @@
         regexp: "^simulation_gas_limit",
         line: "simulation_gas_limit = 50000000",
       }
+
+- name: Update minimum gas price on config file
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "^minimum-gas-prices ="
+    line: 'minimum-gas-prices = "{{ minimum_gas_price }}"'
+    state: present
+  when: minimum_gas_price is defined
