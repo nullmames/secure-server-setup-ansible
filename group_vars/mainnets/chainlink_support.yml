@@ -10,7 +10,7 @@ geth_version: v1.13.12
 lighthouse_version: v4.6.0
 
 # Arbitrum version - offchainlabs/nitro-node
-nitro_version: v2.2.5-a20a1c7
+nitro_version: v2.3.0-3e14543
 
 # Avalanche version
 avalanchego_version: latest
@@ -26,7 +26,7 @@ bor_version: 1.2.3
 heimdall_version: 1.0.3
 
 # Base version
-base_version: v0.6.1
+base_version: v0.7.1
 
 # BNBChain
 # Versions pulled from https://api.github.com/repos/bnb-chain/bsc/releases/latest
