@@ -1,27 +1,57 @@
 ---
-- name: Install haproxy repository key
-  become: true
-  ansible.builtin.get_url:
-    url: "https://haproxy.debian.net/bernat.debian.org.gpg"
-    dest: /usr/share/keyrings/haproxy.debian.net.asc
-    mode: "0644"
-    force: true
+- name: Instally haproxy on Debian
+  when: ansible_distribution == "Debian"
+  block:
+    - name: Install haproxy repository key
+      become: true
+      ansible.builtin.get_url:
+        url: "https://haproxy.debian.net/bernat.debian.org.gpg"
+        dest: /usr/share/keyrings/haproxy.debian.net.asc
+        mode: "0644"
+        force: true
 
-- name: Install haproxy repository
-  become: true
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.asc] http://haproxy.debian.net/ {{ ansible_distribution_release }}-backports-2.8 main"
-    state: present
-    update_cache: true
+    - name: Install haproxy repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.asc] http://haproxy.debian.net/ {{ ansible_distribution_release }}-backports-2.8 main"
+        state: present
+        update_cache: true
 
-- name: Install haproxy
-  become: true
-  ansible.builtin.apt:
-    name:
-      - haproxy=2.8.*
-    state: present
-    update_cache: true
-  notify: Restart haproxy
+    - name: Install haproxy
+      become: true
+      ansible.builtin.apt:
+        name:
+          - haproxy=2.8.*
+        state: present
+        update_cache: true
+      notify: Restart haproxy
+
+- name: Install haproxy on Ubuntu
+  when: ansible_distribution == "Ubuntu"
+  block:
+    - name: Install haproxy repository key
+      become: true
+      ansible.builtin.get_url:
+        url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xcffb779aadc995e4f350a060505d97a41c61b9cd"
+        dest: /usr/share/keyrings/haproxy.debian.net.asc
+        mode: "0644"
+        force: true
+
+    - name: Install haproxy repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.asc] https://ppa.launchpadcontent.net/vbernat/haproxy-2.8/ubuntu {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: true
+
+    - name: Install haproxy
+      become: true
+      ansible.builtin.apt:
+        name:
+          - haproxy=2.8.*
+        state: present
+        update_cache: false
+      notify: Restart haproxy
 
 - name: Copy all certificates
   become: true
