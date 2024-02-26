@@ -1,7 +1,7 @@
 network: chainlink_afn
 folder: chainlink_afn
 repo: smartcontractkit/risk-management-network-alpha.git
-node_version: 4501943763cd33d595db067f475078a62db60320 # 02/08/2024
+node_version: c09a3f7234d6b3e8b434e0e808edd335bfe40b1f # 02/23/2024
 shared_config_version: 4501943763cd33d595db067f475078a62db60320 # 02/08/2024
 
 # Grafana dashboard

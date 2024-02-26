@@ -3,8 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: ea5d477b82d80b278c6577a467ee1c8d4c7465d9 # 3.6.2
-# node_version: v3.6.2 # 01/25/2024
+node_version: de428b1bcfaa6e5c6a47db2b76eedba5abb56a25 # 3.7.0
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
@@ -13,7 +12,7 @@ peers: "42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb@136.243.71.227:11956,d7ad900ff4
 minimum_gas_price: "0.02usei" # Set on 2/18/24
 
 # Upgrade
-upgrade_name: v3.6.1
+upgrade_name: v3.7.0
 
 # Tendermint config version
 tendermint_config_version: 37

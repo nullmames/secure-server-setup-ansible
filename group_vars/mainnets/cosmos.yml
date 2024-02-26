@@ -17,4 +17,4 @@ upgrade_name: v14
 # Force to 1.20
 go_release: "go1.20.11"
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_19135918.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_19275226.tar.lz4

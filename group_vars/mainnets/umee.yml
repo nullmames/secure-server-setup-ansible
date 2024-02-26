@@ -12,3 +12,5 @@ minimum_gas_price: "0.1uumee"
 upgrade_name: v6.3
 
 snap_rpc: https://umee-rpc.polkachu.com:443
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/umee/umee_10764506.tar.lz4

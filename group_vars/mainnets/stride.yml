@@ -14,3 +14,5 @@ snap_rpc: "https://stride-rpc.polkachu.com:443"
 # snapshot_minute: 30
 
 upgrade_name: v18
+
+snapshot_url: https://snapshots.polkachu.com/snapshots/stride/stride_7861336.tar.lz4
