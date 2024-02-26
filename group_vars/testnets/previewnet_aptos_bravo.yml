@@ -1,0 +1,17 @@
+network: aptos
+folder: previewnet_bravo
+repo: https://github.com/aptos-labs/aptos-core
+node_version: ae0a6fd44bad3ebdd80d074c54bba32ef5653827 #
+genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/previewnet3/genesis.blob #
+waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/previewnet3/waypoint.txt #
+p2p_port: 6180
+p2p_port_vfn: 6182
+api_port: 8080
+
+# Build profile
+build_profile: release
+
+# Grafana dashboard
+dashboardUID: bz8kPr673
+
+hotfix_binary_url: #
