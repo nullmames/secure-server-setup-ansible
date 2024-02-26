@@ -1,6 +1,33 @@
 ---
 # Stand up docker containers supporing Confio's tracing stack.
 #
+- name: Start redis
+  when: tracing_role is defined
+  community.docker.docker_container:
+    name: redis
+    image: redis:latest
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    ports:
+      - "{{ nebula_internal_ip_addr }}:6379:6379"
+
+- name: Start Cadvisor
+  when: tracing_role is defined
+  community.docker.docker_container:
+    name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    ports:
+      - "{{ nebula_internal_ip_addr }}:9494:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+
 # Agent / Collector install
 - name: Install agent/collectors
   when: '"jaeger_collector" in tracing_role'
