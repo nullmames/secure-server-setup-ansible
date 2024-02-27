@@ -38,3 +38,6 @@ bnbchain_snapshot_url: https://snapshots.48.club/geth.full.33620169.tar.zst
 # Kroma
 kroma_geth_version: v0.2.1
 kroma_node_version: v1.0.0
+
+# Scroll
+scroll_l2geth_version: v5.1.10
