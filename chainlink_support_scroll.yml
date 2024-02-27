@@ -1,0 +1,9 @@
+---
+- name: Chainlink support node - Scroll blockchain
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/mainnets/chainlink_support.yml"
+  roles:
+    - util_install_docker
+    - chainlink_support_scroll
