@@ -1,0 +1,58 @@
+---
+# Scroll Blockchain support structure with host networking
+# Ports: p2p: 50303, rpc: 58545, ws: 59546
+
+- name: Open p2p ports for l2geth
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 50303
+      comment: External - Scroll l2geth p2p
+
+- name: Run l2geth container
+  community.docker.docker_container:
+    name: scroll-geth
+    image: scrolltech/l2geth:scroll-{{ scroll_l2geth_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    network_mode: host
+    volumes:
+      - "{{ user_dir }}/docker-compose/scroll-geth:/scroll-geth"
+    command:
+      # Scroll chain specific
+      - --scroll
+      - --l1.endpoint={{ ethereum_l1 }}
+      - --l1.confirmations=finalized
+      - --cache.noprefetch
+      # General
+      - --datadir=/scroll-geth
+      - --gcmode=archive
+      - --port=50303
+      # RPC/WS
+      - --http
+      - --http.port=58545
+      - --http.addr=0.0.0.0
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      - --http.api=eth,net,web3,debug,scroll
+      - --ws
+      - --ws.port=58546
+      - --ws.addr=0.0.0.0
+      - --ws.origins=*
+
+- name: Prune unused docker containers and images
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true
+  register: prune_output
+
+- name: Review prune output
+  ansible.builtin.debug:
+    var: prune_output
