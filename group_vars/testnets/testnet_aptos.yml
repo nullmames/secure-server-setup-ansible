@@ -1,7 +1,7 @@
 network: aptos
 folder: testnet
 repo: https://github.com/aptos-labs/aptos-core
-node_version: 4f95626bad4259993cd6164f22135b6441d5b0b3 # 1.8.3
+node_version: b24f6cd08f84b179e49090c7e51a501c535096ca # 1.10.0 - 3/4/2024
 genesis_blob: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/genesis.blob
 waypoint: https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/waypoint.txt
 p2p_port: 6180
