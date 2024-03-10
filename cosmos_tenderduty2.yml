@@ -5,3 +5,4 @@
 
   roles:
     - cosmos_tenderduty2
+    - util_docker_prune

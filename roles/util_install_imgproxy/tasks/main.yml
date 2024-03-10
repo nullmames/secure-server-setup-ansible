@@ -2,7 +2,7 @@
 # Install imgproxy for Stargaze API image management
 # - name: Install Docker
 #   ansible.builtin.import_role:
-#     name: util_install_docker
+#     name: util_docker_install
 
 - name: Login to imgproxy registry
   community.docker.docker_login:

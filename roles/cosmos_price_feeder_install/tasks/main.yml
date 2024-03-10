@@ -1,0 +1,15 @@
+---
+# Install new price feeder for chain
+- name: Get chain information from cosmos.directory
+  delegate_to: localhost
+  ansible.builtin.uri:
+    url: https://chains.cosmos.directory/{{ network }}
+    body_format: json
+    return_content: true
+    headers:
+      Content-Type: application/json
+  register: chain_data
+
+- name: debug
+  debug:
+    msg: "{{ chain_data.json.chain.bech32_prefix }}"

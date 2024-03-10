@@ -3,5 +3,6 @@
   hosts: confio
   gather_facts: true
   roles:
-    # - util_install_docker
+    - util_docker_install
     - tracing_install
+    - util_docker_prune

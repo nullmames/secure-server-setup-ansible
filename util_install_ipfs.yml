@@ -5,5 +5,5 @@
   roles:
     - { role: util_install_ipfs, when: ipfs_role is defined }
     - { role: util_install_ipfs_cluster, when: ipfs_role is defined }
-    - util_install_docker
+    - util_docker_install
     - util_install_imgproxy

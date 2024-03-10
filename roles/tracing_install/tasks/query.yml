@@ -40,16 +40,3 @@
       QUERY_GRPC_SERVER_HOST_PORT: ":26685"
       QUERY_HTTP_SERVER_HOST_PORT: ":26686"
       ADMIN_HTTP_HOST_PORT: ":26687"
-
-- name: Prune unused docker containers and images
-  community.docker.docker_prune:
-    containers: true
-    images: true
-    networks: true
-    volumes: true
-    builder_cache: true
-  register: prune_output
-
-- name: Review prune output
-  ansible.builtin.debug:
-    var: prune_output

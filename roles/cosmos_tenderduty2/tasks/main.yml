@@ -25,15 +25,3 @@
         chdir: "{{ user_dir }}/docker-compose"
       environment:
         PATH: "{{ path }}"
-
-    - name: Prune everything
-      community.docker.docker_prune:
-        containers: true
-        images: true
-        images_filters:
-          dangling: false
-      register: prune_output
-
-    - name: Review prune output
-      ansible.builtin.debug:
-        var: prune_output
