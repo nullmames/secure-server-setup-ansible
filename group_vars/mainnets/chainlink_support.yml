@@ -13,7 +13,7 @@ lighthouse_version: v5.0.0
 nitro_version: v2.3.0-3e14543
 
 # Avalanche version
-avalanchego_version: v1.11.1
+avalanchego_version: v1.11.2
 
 # Optimism versions
 op_node_version: v1.5.1
@@ -22,8 +22,8 @@ op_geth_version: v1.101305.3
 op_erigon_version: 2.55.1-0.4.1-amd64
 
 # Polygon versions
-bor_version: 1.2.3
-heimdall_version: 1.0.3
+bor_version: 1.2.7
+heimdall_version: 1.0.4
 
 # Base version
 base_version: v0.7.1
@@ -41,3 +41,7 @@ kroma_node_version: v1.0.0
 
 # Scroll
 scroll_l2geth_version: v5.1.10
+
+# Gnosis
+gnosis_nethermind_version: latest
+gnosis_lighthouse_version: latest-modern
