@@ -75,6 +75,34 @@
   notify: Restart haproxy
   with_fileglob: "templates/scripts/*.sh"
 
+- name: Create fragments directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/haproxy/fragments
+    state: directory
+
+- name: Download Cloudflare whitelist
+  become: true
+  ansible.builtin.get_url:
+    url: "https://www.cloudflare.com/ips-v4/#"
+    dest: "/etc/haproxy/fragments/cloudflare_whitelist.txt"
+    mode: "0644"
+
+- name: Add uptime robot whitelist
+  become: true
+  ansible.builtin.get_url:
+    url: "https://uptime.betterstack.com/ips.txt"
+    dest: "/etc/haproxy/fragments/uptimerobot_whitelist.txt"
+    mode: "0644"
+
+- name: Concatenate whitelist files
+  notify: Restart haproxy
+  become: true
+  ansible.builtin.assemble:
+    src: "/etc/haproxy/fragments/"
+    dest: "/etc/haproxy/whitelist.txt"
+    mode: "0644"
+
 - name: Copy haproxy config
   become: true
   ansible.builtin.template:
