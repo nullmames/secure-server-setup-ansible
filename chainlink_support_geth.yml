@@ -7,3 +7,4 @@
   roles:
     - util_docker_install
     - chainlink_support_geth
+    - util_docker_prune
