@@ -2,7 +2,7 @@ network: odin
 folder: ".odin"
 daemon: odind
 chain_id: odin-mainnet-freya
-node_version: v0.7.9
+node_version: 00ae85d4df52a4e2e86b78698fbd82db35168360 # hotfix
 repo: https://github.com/ODIN-PROTOCOL/odin-core
 genesis: https://storage.googleapis.com/odin-mainnet-freya/genesis-4.1.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:16856"
@@ -11,6 +11,8 @@ minimum_gas_price: "0.0125loki"
 custom_port_prefix: 168
 
 snap_rpc: http://34.79.179.216:26657
+
+upgrade_name: v0.7.11
 
 # [Optional] Snapshot
 snapshot_hour: 1

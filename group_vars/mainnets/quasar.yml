@@ -3,7 +3,7 @@ network: quasar
 folder: ".quasarnode"
 daemon: quasarnoded
 chain_id: quasar-1
-node_version: v1.0.0
+node_version: v1.0.1
 repo: https://github.com/quasar-finance/quasar.git
 genesis: https://raw.githubusercontent.com/quasar-finance/networks/main/quasar-1/definitive-genesis.json
 minimum_gas_price: "0.01uqsr"

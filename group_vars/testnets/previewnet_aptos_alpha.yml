@@ -1,7 +1,7 @@
 network: aptos
 folder: previewnet_alpha
 repo: https://github.com/aptos-labs/aptos-core
-node_version: 6c254dd9248e4fb9a7356db9b85d0268d18ad2fe # 03/06/2024
+node_version: 589f0c88c64e1d2694cc8d75f174f4d23b451cdf # 03/12/2024
 genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/previewnet3/genesis.blob #
 waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/previewnet3/waypoint.txt #
 p2p_port: 6180
