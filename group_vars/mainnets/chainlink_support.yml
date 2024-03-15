@@ -6,27 +6,27 @@ ethereum_l1_ws: "ws://100.100.3.110:5001"
 ethereum_l1_beacon: "http://100.100.3.110:5002"
 
 # Ethereum versions
-geth_version: v1.13.13
-lighthouse_version: v5.0.0
+geth_version: v1.13.14
+lighthouse_version: v5.1.0
 
 # Arbitrum version - offchainlabs/nitro-node
-nitro_version: v2.3.0-3e14543
+nitro_version: v2.3.1-26fad6f
 
 # Avalanche version
 avalanchego_version: v1.11.2
 
 # Optimism versions
-op_node_version: v1.5.1
+op_node_version: v1.7.0
 #
-op_geth_version: v1.101305.3
-op_erigon_version: 2.55.1-0.4.1-amd64
+op_geth_version: v1.101308.2
+op_erigon_version: 2.55.1-0.4.3-amd64
 
 # Polygon versions
 bor_version: 1.2.7
 heimdall_version: 1.0.4
 
 # Base version
-base_version: v0.7.1
+base_version: v0.8.0
 
 # BNBChain
 # Versions pulled from https://api.github.com/repos/bnb-chain/bsc/releases/latest
