@@ -10,7 +10,7 @@
         version: "{{ node_version }}"
         update: true
         force: true
-        recursive: false
+        recursive: true
 
     - name: Change repo folder permission
       ansible.builtin.file:
@@ -19,18 +19,6 @@
         group: "{{ ansible_user }}"
         recurse: true
         mode: "0755"
-
-    - name: Skip replace tendermint
-      ansible.builtin.command: "{{ item }}"
-      with_items:
-        - "go mod edit -replace github.com/tendermint/tendermint=github.com/skip-mev/mev-tendermint@{{ skip_version }}"
-        - "go mod tidy"
-      args:
-        chdir: "{{ user_dir }}/source/{{ network }}"
-      environment:
-        PATH: "{{ path }}"
-        GOPATH: "{{ user_dir }}/go"
-      when: skip_version is defined
 
     - name: Build and install node to go/bin folder
       ansible.builtin.command: "{{ item }}"
