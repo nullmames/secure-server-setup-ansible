@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "arctic-1"
-node_version: v4.1.4-evm-devnet
+node_version: v4.1.5-evm-devnet
 repo: https://github.com/sei-protocol/sei-chain
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/arctic-1/genesis.json
 custom_port_prefix: 119
@@ -15,7 +15,7 @@ tendermint_config_version: 37
 
 snap_rpc: https://rpc.arctic-1.seinetwork.io:443
 
-upgrade_name: v4.1.4-evm-devnet
+upgrade_name: v4.1.5-evm-devnet
 
 p2p_state_sync: true
 
