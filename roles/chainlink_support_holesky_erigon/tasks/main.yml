@@ -1,0 +1,127 @@
+---
+# Prysm/erigon support structure for Holesky
+# Prysm: 13000/tcp, 12000/udp for p2p
+# Erigon: 30303/tcp/udp, 42069/tcp, 8545 rpc
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Open p2p ports
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop:
+    - port: 30303
+      proto: tcp
+      comment: External - erigon p2p
+    - port: 30303
+      proto: udp
+      comment: External - erigon p2p
+    - port: 42069
+      proto: tcp
+      comment: External - erigon torrent
+    - port: 13000
+      proto: tcp
+      comment: External - prysm p2p
+    - port: 12000
+      proto: udp
+      comment: External - prysm p2p
+
+- name: Add docker-compose and docker-data folders
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Create a network
+  community.docker.docker_network:
+    name: goerli_net
+
+- name: Create erigon-data folder
+  become: true
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/erigon-data"
+    state: directory
+    mode: "0755"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Run erigon container
+  community.docker.docker_container:
+    name: erigon
+    image: thorax/erigon:v2.58.2
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    stop_timeout: 600
+    networks:
+      - name: goerli_net
+    ports:
+      # p2p
+      - 30303:30303/tcp
+      - 30303:30303/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:8545:8545"
+      - 127.0.0.1:8545:8545
+      - "{{ nebula_internal_ip_addr }}:8546:8546"
+      - 127.0.0.1:8546:8546
+    volumes:
+      - "{{ user_dir }}/docker-compose/erigon-data:/erigon-data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/erigon-data/jwtsecret"
+    user: 1001:1002
+    command:
+      - --chain=holesky
+      - --datadir=/erigon-data
+      - --port=30303
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/erigon-data/jwtsecret
+      - --torrent.port=42069
+      - --private.api.addr=127.0.0.1:9090
+      - --http
+      - --ws
+      - --http.api=eth,debug,net,trace,web3,erigon
+      - --txpool.disable
+
+- name: Run prysm container
+  community.docker.docker_container:
+    name: prysm
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    stop_timeout: 600
+    networks:
+      - name: goerli_net
+    ports:
+      # p2p
+      - 13000:13000/tcp
+      - 12000:12000/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:3500:3500"
+      - 127.0.0.1:3500:3500
+    volumes:
+      - "{{ user_dir }}/docker-compose/prysm/data:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+    command:
+      - --holesky
+      - --datadir=/data
+      - --jwt-secret=/jwtsecret
+      - --p2p-host-ip={{ public_ip.content | trim }}
+      - --rpc-host=0.0.0.0
+      - --grpc-gateway-host=0.0.0.0
+      - --monitoring-host=0.0.0.0
+      - --execution-endpoint=http://erigon:8551
+      - --checkpoint-sync-url=https://holesky.beaconstate.info
+      - --genesis-beacon-api-url=https://holesky.beaconstate.info
+      - --accept-terms-of-use
