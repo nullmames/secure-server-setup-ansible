@@ -1,0 +1,158 @@
+---
+# Mantle v2
+# Ports:
+#  - Geth: 32545 (rpc), 32546 (ws)
+
+- name: Ensure mantle-data exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - mantle-data
+    - mantle-data/mantle-geth
+    - mantle-data/mantle-node
+
+- name: Create jwtsecret if it does not exist
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Check if mantle-data is populated
+  ansible.builtin.find:
+    paths: "{{ user_dir }}/docker-compose/mantle-data/mantle-geth"
+    file_type: any
+    hidden: false
+  register: mantle_data
+
+- name: Download and extract snapshot
+  when: mantle_data.matched == 0
+  block:
+    - name: Download snapshot
+      ansible.builtin.shell:
+        cmd: "aria2c -x10 -d {{ user_dir }} -o mantle-snapshot.tar.zst {{ mantle_snapshot_url }}"
+
+    - name: Extract snapshot
+      ansible.builtin.unarchive:
+        src: "{{ user_dir }}/mantle-snapshot.tar.zst"
+        dest: "{{ user_dir }}/docker-compose/mantle-data/mantle-geth"
+        remote_src: true
+
+- name: Download rollup.json file
+  ansible.builtin.copy:
+    src: "files/rollup.json"
+    dest: "{{ user_dir }}/docker-compose/mantle-data/mantle-node/rollup.json"
+    mode: "0644"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: mantle_net
+
+- name: Run op-geth container
+  community.docker.docker_container:
+    name: mantle-geth
+    image: mantlenetworkio/op-geth:{{ mantle_geth_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: mantle_net
+    volumes:
+      - "{{ user_dir }}/docker-compose/mantle-data/mantle-geth:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "{{ nebula_internal_ip_addr }}:32545:32545"
+      - 127.0.0.1:32545:32545
+      - "{{ nebula_internal_ip_addr }}:32546:32546"
+      - 127.0.0.1:32546:32546
+    entrypoint: geth
+    command:
+      # General
+      - --datadir=/data
+      - --verbosity=3
+      - --networkid=5003
+      # RPC
+      - --http
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --http.addr=0.0.0.0
+      - --http.port=32545
+      - --http.api=web3,eth,debug,txpool,net
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=32546
+      - --ws.origins=*
+      - --ws.api=web3,eth,debug,txpool,net
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/jwtsecret
+      - --pprof
+      - --pprof.addr=0.0.0.0
+      - --pprof.port=6060
+      # p2p
+      - --port=30300
+      - --syncmode=full
+      - --maxpeers=0
+      - --rpc.allow-unprotected-txs
+      - --gcmode=archive
+      # metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=9001
+      - --snapshot=false
+
+- name: Run mantle-node container
+  community.docker.docker_container:
+    name: mantle-node
+    image: mantlenetworkio/op-node:{{ mantle_node_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: mantle_net
+    volumes:
+      - "{{ user_dir }}/docker-compose/mantle-data/mantle-node:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      OP_NODE_L1_ETH_RPC: "{{ ethereum_l1 }}"
+      OP_NODE_L2_ENGINE_RPC: "http://mantle-geth:8551"
+      OP_NODE_L2_ENGINE_AUTH: "/jwtsecret"
+      OP_NODE_ROLLUP_CONFIG: "/data/rollup.json"
+      OP_NODE_P2P_PRIV_PATH: "/data/p2p_node_key_txt"
+      OP_NODE_VERIFIER_L1_CONFS: "3"
+      OP_NODE_RPC_ADDR: "0.0.0.0"
+      OP_NODE_RPC_PORT: "8545"
+      OP_NODE_P2P_LISTEN_IP: "0.0.0.0"
+      OP_NODE_P2P_LISTEN_TCP_PORT: "9003"
+      OP_NODE_P2P_LISTEN_UDP_PORT: "9003"
+      OP_NODE_P2P_PEER_SCORING: "light"
+      OP_NODE_P2P_PEER_BANNING: "true"
+      OP_NODE_METRICS_ENABLED: "true"
+      OP_NODE_METRICS_ADDR: "0.0.0.0"
+      OP_NODE_METRICS_PORT: "7300"
+      OP_NODE_PPROF_ENABLED: "true"
+      OP_NODE_PPROF_PORT: "6060"
+      OP_NODE_PPROF_ADDR: "0.0.0.0"
+      OP_NODE_P2P_DISCOVERY_PATH: "/data/opnode_discovery_db"
+      OP_NODE_P2P_PEERSTORE_PATH: "/data/opnode_peerstore_db"
+      OP_NODE_INDEXER_SOCKET: "da-indexer-api.mantle.xyz:443"
+      OP_NODE_INDEXER_ENABLE: "true"
+      OP_NODE_L2_BACKUP_UNSAFE_SYNC_RPC: "https://rpc.mantle.xyz"
+      OP_NODE_P2P_STATIC: "/dns4/peer0.mantle.xyz/tcp/9003/p2p/16Uiu2HAmKVKzUAns2gLhZAz1PYcbnhY3WpxNxUZYeTN1x29tNBAW,/dns4/peer1.mantle.xyz/tcp/9003/p2p/16Uiu2HAm1AiZtVp8f5C8LvpSTAXC6GtwqAVKnB3VLawWYSEBmcFN,/dns4/peer2.mantle.xyz/tcp/9003/p2p/16Uiu2HAm2UHVKiPXpovs8VbbUQVPr7feBAqBJdFsH1z5XDiLEvHT"
+      OP_NODE_SEQUENCER_ENABLED: "false"
+      OP_NODE_P2P_AGENT: "mantle"
+      OP_NODE_L2_ENGINE_SYNC_ENABLED: "true"
+      OP_NODE_L2_SKIP_SYNC_START_CHECK: "true"
+      OP_NODE_P2P_SYNC_REQ_RESP: "true"
+
+- name: Remove snapshot if exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/mantle-snapshot.tar.zst"
+    state: absent

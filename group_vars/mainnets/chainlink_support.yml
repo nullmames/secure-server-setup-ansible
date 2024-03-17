@@ -45,3 +45,8 @@ scroll_l2geth_version: v5.1.10
 # Gnosis
 gnosis_nethermind_version: latest
 gnosis_lighthouse_version: latest-modern
+
+# Mantle
+mantle_geth_version: v1.0.0-alpha.1
+mantle_node_version: v1.0.0-alpha.1
+mantle_snapshot_url: https://s3.ap-southeast-1.amazonaws.com/snapshot.mantle.xyz/mantle-fullnode.20240315.tar.zst # full node snapshot

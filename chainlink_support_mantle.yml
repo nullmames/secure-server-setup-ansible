@@ -1,0 +1,10 @@
+---
+- name: Chainlink support node - mantle
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/mainnets/chainlink_support.yml"
+  roles:
+    #- util_docker_install
+    - chainlink_support_mantle
+    - util_docker_prune
