@@ -68,10 +68,10 @@
       - 30303:30303/tcp
       - 30303:30303/udp
       # rpc
-      - "{{ nebula_internal_ip_addr }}:8545:8545"
-      - 127.0.0.1:8545:8545
-      - "{{ nebula_internal_ip_addr }}:8546:8546"
-      - 127.0.0.1:8546:8546
+      - 8545:8545
+      # - 127.0.0.1:8545:8545
+      - 8546:8546
+      # - 127.0.0.1:8546:8546
     volumes:
       - "{{ user_dir }}/docker-compose/erigon-data:/erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/erigon-data/jwtsecret"
@@ -80,8 +80,11 @@
       - --chain=holesky
       - --datadir=/erigon-data
       - --port=30303
+      # RPC
       - --http.addr=0.0.0.0
       - --http.port=8545
+      - --http.vhosts=*
+      - --http.corsdomain=*
       - --authrpc.addr=0.0.0.0
       - --authrpc.port=8551
       - --authrpc.vhosts=*
@@ -91,7 +94,6 @@
       - --http
       - --ws
       - --http.api=eth,debug,net,trace,web3,erigon
-      - --txpool.disable
 
 - name: Run prysm container
   community.docker.docker_container:
@@ -108,8 +110,8 @@
       - 13000:13000/tcp
       - 12000:12000/udp
       # rpc
-      - "{{ nebula_internal_ip_addr }}:3500:3500"
-      - 127.0.0.1:3500:3500
+      - 3500:3500
+      # - 127.0.0.1:3500:3500
     volumes:
       - "{{ user_dir }}/docker-compose/prysm/data:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
