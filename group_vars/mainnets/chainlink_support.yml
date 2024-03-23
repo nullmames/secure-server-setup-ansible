@@ -10,10 +10,10 @@ geth_version: v1.13.14
 lighthouse_version: v5.1.0
 
 # Arbitrum version - offchainlabs/nitro-node
-nitro_version: v2.3.1-26fad6f
+nitro_version: v2.3.2-064fa11
 
 # Avalanche version
-avalanchego_version: v1.11.2
+avalanchego_version: v1.11.1
 
 # Optimism versions
 op_node_version: v1.7.0
