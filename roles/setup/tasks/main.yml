@@ -11,5 +11,8 @@
 - name: Install essentials
   ansible.builtin.import_tasks: install_essentials.yml
 
+- name: Install mc
+  ansible.builtin.import_tasks: install_mc.yml
+
 - name: Install promtail
   ansible.builtin.import_tasks: install_promtail.yml
