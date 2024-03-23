@@ -39,15 +39,15 @@
     ansible_httpapi_pass: "{{ zabbix_login_pass }}"
     ansible_zabbix_url_path: "/"
   community.zabbix.zabbix_host:
-    host_name: "NODE-{{ network}}-{{ inventory_hostname }}"
-    visible_name: "NODE-{{ network}}-{{ inventory_hostname }}"
+    host_name: "NODE-{{ network }}-{{ inventory_hostname }}"
+    visible_name: "NODE-{{ network }}-{{ inventory_hostname }}"
     description: "{{ network }} node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})"
     host_groups:
       - Cosmos
       - Cosmos node
       - "{{ network }}"
     link_templates:
-      - Cosmos Nodes
+      - Cosmos Nodes - Base
     status: enabled
     state: present
     inventory_mode: manual
@@ -69,6 +69,8 @@
         dns: ""
         port: "10050"
     macros:
+      - macro: "{$SYSTEMD.NAME.SERVICE.MATCHES}"
+        value: "{{ daemon }}"
       - macro: "{$NODE_DAEMON}"
         value: "{{ daemon }}"
       - macro: "{$RPC_LOCAL_PORT}"
