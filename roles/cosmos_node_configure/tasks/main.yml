@@ -14,3 +14,11 @@
   ansible.builtin.import_tasks: node_config_37.yml
   when:
     - (tendermint_config_version is defined) and (tendermint_config_version == 37)
+
+- name: Open p2p port in ufw
+  become: true
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ custom_port_prefix }}56"
+    comment: p2p port for {{ network }}
