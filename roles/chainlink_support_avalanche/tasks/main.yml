@@ -3,6 +3,12 @@
 # Ports:
 #  - avalanchego: 9651 (p2p - public), 9650 (rpc)
 
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
 - name: Open p2p ports for avalanchego
   become: true
   community.general.ufw:
@@ -12,7 +18,7 @@
     comment: "{{ item.comment }}"
   loop:
     - port: 9651
-      proto: tcp
+      proto: any
       comment: External - avalanchego
 
 - name: Create folder structure for data and config
@@ -34,6 +40,10 @@
     group: "root"
     mode: "0644"
 
+- name: Create a network
+  community.docker.docker_network:
+    name: avax_net
+
 - name: Run avalanchego container
   community.docker.docker_container:
     name: avalanchego
@@ -41,8 +51,15 @@
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
     pull: true
+    networks:
+      - name: avax_net
+    ports:
+      # p2p
+      - 9651:9651/tcp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:9650:9650"
+      - 127.0.0.1:9650:9650
     volumes:
       - "{{ user_dir }}/docker-compose/avalanchego-data:/avalanchego-data"
       - "{{ user_dir }}/docker-compose/avalanchego-config:/avalanchego-config"
@@ -52,4 +69,6 @@
       - --data-dir=/avalanchego-data
       - --chain-config-dir=/avalanchego-config
       - --http-host=0.0.0.0
+      - --public-ip={{ public_ip.content | trim }}
+      - --staking-port=9651
       - --log-level=info
