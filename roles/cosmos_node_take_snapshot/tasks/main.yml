@@ -1,31 +1,44 @@
 ---
-- name: Add cosmprund repository
-  ansible.builtin.git:
-    repo: https://github.com/binaryholdings/cosmprund.git
-    dest: /home/{{ ansible_user }}/source/cosmprund
-    single_branch: true
-    force: true
-    version: "{{ cosmprund_version }}"
+- name: Check for mc
+  ansible.builtin.include_role:
+    name: setup
+    tasks_from: install_mc
 
-- name: Build cosmprund
-  ansible.builtin.command: "{{ item }}"
-  args:
-    chdir: "{{ user_dir }}/source/cosmprund"
-  with_items:
-    - "make build"
-  environment:
-    PATH: "{{ path }}"
-    GOPATH: "{{ user_dir }}/go"
+- name: Check for cosmprund
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/go/bin/cosmprund"
+  register: cosmprund
 
-- name: Copy cosmprund to directory
-  ansible.builtin.copy:
-    src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
-    dest: "{{ user_dir }}/go/bin/cosmprund"
-    remote_src: true
-    mode: "0755"
+- name: Install cosmprund
+  when: not cosmprund.stat.exists
+  block:
+    - name: Add cosmprund repository
+      ansible.builtin.git:
+        repo: https://github.com/binaryholdings/cosmprund.git
+        dest: "{{ user_dir }}/source/cosmprund"
+        single_branch: true
+        force: true
+        version: "{{ cosmprund_version }}"
+
+    - name: Build cosmprund
+      ansible.builtin.command: "make build"
+      args:
+        chdir: "{{ user_dir }}/source/cosmprund"
+      environment:
+        PATH: "{{ path }}"
+        GOPATH: "{{ user_dir }}/go"
+
+    - name: Copy cosmprund to directory
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
+        dest: "{{ user_dir }}/go/bin/cosmprund"
+        remote_src: true
+        mode: "0755"
 
 - name: Get current block height
-  ansible.builtin.shell: "curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r .result.sync_info.latest_block_height"
+  ansible.builtin.shell: "set -o pipefail && curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r .result.sync_info.latest_block_height"
+  args:
+    executable: /usr/bin/bash
   register: currentheight
 
 - name: Stop cosmovisor
@@ -55,10 +68,14 @@
     path: "{{ user_dir }}/{{ folder }}/data/wasm"
   register: wasm_inside
 
+- name: Set fact
+  ansible.builtin.set_fact:
+    snapshot_filename: "{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+
 - name: Create archive - external wasm
   when: wasm_outside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar --exclude=wasm/wasm/cache -cf - data wasm | lz4 > {{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    cmd: "tar --exclude=wasm/wasm/cache -cf - data wasm | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -66,7 +83,7 @@
 - name: Create archive - internal wasm
   when: wasm_inside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar --exclude=data/wasm/wasm/cache -cf - data | lz4 > {{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    cmd: "tar --exclude=data/wasm/wasm/cache -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -74,7 +91,7 @@
 - name: Create archive - no wasm
   when: not wasm_inside.stat.exists and not wasm_outside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar -cf - data | lz4 > {{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    cmd: "tar -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}4"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -85,18 +102,38 @@
     name: "{{ daemon }}"
     state: restarted
 
-- name: Copy files to snapshot
+- name: Set bucket name
+  ansible.builtin.set_fact:
+    bucket_name: "{% if 'Testnet' in group_names %}testnet-{% endif %}{{ network }}"
+
+- name: Create network bucket
   ansible.builtin.command:
-    cmd: "rsync -av --progress {{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4 rsync://10.254.110.101/share/"
+    cmd: "mc mb --ignore-existing snapshots/{{ bucket_name }}"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
+  register: bucket_created
+
+- name: Set public access on bucket
+  when: bucket_created.changed
+  ansible.builtin.command:
+    cmd: "mc anonymous set download snapshots/{{ bucket_name }}"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
+
+- name: Copy file to snapshots server
+  ansible.builtin.command:
+    cmd: "mc cp {{ snapshot_filename }} snapshots/{{ bucket_name }}/"
     chdir: "{{ user_dir }}"
   environment:
     PATH: "{{ path }}"
 
 - name: Cleanup temporary files
   ansible.builtin.file:
-    path: "{{ user_dir }}/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    path: "{{ user_dir }}/{{ snapshot_filename }}"
     state: absent
 
 - name: Print path
   ansible.builtin.debug:
-    msg: "Snapshot uploaded to: https://share.rhinostake.com/{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    msg: "Snapshot uploaded to: https://snapshots.rhinostake.com/{{ bucket_name }}/{{ snapshot_filename }}"
