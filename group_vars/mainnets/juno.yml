@@ -10,7 +10,7 @@ minimum_gas_price: "0.0025ujuno"
 custom_port_prefix: 126
 
 # StateSync
-snap_rpc: "https://rpc.cosmos.directory:443/juno"
+snap_rpc: "https://juno-rpc.polkachu.com:443"
 
 # # [Optional] Snapshot
 # snapshot_hour: 0

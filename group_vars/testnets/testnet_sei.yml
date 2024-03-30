@@ -16,8 +16,8 @@ tendermint_config_version: 37
 upgrade_name: v3.8.0
 
 # StateSync
-snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
-# snap_rpc: "http://localhost:5000"
+#snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
+snap_rpc: "http://100.100.3.8:11957"
 
 p2p_state_sync: true
 snap_rpc_height_buffer: 80000

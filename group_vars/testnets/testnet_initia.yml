@@ -1,17 +1,17 @@
 network: initia
 folder: ".initia"
 daemon: initiad
-chain_id: mahalo-1
+chain_id: mahalo-2
 ## Node info
-node_version: v0.2.0-beta.7.1
-binary: https://initia.s3.ap-southeast-1.amazonaws.com/mahalo-1/initia_v0.2.0-beta.7.1_Linux_x86_64.tar.gz
+node_version: v0.2.3
+binary: https://initia.s3.ap-southeast-1.amazonaws.com/mahalo-2/initia_v0.2.3_Linux_x86_64.tar.gz
 binary_processing: targz
 lib_sidecar: true
 #
 repo: https://github.com/initia-labs/initia
-genesis: https://raw.githubusercontent.com/initia-labs/networks/main/mahalo-1/genesis.json?token=GHSAT0AAAAAACFYAIYOGYZ7PQ4UUANXAGN6ZNKZZ4Q
-seeds:
-peers: "1b11f3ddc25d97fbe7f96fc4caec4c34fb26e6fa@34.143.171.2:26656"
+genesis: https://raw.githubusercontent.com/initia-labs/networks/main/mahalo-2/genesis.json?token=GHSAT0AAAAAACQC3QZPMVUUPRPVYNXLPJMKZQF3JJQ
+seeds: "20e1000e88125698264454a884812746c2eb4807@testnet-seeds.lavenderfive.com:25756"
+peers: "09446781fcc4cb0dc6b9331ab4fbe2bc6808fc15@34.87.121.251:26656"
 minimum_gas_price: "0.15uinit,0.01uusdc"
 custom_port_prefix: 257
 
