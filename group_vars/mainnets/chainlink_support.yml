@@ -7,19 +7,23 @@ ethereum_l1_beacon: "http://100.100.3.110:5002"
 
 # Ethereum versions
 geth_version: v1.13.14
-lighthouse_version: v5.1.0
+lighthouse_version: v5.1.3
 
 # Arbitrum version - offchainlabs/nitro-node
 nitro_version: v2.3.2-064fa11
 
 # Avalanche version
-avalanchego_version: v1.11.1
+avalanchego_version: v1.11.3
 
 # Optimism versions
-op_node_version: v1.7.0
+op_node_version: v1.7.2
 #
 op_geth_version: v1.101308.2
 op_erigon_version: 2.55.1-0.4.3-amd64
+
+# Base versions
+base_node_version: v1.7.2
+base_geth_version: v1.101308.2
 
 # Polygon versions
 bor_version: 1.2.7

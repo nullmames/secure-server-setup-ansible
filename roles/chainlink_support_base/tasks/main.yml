@@ -1,71 +1,142 @@
 ---
-# Base chain utilizing .env file from local
+# Base with op-node, op-geth.  Utilized snap-sync for sync
+# Base port prefix: 135
 # Ports:
-#  - geth: 8545 (rpc), 8546 (ws), 30303 (p2p-unused), 7301 (metrics)
-#  - node: 7545 (rpc), 9222 (p2p public), 7300 (metrics), 6060 (pprof)
+#  - Geth: 13503 (p2p - public), 13545 (rpc), 13546 (ws), 8551 (authrpc)
+#  - Node: 13509 (p2p - public), 13549 (rpc)
 
-- name: Ensure base-data exists
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Ensure op-geth-data exists
   ansible.builtin.file:
-    path: "{{ user_dir }}/docker-compose/base-data"
+    path: "{{ user_dir }}/docker-compose/{{ item }}"
     state: directory
     mode: "0755"
-
-- name: Update base repo
-  ansible.builtin.git:
-    repo: "https://github.com/base-org/node.git"
-    dest: "{{ user_dir }}/docker-compose/base"
-    version: "{{ base_version }}"
-    update: true
-    force: true
-    recursive: true
-
-- name: Update env file
-  ansible.builtin.template:
-    src: env.mainnet.j2
-    dest: "{{ user_dir }}/docker-compose/base/.env.mainnet"
-    mode: "0644"
-
-- name: Update docker-compose
-  ansible.builtin.template:
-    src: docker-compose.yml.j2
-    dest: "{{ user_dir }}/docker-compose/base/docker-compose.yml"
-    mode: "0644"
-
-- name: Check if base data is populated
-  ansible.builtin.find:
-    paths: "{{ user_dir }}/docker-compose/base-data"
-    file_type: any
-    hidden: false
-  register: base_data
-
-- name: Download and extract snapshot
-  when: base_data.matched == 0
-  block:
-    - name: Download snapshot
-      ansible.builtin.shell:
-        cmd: "aria2c -x6 -d {{ user_dir }} -o base-snapshot.tar.gz https://base-mainnet-archive-snapshots.s3.us-east-1.amazonaws.com/$(curl https://base-mainnet-archive-snapshots.s3.us-east-1.amazonaws.com/latest)"
-
-    - name: Extract snapshot
-      ansible.builtin.shell: "tar -zxvf {{ user_dir }}/base-snapshot.tar.gz -C {{ user_dir }}/docker-compose/base-data/ --strip-components 1"
-      environment:
-        PATH: "{{ path }}"
-
-- name: Open appropriate firewall ports for base
-  become: true
-  community.general.ufw:
-    rule: allow
-    proto: "{{ item.proto }}"
-    port: "{{ item.port }}"
-    comment: "{{ item.comment }}"
   loop:
-    - port: 9222
-      proto: any
-      comment: p2p port for base-node
+    - base
+    - base/op-geth-data
 
-- name: Update and launch containers
-  ansible.builtin.command:
-    cmd: "docker compose up --build -d"
+- name: Create jwtsecret if it does not exist
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
-    chdir: "{{ user_dir }}/docker-compose/base"
-  environment:
-    PATH: "{{ path }}"
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Create a network
+  community.docker.docker_network:
+    name: base_net
+
+- name: Run base-op-geth container
+  community.docker.docker_container:
+    name: base-op-geth
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ base_geth_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: base_net
+    ports:
+      # p2p
+      - 13503:13503/tcp
+      - 13503:13503/udp
+      # rpc
+      - 127.0.0.1:13545:8545
+      - "{{ nebula_internal_ip_addr }}:13545:8545"
+      - 127.0.0.1:13546:8546
+      - "{{ nebula_internal_ip_addr }}:13546:8546"
+      # metrics
+      - 127.0.0.1:13560:6060
+      - "{{ nebula_internal_ip_addr }}:13560:6060"
+    volumes:
+      - "{{ user_dir }}/docker-compose/base/op-geth-data:/op-geth-data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - --datadir=/op-geth-data
+      - --syncmode=snap
+      - --op-network=base-mainnet
+      ## Interfaces
+      # Consensus Layer Engine API
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/jwtsecret
+      # HTTP/RPC
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.corsdomain=*"
+      - --http.vhosts=*
+      - --http.api=web3,debug,eth,txpool,net,engine
+      # Websocket
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.origins=*
+      - --ws.api=web3,debug,eth,txpool,net,engine
+      # P2P
+      - --port=13503
+      - --discovery.port=13503
+      # Metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=6060
+      - --metrics.expensive
+      # Transaction & Chain Specific
+      - --rollup.sequencerhttp=https://mainnet-sequencer.base.org
+      - --rollup.disabletxpoolgossip=true
+      - --rollup.halt=major
+      - --rpc.gascap=0
+      - --rpc.txfeecap=0
+      - --ipcdisable
+
+- name: Run base-op-node container
+  community.docker.docker_container:
+    name: base-op-node
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ base_node_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: base_net
+    ports:
+      # p2p
+      - 13509:13509
+      # rpc
+      - 127.0.0.1:13549:9545
+      - "{{ nebula_internal_ip_addr }}:13549:9545"
+    volumes:
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - op-node
+      - --l1={{ ethereum_l1 }}
+      - --l1.beacon={{ ethereum_l1_beacon }}
+      - --l1.trustrpc
+      - --l2=http://base-op-geth:8551
+      - --l2.jwt-secret=/jwtsecret
+      - --network=base-mainnet
+      - --rollup.load-protocol-versions=true
+      # Syncing
+      - --syncmode=execution-layer
+      - --l1.max-concurrency=64
+      - --l1.rpc-rate-limit=0
+      - --l1.rpc-max-batch-size=500
+      # p2p
+      - --p2p.advertise.ip={{ public_ip.content | trim }}
+      - --p2p.listen.tcp=13509
+      - --p2p.agent=base
+      ## Interfaces
+      - --rpc.addr=0.0.0.0
+      - --rpc.port=9545
+      ## Bootnodes
+      - --p2p.bootnodes=enr:-J24QNz9lbrKbN4iSmmjtnr7SjUMk4zB7f1krHZcTZx-JRKZd0kA2gjufUROD6T3sOWDVDnFJRvqBBo62zuF-hYCohOGAYiOoEyEgmlkgnY0gmlwhAPniryHb3BzdGFja4OFQgCJc2VjcDI1NmsxoQKNVFlCxh_B-716tTs-h1vMzZkSs1FTu_OYTNjgufplG4N0Y3CCJAaDdWRwgiQG,enr:-J24QH-f1wt99sfpHy4c0QJM-NfmsIfmlLAMMcgZCUEgKG_BBYFc6FwYgaMJMQN5dsRBJApIok0jFn-9CS842lGpLmqGAYiOoDRAgmlkgnY0gmlwhLhIgb2Hb3BzdGFja4OFQgCJc2VjcDI1NmsxoQJ9FTIv8B9myn1MWaC_2lJ-sMoeCDkusCsk4BYHjjCq04N0Y3CCJAaDdWRwgiQG,enr:-J24QDXyyxvQYsd0yfsN0cRr1lZ1N11zGTplMNlW4xNEc7LkPXh0NAJ9iSOVdRO95GPYAIc6xmyoCCG6_0JxdL3a0zaGAYiOoAjFgmlkgnY0gmlwhAPckbGHb3BzdGFja4OFQgCJc2VjcDI1NmsxoQJwoS7tzwxqXSyFL7g0JM-KWVbgvjfB8JA__T7yY_cYboN0Y3CCJAaDdWRwgiQG,enr:-J24QHmGyBwUZXIcsGYMaUqGGSl4CFdx9Tozu-vQCn5bHIQbR7On7dZbU61vYvfrJr30t0iahSqhc64J46MnUO2JvQaGAYiOoCKKgmlkgnY0gmlwhAPnCzSHb3BzdGFja4OFQgCJc2VjcDI1NmsxoQINc4fSijfbNIiGhcgvwjsjxVFJHUstK9L1T8OTKUjgloN0Y3CCJAaDdWRwgiQG,enr:-J24QG3ypT4xSu0gjb5PABCmVxZqBjVw9ca7pvsI8jl4KATYAnxBmfkaIuEqy9sKvDHKuNCsy57WwK9wTt2aQgcaDDyGAYiOoGAXgmlkgnY0gmlwhDbGmZaHb3BzdGFja4OFQgCJc2VjcDI1NmsxoQIeAK_--tcLEiu7HvoUlbV52MspE0uCocsx1f_rYvRenIN0Y3CCJAaDdWRwgiQG
