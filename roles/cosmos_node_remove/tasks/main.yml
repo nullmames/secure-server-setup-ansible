@@ -8,6 +8,8 @@
     daemon_reload: true
     state: stopped
     enabled: false
+  ignore_errors: true
+  register: systemd_errors
 
 - name: Remove service file
   become: true
@@ -28,4 +30,9 @@
 - name: Remove chain folder
   ansible.builtin.file:
     path: "{{ user_dir }}/{{ folder }}/"
+    state: absent
+
+- name: Remove source folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/source/{{ network }}"
     state: absent
