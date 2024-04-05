@@ -4,6 +4,6 @@
   "files.associations": {
     "**/*.yml": "ansible",
     "**/*.yaml": "ansible",
-    "**/haproxy*": "haproxy"
+    "**/haproxy*.cfg": "haproxy"
   }
 }
