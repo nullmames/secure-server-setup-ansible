@@ -15,4 +15,4 @@ snap_rpc: https://migaloo-rpc.polkachu.com:443
 # # [Optional] Prep for upgrade in cosmovisor
 upgrade_name: v4.1.2
 
-snapshot_url: https://snapshots.rhinostake.com/whitewhale/whitewhale-snapshot.6038504.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/migaloo/migaloo_6232311.tar.lz4

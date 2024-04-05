@@ -2,14 +2,14 @@ network: osmosis
 folder: ".osmosisd"
 daemon: osmosisd
 chain_id: osmo-test-5
-node_version: v23.0.0-rc1
+node_version: v24.0.0-rc0
 repo: https://github.com/osmosis-labs/osmosis
 genesis: "https://genesis.osmotest5.osmosis.zone/genesis.json"
 seeds: "9e995521d27583f957c9f408b52f2443f60ecdc3@65.109.99.43:26656,28989fdf4bd4eae82d92c63667f2edff34405fc1@65.109.158.84:26656,dbed950f93f0a30cec22c95f0ac958cc9ebeafd9@65.109.158.85:26656"
 peers: ""
 custom_port_prefix: 125
 
-upgrade_name: v23
+upgrade_name: v24
 
 snap_rpc: "https://osmosis-testnet-rpc.polkachu.com:443"
 
