@@ -1,3 +1,4 @@
 {
-  "state-sync-enabled": false
+  "state-sync-enabled": false,
+  "pruning-enabled": false
 }
