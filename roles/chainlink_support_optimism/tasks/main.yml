@@ -1,14 +1,23 @@
 ---
-# Optimism structure with host networking
+# Optimism with op-node, op-geth.  Utilized snap-sync for sync
 # Ports:
-#  - Geth: 8545 (rpc), 8546 (ws), 8551 (authrpc)
+#  - Geth: 13303 (p2p - public), 13045 (rpc), 13046 (ws), 8551 (authrpc)
 #  - Node: 9003 (p2p - public), 9545 (rpc)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
 
 - name: Ensure op-geth-data exists
   ansible.builtin.file:
-    path: "{{ user_dir }}/docker-compose/op-geth-data"
+    path: "{{ user_dir }}/docker-compose/{{ item }}"
     state: directory
     mode: "0755"
+  loop:
+    - optimism
+    - optimism/op-geth-data
 
 - name: Create jwtsecret if it does not exist
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
@@ -17,36 +26,9 @@
     creates: jwtsecret
     executable: /bin/bash
 
-- name: Check if op-geth-data is populated
-  ansible.builtin.find:
-    paths: "{{ user_dir }}/docker-compose/op-geth-data"
-    file_type: any
-    hidden: false
-  register: op_geth_data
-
-- name: Download and extract snapshot
-  when: op_geth_data.matched == 0
-  block:
-    - name: Download snapshot
-      ansible.builtin.shell:
-        cmd: "aria2c -x6 -d {{ user_dir }} -o op-geth-snapshot.tar.zst https://datadirs.optimism.io/mainnet-bedrock.tar.zst"
-
-    - name: Extract snapshot
-      ansible.builtin.shell: "tar -xf {{ user_dir }}/op-geth-snapshot.tar.zst -C {{ user_dir }}/docker-compose/op-geth-data"
-      environment:
-        PATH: "{{ path }}"
-
-- name: Open p2p ports for op-node
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    proto: "{{ item.proto }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 9003
-      proto: any
-      comment: External - op-node p2p
+- name: Create a network
+  community.docker.docker_network:
+    name: optimism_net
 
 - name: Run op-geth container
   community.docker.docker_container:
@@ -55,21 +37,33 @@
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
     pull: true
+    networks:
+      - name: optimism_net
+    ports:
+      # p2p
+      - 13303:13303/tcp
+      - 13303:13303/udp
+      # rpc
+      - 127.0.0.1:13045:8545
+      - "{{ nebula_internal_ip_addr }}:13045:8545"
+      - 127.0.0.1:13046:8546
+      - "{{ nebula_internal_ip_addr }}:13046:8546"
+      # metrics
+      - 127.0.0.1:13060:6060
+      - "{{ nebula_internal_ip_addr }}:13060:6060"
     volumes:
-      - "{{ user_dir }}/docker-compose/op-geth-data:/op-geth-data"
+      - "{{ user_dir }}/docker-compose/optimism/op-geth-data:/op-geth-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
       - --datadir=/op-geth-data
-      - --syncmode=full
-      - --snapshot=false
+      - --syncmode=snap
       - --op-network=op-mainnet
       ## Interfaces
       # Consensus Layer Engine API
-      - --authrpc.addr=127.0.0.1
+      - --authrpc.addr=0.0.0.0
       - --authrpc.port=8551
       - --authrpc.vhosts=*
       - --authrpc.jwtsecret=/jwtsecret
@@ -77,26 +71,26 @@
       - --http
       - --http.addr=0.0.0.0
       - --http.port=8545
+      - --http.corsdomain=*"
       - --http.vhosts=*
-      - --http.api=debug,eth,txpool,net,engine
+      - --http.api=web3,debug,eth,txpool,net,engine
       # Websocket
       - --ws
       - --ws.addr=0.0.0.0
       - --ws.port=8546
       - --ws.origins=*
-      - --ws.api=debug,eth,txpool,net,engine
+      - --ws.api=web3,debug,eth,txpool,net,engine
       # P2P
-      - --port=30303
-      - --nodiscover
+      - --port=13303
+      - --discovery.port=13303
       # Metrics
       - --metrics
       - --metrics.addr=0.0.0.0
       - --metrics.port=6060
       - --metrics.expensive
       # Transaction & Chain Specific
-      - --maxpeers=0
       - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
-      - --rollup.disabletxpoolgossip
+      - --rollup.disabletxpoolgossip=true
       - --rpc.gascap=0
       - --rpc.txfeecap=0
       - --ipcdisable
@@ -108,8 +102,15 @@
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
     pull: true
+    networks:
+      - name: optimism_net
+    ports:
+      # p2p
+      - 9003:9003
+      # rpc
+      - 127.0.0.1:9545:9545
+      - "{{ nebula_internal_ip_addr }}:9545:9545"
     volumes:
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
@@ -118,10 +119,18 @@
       - op-node
       - --l1={{ ethereum_l1 }}
       - --l1.beacon={{ ethereum_l1_beacon }}
-      - --l2=http://127.0.0.1:8551
+      - --l1.trustrpc
+      - --l2=http://op-geth:8551
       - --l2.jwt-secret=/jwtsecret
       - --network=op-mainnet
       - --rollup.load-protocol-versions=true
+      # Syncing
+      - --syncmode=execution-layer
+      - --l1.max-concurrency=64
+      - --l1.rpc-rate-limit=0
+      - --l1.rpc-max-batch-size=500
+      # p2p
+      - --p2p.advertise.ip={{ public_ip.content | trim }}
       ## Interfaces
       - --rpc.addr=0.0.0.0
       - --rpc.port=9545
