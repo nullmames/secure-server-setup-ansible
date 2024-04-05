@@ -32,7 +32,9 @@
       - "{{ user_dir }}/docker-compose/geth:/geth"
       - "{{ user_dir }}/docker-compose/jwtsecret:/geth/jwtsecret"
     command:
+      # p2p
       - --port=30303
+      # rpc
       - --http
       - --http.port=8545
       - --http.addr=0.0.0.0
@@ -46,6 +48,7 @@
       - --authrpc.port=8551
       - --authrpc.vhosts=*
       - --authrpc.jwtsecret=/geth/jwtsecret
+      # general
       - --ipcdisable
       - --state.scheme=path
       - --datadir=/geth
