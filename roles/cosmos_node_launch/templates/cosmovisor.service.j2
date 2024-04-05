@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 User={{ ansible_user }}
-ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir}}/{{ folder }}
+ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=5
