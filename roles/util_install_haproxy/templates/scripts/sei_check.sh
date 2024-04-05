@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Obtain lag status from Sei node
-LAG=$(curl -s -m5 -N http://${HAPROXY_SERVER_ADDR}:${HAPROXY_SERVER_PORT}/lag_status)
+# Obtain lag status from Sei node - connect time of 1 second, max time of 2 seconds
+LAG=$(curl -s --connect-timeout 1 --max-time 2 -N http://${HAPROXY_SERVER_ADDR}:${HAPROXY_SERVER_PORT}/lag_status)
 
-# Check if high lag amount
-echo "${LAG}" | grep -q "code"
-if [ $? -eq 0 ]; then
+# Check if we have data
+echo "${LAG}" | grep -q "height"
+if [ $? -eq 1 ]; then
     exit 1
 fi
 
