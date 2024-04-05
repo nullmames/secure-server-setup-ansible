@@ -28,4 +28,10 @@ snapshot_url:
 upgrade_name:
 
 # If there's a library sidecar in binary downloads
-ib_sidecar: false
+lib_sidecar: false
+
+# Additional launch commands on systemd e.g. "--json-rpc.api eth,net,web3,miner --json-rpc.address 0.0.0.0:8545"
+launch_commands:
+
+# Make arguments  e.g. "--release profile"
+make_args:
