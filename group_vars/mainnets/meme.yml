@@ -11,6 +11,4 @@ minimum_gas_price: "0.025umeme"
 custom_port_prefix: 147
 snap_rpc: "https://meme-rpc.polkachu.com:443"
 
-# [Optional] Snapshot
-snapshot_hour: 6
-snapshot_minute: 0
+snapshot_url: https://snapshots.polkachu.com/snapshots/meme/meme_10605907.tar.lz4
