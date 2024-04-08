@@ -1,8 +1,8 @@
 ---
-# Linea Support with custom ports
+# Linea Support with custom ports (105)
 # Ports:
 #  - Geth:
-#    - 10303 (p2p, public)
+#    - 10503 (p2p, public)
 #    - 10545 (rpc, internal)
 
 - name: Register public ip
@@ -23,7 +23,7 @@
     port: "{{ item.port }}"
     comment: "{{ item.comment }}"
   loop:
-    - port: 10303
+    - port: 10503
       comment: External - linea geth p2p
 
 - name: Create Linea folder
@@ -34,7 +34,7 @@
 
 - name: Download Linea genesis
   ansible.builtin.get_url:
-    url: "https://docs.linea.build/files/genesis.json"
+    url: "https://docs.linea.build/files/geth/mainnet/genesis.json"
     dest: "{{ user_dir }}/docker-compose/linea-data/genesis.json"
     mode: "0644"
 
@@ -65,14 +65,15 @@
     name: linea_geth
     image: ethereum/client-go:v1.13.4
     state: started
+    restart_policy: unless-stopped
     stop_timeout: 600
     pull: true
     networks:
       - name: linea_net
     ports:
       # p2p
-      - 10303:30303/tcp
-      - 10303:30303/udp
+      - 10503:10503/tcp
+      - 10503:10503/udp
       # rpc
       - "{{ nebula_internal_ip_addr }}:10545:8545"
       - 127.0.0.1:10545:8545
@@ -82,7 +83,7 @@
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     command:
-      - --port=10303
+      - --port=10503
       - --networkid=59144
       - --syncmode=snap
       - --http
