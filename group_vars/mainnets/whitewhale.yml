@@ -5,7 +5,7 @@ chain_id: migaloo-1
 node_version: v4.1.3
 repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
 genesis: https://raw.githubusercontent.com/White-Whale-Defi-Platform/migaloo-chain/release/v1.0.x/networks/mainnet/genesis.json
-seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:20756,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:20756"
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:20756"
 minimum_gas_price: "0uwhale"
 custom_port_prefix: 207
 
@@ -15,4 +15,14 @@ snap_rpc: https://migaloo-rpc.polkachu.com:443
 # # [Optional] Prep for upgrade in cosmovisor
 upgrade_name: v4.1.2
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/migaloo/migaloo_6232311.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/migaloo/migaloo_6336770.tar.lz4
+
+# Hotfix
+binary: https://snapshots.rhinostake.com/dropshare/priacanthine-trochocephaly-concordant-snooled.tar.gz
+binary_processing: targz
+
+# Horcrux
+horcrux_group: horcrux_alpha
+sentries:
+  - 100.100.1.208
+  - 100.100.1.203

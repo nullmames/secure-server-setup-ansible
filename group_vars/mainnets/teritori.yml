@@ -13,3 +13,9 @@ snap_rpc: "https://teritori-rpc.polkachu.com:443"
 upgrade_name: v2.0.0
 
 snapshot_url: https://snapshots.rhinostake.com/teritori/teritori-snapshot.7954760.tar.lz4
+
+# Horcrux
+horcrux_group: horcrux_alpha
+sentries:
+  - 100.100.1.206
+  - 100.100.1.207
