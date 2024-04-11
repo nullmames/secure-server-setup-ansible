@@ -18,6 +18,16 @@
         msg: version is not set in config. Unable to continue.
       when: not node_version
 
+    - name: Verify we're on the right node_version
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Please check if limit is correct"
+      when: not folder.stat.exists
+
 - name: Prepare network upgrade using cosmovisor
   hosts: all
   gather_facts: false
