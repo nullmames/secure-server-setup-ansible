@@ -5,18 +5,20 @@
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
   tasks:
-    - name: Add single signer
-      when: shares == 1
-      ansible.builtin.add_host:
-        hostname: signer-01
-        group: signers
+    - name: Check variables
+      ansible.builtin.assert:
+        that:
+          - horcrux_group is defined
+          - sentries is defined
+        fail_msg: |
+          - horcrux_group: "horcrux_group not defined"
+          - sentries: "sentries not defined"
 
     - name: Add all signers
-      when: shares > 1
       ansible.builtin.add_host:
         hostname: "{{ item }}"
         group: signers
-      loop: '{{ groups["horcrux"] }}'
+      loop: "{{ groups[horcrux_group] }}"
 
 - name: Install Horcrux
   hosts: signers

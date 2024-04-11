@@ -206,3 +206,11 @@
     line: 'minimum-gas-prices = "{{ minimum_gas_price }}"'
     state: present
   when: minimum_gas_price is defined
+
+- name: Set signing port address for horcrux
+  when: ( sentries is defined ) and ( nebula_internal_ip_addr in sentries )
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^priv_validator_laddr ="
+    line: 'priv_validator_laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}59"'
+    state: present

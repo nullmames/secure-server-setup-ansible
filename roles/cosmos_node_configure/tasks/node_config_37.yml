@@ -225,3 +225,13 @@
     line: 'minimum-gas-prices = "{{ minimum_gas_price }}"'
     state: present
   when: minimum_gas_price is defined
+
+- name: Set signing port address for horcrux
+  when: ( sentries is defined ) and ( nebula_internal_ip_addr in sentries )
+  community.general.ini_file:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    section: priv-validator
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    mode: "0644"
+  loop: '{{ config_changes.config_toml_37["priv-validator"] | dict2items }}'
