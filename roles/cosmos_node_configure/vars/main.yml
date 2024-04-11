@@ -23,6 +23,8 @@ config_toml_37:
   no_section:
     moniker: '"{{ network }}"'
     proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+  priv-validator:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}59"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
     cors-allowed-origins: "'[]'"
