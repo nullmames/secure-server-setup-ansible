@@ -21,12 +21,12 @@
     - name: Verify we're on the right node
       ansible.builtin.stat:
         path: "{{ user_dir }}/{{ folder }}"
-      register: folder
+      register: network_folder
 
     - name: Directory missing
       ansible.builtin.fail:
         msg: "Directory {{ folder }} does not exist. Wrong --limit?"
-      when: not folder.stat.exists
+      when: not network_folder.stat.exists
 
 - name: Prepare network upgrade using cosmovisor
   hosts: all
