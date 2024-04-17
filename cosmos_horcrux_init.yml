@@ -1,5 +1,5 @@
 ---
-- name: Define hosts
+- name: Prep horcrux node(s) and install keys
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -35,7 +35,7 @@
         path: "{{ playbook_dir }}/keys/priv_validator_key.json"
       register: key_exists
 
-    - name: There is no file
+    - name: There is no key file present
       when: not key_exists.stat.exists
       ansible.builtin.pause:
         prompt: There is no priv_validator key to process.  Continue? Press return to continue. Press Ctrl+c and then "a" to abort
