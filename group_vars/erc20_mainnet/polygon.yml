@@ -1,0 +1,14 @@
+# Polygon versions and approach
+network: polygon
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 117
+
+# Execution
+execution_container_name: bor
+execution_container_version: 1.2.7
+execution_snapshot_location: "{{ folder }}/bor/bor/chaindata"
+
+# Consensus
+consensus_container_name: heimdall
+consensus_container_version: 1.0.4
+consensus_snapshot_location: "{{ folder }}/heimdall/data"

@@ -1,0 +1,9 @@
+# Avalanche versions and approach
+network: avalanche
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 116
+
+# Avalanche version
+execution_container_name: avalanchego
+execution_container_version: v1.11.3
+execution_snapshot_location: "{{ folder }}/avalanchego-data/db"

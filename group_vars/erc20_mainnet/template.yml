@@ -1,0 +1,14 @@
+# Network information
+network: networkname
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 116
+
+# Execution
+execution_container_name: execution-container
+execution_container_version: v1.0.0
+execution_snapshot_location: "{{ folder }}/execution-data/db"
+
+# Consensus
+consensus_container_name: consensus-container
+consensus_container_version: v1.0.0
+consensus_snapshot_location: "{{ folder }}/consensus-data/db"
