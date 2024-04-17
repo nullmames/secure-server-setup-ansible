@@ -20,8 +20,7 @@ alerts:
 
   pagerduty:
     enabled: true
-    api_key: {% if 'Testnet' in group_names %}"{{ testnet_tenderduty_pagerduty_key }}"{% else %} ""{% endif %}
-
+    api_key: {% if 'Testnet' in group_names %}"{{ testnet_tenderduty_pagerduty_key }}"{% else %} "{{ tenderduty_pagerduty_key }}"{% endif %}
 
   slack:
     enabled: true
