@@ -1,0 +1,53 @@
+---
+- name: Prep horcrux node(s) and install keys
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - "group_vars/testnets/{{ target }}.yml"
+  tasks:
+    - name: Check variables
+      ansible.builtin.assert:
+        that:
+          - horcrux_group is defined
+          - sentries is defined
+        fail_msg: |
+          - horcrux_group: "horcrux_group not defined"
+          - sentries: "sentries not defined"
+
+    - name: Add all signers
+      ansible.builtin.add_host:
+        hostname: "{{ item }}"
+        group: signers
+      loop: "{{ groups[horcrux_group] }}"
+
+    - name: Set shares when in degen mode
+      when: groups['signers'] | length == 1
+      ansible.builtin.set_fact:
+        shares: 1
+
+- name: Install Horcrux
+  hosts: signers
+  become: true
+  gather_facts: false
+  vars_files:
+    - "group_vars/testnets/{{ target }}.yml"
+
+  pre_tasks:
+    - name: Check for key
+      become: true
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/keys/priv_validator_key.json"
+      register: key_exists
+
+    - name: There is no key file present
+      when: not key_exists.stat.exists
+      ansible.builtin.pause:
+        prompt: There is no priv_validator key to process.  Continue? Press return to continue. Press Ctrl+c and then "a" to abort
+
+  roles:
+    - util_go_install
+    - cosmos_horcrux_install
+    - cosmos_horcrux_configure
+    - cosmos_horcrux_create_shares
+    - cosmos_horcrux_restart
