@@ -128,3 +128,5 @@
       - --tries-verify-mode=none
       - --rpc.allow-unprotected-txs
       - --ipcdisable
+      - --rpc.batch-response-max-size=300000000 # Per RMN Documentation
+      - --rpc.txfeecap=0 # Per RMN Documentation

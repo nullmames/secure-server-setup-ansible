@@ -94,6 +94,8 @@
       - --rpc.gascap=0
       - --rpc.txfeecap=0
       - --ipcdisable
+      - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
+      - --rpc.txfeecap=0 # Per RMN Documentation
 
 - name: Run op-node container
   community.docker.docker_container:

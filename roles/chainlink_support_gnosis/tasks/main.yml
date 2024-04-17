@@ -63,6 +63,7 @@
       - --Network.DiscoveryPort=30303
       - --HealthChecks.Enabled=false
       - --Pruning.CacheMb=2048
+      - --JsonRpc.MaxBatchResponseBodySize=70000000 # Per RMN Documentation
 
 - name: Run lighthouse container for Gnosis
   community.docker.docker_container:

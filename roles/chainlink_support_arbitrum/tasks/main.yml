@@ -39,8 +39,9 @@
       - --ws.addr=0.0.0.0
       - --ws.origins=*
       - --execution.rpc.gas-cap=0
-      - --execution.rpc.tx-fee-cap=0
       - --init.url=https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
       - --node.staker.enable=false # Remove watchtower mode
+      - --execution.rpc.tx-fee-cap=0 # Per RMN Documentation
       - --rpc.max-batch-response-size=200000000 # Per RMN Documentation
+      - --rpc.batch-request-limit=20000 # Per RMN Documentation
       # - --init.prune=full # Prune at startup

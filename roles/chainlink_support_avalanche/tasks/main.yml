@@ -27,15 +27,15 @@
     state: directory
     mode: "0755"
   loop:
-    - "{{ user_dir }}/docker-compose/avalanchego-data"
-    - "{{ user_dir }}/docker-compose/avalanchego-config"
-    - "{{ user_dir }}/docker-compose/avalanchego-config/C"
+    - "{{ avalanche_dir }}/avalanchego-data"
+    - "{{ avalanche_dir }}/avalanchego-config"
+    - "{{ avalanche_dir }}/avalanchego-config/C"
 
 - name: Copy C-Chain config for use
   become: true
   ansible.builtin.copy:
     src: files/C-config.json
-    dest: "{{ user_dir }}/docker-compose/avalanchego-config/C/config.json"
+    dest: "{{ avalanche_dir }}/avalanchego-config/C/config.json"
     owner: "root"
     group: "root"
     mode: "0644"
@@ -46,8 +46,8 @@
 
 - name: Run avalanchego container
   community.docker.docker_container:
-    name: avalanchego
-    image: avaplatform/avalanchego:{{ avalanchego_version }}
+    name: "{{ execution_container_name }}"
+    image: avaplatform/avalanchego:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -61,8 +61,8 @@
       - "{{ nebula_internal_ip_addr }}:9650:9650"
       - 127.0.0.1:9650:9650
     volumes:
-      - "{{ user_dir }}/docker-compose/avalanchego-data:/avalanchego-data"
-      - "{{ user_dir }}/docker-compose/avalanchego-config:/avalanchego-config"
+      - "{{ avalanche_dir }}/avalanchego-data:/avalanchego-data"
+      - "{{ avalanche_dir }}/avalanchego-config:/avalanchego-config"
       - /etc/localtime:/etc/localtime:ro
     command:
       - /avalanchego/build/avalanchego
@@ -72,3 +72,4 @@
       - --public-ip={{ public_ip.content | trim }}
       - --staking-port=9651
       - --log-level=info
+      - --rpc-tx-fee-cap=0 # Per RMN Documentation

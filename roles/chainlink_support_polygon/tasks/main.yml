@@ -3,9 +3,9 @@
 # curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client bor --extract-dir bor_extract --validate-checksum false
 # curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client heimdall --extract-dir bor_extract --validate-checksum false
 # Ports:
-#  - Bor: 30303/tcp - public, 8545/tcp, 8546/tcp, 7071/tcp
-#  - Heimdall: 26656/tcp - public, 26657/tcp
-#  - HeimdallRest: 1317/tcp
+#  - Bor: 11703/tcp - public, 11745/tcp, 11746/tcp
+#  - Heimdall: 11756/tcp - public, 11757/tcp
+#  - HeimdallRest: 11717/tcp
 
 - name: Build folder structure
   ansible.builtin.file:
@@ -23,7 +23,7 @@
     dest: "{{ user_dir }}/docker-compose/polygon/bor/config.toml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: "0755"
+    mode: "0644"
 
 - name: Open appropriate firewall ports for bor and heimdall
   become: true
@@ -33,15 +33,15 @@
     port: "{{ item.port }}"
     comment: "{{ item.comment }}"
   loop:
-    - port: 30303
+    - port: "{{ custom_port_prefix }}03"
       comment: p2p port for bor
-    - port: 26656
+    - port: "{{ custom_port_prefix }}56"
       comment: p2p port for heimdall
 
 - name: Pull and run heimdall container
   community.docker.docker_container:
-    name: heimdall
-    image: 0xpolygon/heimdall:{{ heimdall_version }}
+    name: "{{ consensus_container_name }}"
+    image: 0xpolygon/heimdall:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     network_mode: host
@@ -56,8 +56,8 @@
 
 - name: Pull and run heimdallrest container
   community.docker.docker_container:
-    name: heimdallrest
-    image: 0xpolygon/heimdall:{{ heimdall_version }}
+    name: "{{ consensus_container_name }}rest"
+    image: 0xpolygon/heimdall:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     network_mode: host
@@ -73,8 +73,8 @@
 
 - name: Pull and run bor container
   community.docker.docker_container:
-    name: bor
-    image: 0xpolygon/bor:{{ bor_version }}
+    name: "{{ execution_container_name }}"
+    image: 0xpolygon/bor:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     network_mode: host

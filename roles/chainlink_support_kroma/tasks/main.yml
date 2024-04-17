@@ -95,3 +95,5 @@
       - --metrics.addr=0.0.0.0
       - --metrics.port=28301
       - --metrics.expensive
+      - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
+      - --rpc.txfeecap=0 # Per RMN Documentation

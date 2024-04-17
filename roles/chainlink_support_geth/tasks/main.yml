@@ -53,7 +53,8 @@
       - --state.scheme=path
       - --datadir=/geth
       - --rpc.gascap=0
-      - --rpc.txfeecap=0
+      - --rpc.txfeecap=0 # Per RMN Documentation
+      - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
 
 - name: Run lighthouse container
   community.docker.docker_container:
