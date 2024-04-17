@@ -2,7 +2,7 @@ network: cosmos
 folder: ".gaia"
 daemon: gaiad
 chain_id: cosmoshub-4
-node_version: v15.1.0
+node_version: v15.2.0
 repo: "https://github.com/cosmos/gaia"
 genesis: "https://github.com/cosmos/mainnet/blob/master/genesis/genesis.cosmoshub-4.json.gz?raw=true"
 genesis_processing: gz
@@ -17,4 +17,4 @@ upgrade_name: v15
 # Force to 1.20
 go_release: "go1.20.11"
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_19275226.tar.lz4
+snapshot_url: https://snap.rhinostake.com/cosmos/cosmos-snapshot.19988064.tar.lz4

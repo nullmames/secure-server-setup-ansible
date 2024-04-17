@@ -18,4 +18,4 @@ snapshot_url:
 horcrux_group: horcrux_alpha
 sentries:
   - 100.100.2.10
-  - 100.100.2.11
+  - 100.100.1.201
