@@ -18,7 +18,7 @@ promtail_monitor: "http://10.254.100.13:3100"
 promtail_monitor_nebula: "http://100.100.0.13:3100"
 
 # ipfs
-ipfs_release: "0.26.0"
+ipfs_release: "0.28.0"
 ipfs_cluster_release: "1.0.8"
 ipfs_cluster_ctl_release: "1.0.8"
 
