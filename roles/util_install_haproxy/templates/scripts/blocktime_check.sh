@@ -2,7 +2,9 @@
 # Time in seconds between current time and last block
 ACCEPTABLE_DELTA=30
 
-LATEST_BLOCK_DATA=$(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0","method": "eth_getBlockByNumber","params": ["latest", false],"id": 1}' "http://${HAPROXY_SERVER_ADDR}:${HAPROXY_SERVER_PORT}")
+# Get latest block height - connect time of 1 second, max time of 2 seconds
+LATEST_BLOCK_DATA=$(curl -s --connect-timeout 1 --max-time 2 -H "Content-Type: application/json" --data '{"jsonrpc": "2.0","method": "eth_getBlockByNumber","params": ["latest", false],"id": 1}' "http://${HAPROXY_SERVER_ADDR}:${HAPROXY_SERVER_PORT}")
+
 CURRENT_TIME=$(date '+%s')
 
 # Check sync status
