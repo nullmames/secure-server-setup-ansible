@@ -1,5 +1,6 @@
 ---
 # Prep upgrade in cosmovisor
+
 - name: Create cosmovisor upgrade directory
   ansible.builtin.file:
     path: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
