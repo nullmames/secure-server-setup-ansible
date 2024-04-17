@@ -41,6 +41,12 @@
     executable: /usr/bin/bash
   register: currentheight
 
+- name: Assert height is viable
+  ansible.builtin.assert:
+    that:
+      - (currentheight.stdout | int) >= 1
+    fail_msg: "Current height of chain is incorrect"
+
 - name: Stop cosmovisor
   become: true
   ansible.builtin.systemd:
@@ -91,7 +97,7 @@
 - name: Create archive - no wasm
   when: not wasm_inside.stat.exists and not wasm_outside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}4"
+    cmd: "tar -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -106,25 +112,20 @@
   ansible.builtin.set_fact:
     bucket_name: "{% if 'Testnet' in group_names %}testnet-{% endif %}{{ network }}"
 
-- name: Create network bucket
+- name: Prep snapshots bucket
   ansible.builtin.command:
-    cmd: "mc mb --ignore-existing snapshots/{{ bucket_name }}"
+    cmd: "{{ item }}"
     chdir: "{{ user_dir }}"
   environment:
     PATH: "{{ path }}"
-  register: bucket_created
-
-- name: Set public access on bucket
-  when: bucket_created.changed
-  ansible.builtin.command:
-    cmd: "mc anonymous set download snapshots/{{ bucket_name }}"
-    chdir: "{{ user_dir }}"
-  environment:
-    PATH: "{{ path }}"
+  loop:
+    - "mc mb --ignore-existing snapshots/{{ bucket_name }}"
+    - "mc anonymous set download snapshots/{{ bucket_name }}"
+    - 'mc tag set snapshots/{{ bucket_name }} "public_snapshots=true"'
 
 - name: Copy file to snapshots server
   ansible.builtin.command:
-    cmd: "mc cp {{ snapshot_filename }} snapshots/{{ bucket_name }}/"
+    cmd: "mc cp {{ snapshot_filename }} snapshots/{{ bucket_name }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}"
   environment:
     PATH: "{{ path }}"
@@ -136,4 +137,4 @@
 
 - name: Print path
   ansible.builtin.debug:
-    msg: "Snapshot uploaded to: https://snapshots.rhinostake.com/{{ bucket_name }}/{{ snapshot_filename }}"
+    msg: "Snapshot uploaded to: {{ mc_url }}/{{ bucket_name }}/{{ snapshot_filename }}"
