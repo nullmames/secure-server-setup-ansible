@@ -1,0 +1,8 @@
+---
+- name: Snapshot an erc20 node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/{{ target }}.yml"
+  roles:
+    - chainlink_support_take_snapshot
