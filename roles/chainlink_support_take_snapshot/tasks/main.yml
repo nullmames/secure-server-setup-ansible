@@ -1,0 +1,86 @@
+---
+- name: Check for mc
+  ansible.builtin.include_role:
+    name: setup
+    tasks_from: install_mc
+
+# Prep buckets
+- name: Set bucket name
+  ansible.builtin.set_fact:
+    bucket_name: "{% if 'Testnet' in group_names %}testnet-{% endif %}{{ network }}"
+
+- name: Prep snapshots bucket
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
+  loop:
+    - "mc mb --ignore-existing snapshots/{{ bucket_name }}"
+    - "mc anonymous set download snapshots/{{ bucket_name }}"
+    - 'mc tag set snapshots/{{ bucket_name }} "public_snapshots=true"'
+
+# Execution Client
+- name: Snapshot of Execution Client
+  when: execution_snapshot_location is defined
+  block:
+    - name: Set fact
+      ansible.builtin.set_fact:
+        execution_snapshot_filename: "{{ execution_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.lz4"
+
+    - name: Stop execution container
+      community.docker.docker_container:
+        name: "{{ execution_container_name }}"
+        state: stopped
+        stop_timeout: 600
+
+    - name: Create and send execution archive
+      become: true
+      ansible.builtin.shell:
+        cmd: "tar --use-compress-program=lz4 -cf - {{ execution_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}"
+        chdir: "{{ execution_snapshot_location | dirname }}"
+      environment:
+        PATH: "{{ path }}"
+
+# Consensus Client
+- name: Snapshot of Consensus Client
+  when: consensus_snapshot_location is defined
+  block:
+    - name: Set fact
+      ansible.builtin.set_fact:
+        consensus_snapshot_filename: "{{ consensus_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.lz4"
+
+    - name: Stop consensus container
+      community.docker.docker_container:
+        name: "{{ consensus_container_name }}"
+        state: stopped
+        stop_timeout: 600
+
+    - name: Create and send consensus archive
+      become: true
+      ansible.builtin.shell:
+        cmd: "tar --use-compress-program=lz4 -cf - {{ consensus_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}"
+        chdir: "{{ consensus_snapshot_location | dirname }}"
+      environment:
+        PATH: "{{ path }}"
+
+# Start containers
+- name: Start consensus container
+  when: consensus_snapshot_location is defined
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    state: started
+
+- name: Start execution container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    state: started
+
+- name: Print execution path
+  ansible.builtin.debug:
+    msg: "Execution snapshot uploaded to: https://snapshots.rhinostake.com/{{ bucket_name }}/{{ execution_snapshot_filename }}"
+
+- name: Print consensus path
+  when: consensus_snapshot_location is defined
+  ansible.builtin.debug:
+    msg: "Consensus snapshot uploaded to: https://snapshots.rhinostake.com/{{ bucket_name }}/{{ consensus_snapshot_filename }}"
