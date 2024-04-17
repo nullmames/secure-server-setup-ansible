@@ -12,9 +12,6 @@ lighthouse_version: v5.1.3
 # Arbitrum version - offchainlabs/nitro-node
 nitro_version: v2.3.2-064fa11
 
-# Avalanche version
-avalanchego_version: v1.11.3
-
 # Optimism versions
 op_node_version: v1.7.2
 #
