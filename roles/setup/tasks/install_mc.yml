@@ -16,18 +16,15 @@
     mc_sha256: "{{ url_output.content.split(' ')[0] }}"
 
 - name: Install mc client
-  become: true
   when: (not mc_ver.stat.exists) or (mc_sha256 != mc_ver.stat.checksum)
-  block:
-    - name: Download mc
-      become: true
-      ansible.builtin.get_url:
-        url: https://dl.min.io/client/mc/release/linux-amd64/mc
-        dest: /usr/local/bin/mc
-        mode: "0755"
-        checksum: sha256:{{ mc_sha256 }}
+  become: true
+  ansible.builtin.get_url:
+    url: https://dl.min.io/client/mc/release/linux-amd64/mc
+    dest: /usr/local/bin/mc
+    mode: "0755"
+    checksum: sha256:{{ mc_sha256 }}
 
-    - name: Set snapshots alias
-      become: true
-      become_user: "{{ ansible_user }}"
-      ansible.builtin.command: /usr/local/bin/mc alias set snapshots {{ mc_url }} {{ mc_username }} {{ mc_password }}
+- name: Force snapshots alias
+  become: true
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.command: /usr/local/bin/mc alias set snapshots {{ mc_url }} {{ mc_access_key }} {{ mc_secret_key }}
