@@ -35,3 +35,9 @@ launch_commands:
 
 # Make arguments  e.g. "--release profile"
 make_args:
+
+# Horcrux
+horcrux_group: horcrux_cluster_name
+sentries:
+  - "<ip-1>"
+  - "<ip-2>"
