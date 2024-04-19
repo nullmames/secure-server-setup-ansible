@@ -1,0 +1,10 @@
+---
+- name: Solana node init
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/solana.yml"
+  roles:
+    # - util_install_rust
+    - solana_node_install
+    - solana_node_launch
