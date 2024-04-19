@@ -1,0 +1,13 @@
+# Polygon versions and approach
+network: celo
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 136
+
+# Execution
+execution_container_name: celo_geth
+execution_container_version: mainnet
+execution_snapshot_location: "{{ folder }}/execution-data/data/chainData"
+# Consensus
+# consensus_container_name: heimdall
+# consensus_container_version: 1.0.4
+# consensus_snapshot_location: "{{ folder }}/heimdall/data"
