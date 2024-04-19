@@ -1,0 +1,93 @@
+---
+- name: Remove and create temp directory
+  ansible.builtin.file:
+    path: /tmp/binary
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
+- name: Clone tracing repo
+  ansible.builtin.git:
+    repo: "{{ tracing_repo }}"
+    dest: "{{ user_dir }}/source/tracing_artifacts"
+    version: master
+    update: true
+    force: true
+    recursive: true
+
+- name: Assert the binary exists
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/source/tracing_artifacts/{{ network }}/{{ daemon }}-{{ node_version[1:] }}-linux-amd64.tar.gz"
+  register: tracing_binary
+
+- name: Fail if binary not found
+  ansible.builtin.fail:
+    msg: "Tracing binary {{ daemon }}-{{ node_version[1:] }}-linux-amd64.tar.gz not found in repository."
+  when: not tracing_binary.stat.exists
+
+- name: Unarchive binary file
+  ansible.builtin.unarchive:
+    src: "{{ user_dir }}/source/tracing_artifacts/{{ network }}/{{ daemon }}-{{ node_version[1:] }}-linux-amd64.tar.gz"
+    remote_src: true
+    dest: "/tmp/binary"
+
+- name: Check if libraries present
+  ansible.builtin.find:
+    paths: /tmp/binary
+    patterns: "*.so"
+  register: libraries
+
+- name: Find binary names in folder
+  ansible.builtin.find:
+    paths: /tmp/binary
+    patterns: "{{ daemon }}*"
+    file_type: file
+  register: binary_files
+
+- name: Rename binary
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "/tmp/binary/{{ daemon }}"
+    remote_src: true
+    mode: "0755"
+  loop: "{{ binary_files.files }}"
+
+- name: Copy binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/binary/{{ daemon }}"
+    dest: "{{ user_dir }}/go/bin/{{ daemon }}"
+    mode: "0755"
+
+- name: Copy libraries
+  when: libraries.matched != 0
+  block:
+    - name: Create lib folder in home dir
+      ansible.builtin.file:
+        path: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+        state: directory
+        mode: "0755"
+
+    - name: Copy to home dir
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ libraries.files }}"
+
+    - name: Copy to /usr/lib
+      become: true
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "/usr/lib/"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ libraries.files }}"
+
+- name: Cleanup
+  ansible.builtin.file:
+    path: "/tmp/binary"
+    state: absent
