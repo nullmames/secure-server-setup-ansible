@@ -1,51 +1,58 @@
 ---
 # Install binary
-- name: Install from source
-  when: binary is undefined
+- name: Install or build binary
+  when: not tracing
   block:
-    - name: Clone node repo
-      ansible.builtin.git:
-        repo: "{{ repo }}"
-        dest: "{{ user_dir }}/source/{{ network }}"
-        version: "{{ node_version }}"
-        update: true
-        force: true
-        recursive: true
+    - name: Install from binary
+      ansible.builtin.include_tasks: binary_default.yml
+      when: binary is defined and binary_processing is not defined
 
-    - name: Change repo folder permission
-      ansible.builtin.file:
-        path: "{{ user_dir }}/source/{{ network }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        recurse: true
-        mode: "0755"
+    - name: Install from binary tarred
+      ansible.builtin.include_tasks: binary_tar.yml
+      when: binary is defined and binary_processing is defined and binary_processing == 'tar'
 
-    - name: Build and install node to go/bin folder
-      ansible.builtin.command: "{{ item }}"
-      args:
-        chdir: "{{ user_dir }}/source/{{ network }}"
-      with_items:
-        - 'nice -n 15 make {{ make_args | default("install") }}'
-      environment:
-        PATH: "{{ path }}"
-        GOPATH: "{{ user_dir }}/go"
+    - name: Install from binary zipped
+      ansible.builtin.include_tasks: binary_zip.yml
+      when: binary is defined and binary_processing is defined and binary_processing == 'zip'
 
-- name: Install from binary
-  ansible.builtin.include_tasks: binary_default.yml
-  when: binary is defined and binary_processing is not defined
+    - name: Install from binary tar gz
+      ansible.builtin.include_tasks: binary_targz.yml
+      when: binary is defined and binary_processing is defined and binary_processing == 'targz'
 
-- name: Install from binary tarred
-  ansible.builtin.include_tasks: binary_tar.yml
-  when: binary is defined and binary_processing is defined and binary_processing == 'tar'
+    - name: Install from binary tar bz2
+      ansible.builtin.include_tasks: binary_tarbz2.yml
+      when: binary is defined and binary_processing is defined and binary_processing == 'tarbz2'
 
-- name: Install from binary zipped
-  ansible.builtin.include_tasks: binary_zip.yml
-  when: binary is defined and binary_processing is defined and binary_processing == 'zip'
+    - name: Install from source
+      when: binary is undefined
+      block:
+        - name: Clone node repo
+          ansible.builtin.git:
+            repo: "{{ repo }}"
+            dest: "{{ user_dir }}/source/{{ network }}"
+            version: "{{ node_version }}"
+            update: true
+            force: true
+            recursive: true
 
-- name: Install from binary tar gz
-  ansible.builtin.include_tasks: binary_targz.yml
-  when: binary is defined and binary_processing is defined and binary_processing == 'targz'
+        - name: Change repo folder permission
+          ansible.builtin.file:
+            path: "{{ user_dir }}/source/{{ network }}"
+            owner: "{{ ansible_user }}"
+            group: "{{ ansible_user }}"
+            recurse: true
+            mode: "0755"
 
-- name: Install from binary tar bz2
-  ansible.builtin.include_tasks: binary_tarbz2.yml
-  when: binary is defined and binary_processing is defined and binary_processing == 'tarbz2'
+        - name: Build and install node to go/bin folder
+          ansible.builtin.command: "{{ item }}"
+          args:
+            chdir: "{{ user_dir }}/source/{{ network }}"
+          with_items:
+            - 'nice -n 15 make {{ make_args | default("install") }}'
+          environment:
+            PATH: "{{ path }}"
+            GOPATH: "{{ user_dir }}/go"
+
+- name: Install from tracing
+  ansible.builtin.include_tasks: binary_tracing.yml
+  when: tracing
