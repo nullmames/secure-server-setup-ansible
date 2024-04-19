@@ -1,0 +1,32 @@
+---
+- name: Open range of ufw ports for p2p tcp
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: 8000:8020
+    proto: tcp
+    comment: "External: Solana p2p ports"
+
+- name: Open range of ufw ports for p2p udp
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: 8000:8020
+    proto: udp
+    comment: "External: Solana p2p ports"
+
+- name: Copy service file
+  become: true
+  ansible.builtin.template:
+    src: "solana-validator.service.j2"
+    dest: "/etc/systemd/system/solana-validator.service"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable solana-validator service
+  become: true
+  ansible.builtin.systemd:
+    name: solana-validator
+    daemon_reload: true
+    enabled: true

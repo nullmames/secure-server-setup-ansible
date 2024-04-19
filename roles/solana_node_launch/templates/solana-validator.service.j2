@@ -1,0 +1,50 @@
+[Unit]
+Description=solana-validator
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+User={{ ansible_user }}
+WorkingDirectory={{ user_dir }}/{{ folder }}
+
+ExecStart=/usr/local/bin/solana-validator \
+    --identity validator-keypair.json \
+    --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2 \
+    --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ \
+    --known-validator DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ \
+    --known-validator CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S \
+    --no-voting \
+    --ledger ledger \
+    --accounts accounts \
+    --only-known-rpc \
+    --full-rpc-api \
+    --rpc-port 8899 \
+    --rpc-bind-address 0.0.0.0 \
+    --private-rpc \
+    --dynamic-port-range 8001-8020 \
+    --entrypoint entrypoint.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint2.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint3.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint4.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint5.mainnet-beta.solana.com:8001 \
+    --expected-genesis-hash 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d \
+    --wal-recovery-mode skip_any_corrupted_record \
+    --limit-ledger-size 100000000
+
+ExecStop=/bin/kill -s INT ${MAINPID}
+Restart=on-failure
+RestartSec=5
+
+Environment=RUST_LOG=error
+Environment=RUST_BACKTRACE=full
+
+# LogNamespace
+LogNamespace=noisy
+
+# Open files
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
