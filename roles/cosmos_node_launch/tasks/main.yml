@@ -35,21 +35,6 @@
     - unconditional_peer_ids
     - unconditional-peer-ids
 
-- name: Install cosmovisor
-  ansible.builtin.shell: "go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@{{ cosmovisor_version }}"
-  environment:
-    PATH: "/usr/local/go/bin"
-    GOPATH: "{{ user_dir }}/go"
-
-- name: Create Cosmovisor directories for binary
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: "0755"
-  with_items:
-    - "{{ user_dir }}/{{ folder }}/cosmovisor/genesis/bin"
-    - "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades"
-
 - name: Copy binary into cosmovisor directory
   ansible.builtin.copy:
     src: "{{ user_dir }}/go/bin/{{ daemon }}"
@@ -73,22 +58,6 @@
         dest: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin"
         remote_src: true
         mode: "0755"
-
-- name: Copy cosmovisor systemctl service file for binary
-  become: true
-  ansible.builtin.template:
-    src: "cosmovisor.service.j2"
-    dest: "/etc/systemd/system/{{ daemon }}.service"
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Enable cosmovisor service for binary
-  become: true
-  ansible.builtin.systemd:
-    name: "{{ daemon }}"
-    daemon_reload: true
-    enabled: true
 
 - name: Create state_sync directory
   ansible.builtin.file:

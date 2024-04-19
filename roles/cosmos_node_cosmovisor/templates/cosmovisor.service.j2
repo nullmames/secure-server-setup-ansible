@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 User={{ ansible_user }}
-ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }}
+ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }} {{ '--trace --twasm.open-tracing' if tracing }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=5
@@ -20,12 +20,13 @@ Environment="UNSAFE_SKIP_BACKUP=true"
 Environment="LD_LIBRARY_PATH={{ user_dir }}/{{ folder }}/cosmovisor/current/bin/"
 {% endif %}
 LogNamespace=noisy
-{% if process_priority is defined %}
-CPUSchedulingPolicy=fifo
-CPUSchedulingPriority=20
-IOSchedulingClass=best-effort
-IOSchedulingPriority=0
+
+{% if tracing %}
+Environment="no_tracing_ibcreceive_capture=true"
+Environment="no_tracing_ibcreceive_log=true"
+Environment=JAEGER_SERVICE_NAME={{ network }}-{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}
 {% endif %}
+
 
 [Install]
 WantedBy=multi-user.target
