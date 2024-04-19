@@ -1,0 +1,60 @@
+---
+# Celo Support with custom ports (136)
+# Ports:
+#  - Geth:
+#    - 13603 (p2p, public)
+#    - 13645 (rpc, internal)
+
+- name: Set facts
+  ansible.builtin.set_fact:
+    p2p_port: "{{ custom_port_prefix }}03"
+    rpc_port: "{{ custom_port_prefix }}45"
+
+- name: Create Celo folder
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/execution-data"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: celo_net
+
+- name: Run geth container for Celo
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: us.gcr.io/celo-org/geth:{{ execution_container_version }}
+    state: started
+    restart_policy: unless-stopped
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: celo_net
+    ports:
+      # p2p
+      - "{{ p2p_port }}:{{ p2p_port }}/tcp"
+      - "{{ p2p_port }}:{{ p2p_port }}/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ rpc_port }}:{{ rpc_port }}"
+      - "127.0.0.1:{{ rpc_port }}:{{ rpc_port }}"
+    volumes:
+      - "{{ folder }}/execution-data:/root/.celo"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - --port={{ p2p_port }}
+      - --datadir=/root/.celo
+      - --syncmode=full
+      - --light.serve=50
+      - --light.maxpeers=1000
+      - --maxpeers=1100
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port={{ rpc_port }}
+      - --http.corsdomain=*
+      - --http.api=eth,net,web3,debug,admin,personal
+      - --http.vhosts=*
+      - --verbosity=3
