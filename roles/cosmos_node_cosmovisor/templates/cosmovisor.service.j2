@@ -1,5 +1,6 @@
 [Unit]
-Description=cosmovisor
+Description=Cosmovisor service file for {{ network}} on {% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}
+
 After=network-online.target
 
 [Service]
@@ -24,7 +25,7 @@ LogNamespace=noisy
 {% if tracing %}
 Environment="no_tracing_ibcreceive_capture=true"
 Environment="no_tracing_ibcreceive_log=true"
-Environment=JAEGER_SERVICE_NAME={{ network }}-{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}
+Environment="JAEGER_SERVICE_NAME={{ network }}-{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
 {% endif %}
 
 
