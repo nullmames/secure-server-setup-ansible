@@ -2,7 +2,7 @@ network: evmos
 folder: ".evmosd"
 daemon: evmosd
 chain_id: evmos_9001-2
-node_version: v17.0.0
+node_version: v17.0.1
 repo: https://github.com/tharsis/evmos
 genesis: "https://archive.evmos.org/mainnet/genesis.json"
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:13456,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:13456,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:13456"
