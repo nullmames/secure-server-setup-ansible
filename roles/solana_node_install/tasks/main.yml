@@ -11,15 +11,20 @@
     - llvm
     - libclang-dev
     - protobuf-compiler
+    - libssl-dev
+    - clang
+    - acl
 
 - name: Add additional system tweaks
   become: true
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
+    sysctl_set: true
     state: present
     reload: true
   loop:
+    ## From Solana Docs
     # Increase UDP Buffer sizes
     - name: net.core.rmem_default
       value: "134217728"
@@ -35,13 +40,13 @@
     # Increase memory mapped files limit
     - name: vm.max_map_count
       value: "1000000"
-    # Additionals
+    - name: fs.nr_open
+      value: "1000000"
+    ## Additional tweaks
     - name: kernel.nmi_watchdog
       value: "0"
     - name: vm.swappiness
       value: "30"
-    - name: kernel.hung_task_timeout_secs
-      value: "600"
     - name: vm.stat_interval
       value: "10"
     - name: vm.dirty_ratio
@@ -57,9 +62,9 @@
     - name: kernel.timer_migration
       value: "0"
     - name: kernel.pid_max
-      value: "65536"
-    - name: net.ipv4.tcp_fastopen
-      value: "3"
+      value: "{{ ansible_processor_vcpus * 1024 | int | abs }}" # 1024 * threads
+    # - name: net.ipv4.tcp_fastopen
+    #   value: "3"
 
 - name: Create network folder
   ansible.builtin.file:
