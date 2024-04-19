@@ -22,6 +22,7 @@
   ansible.builtin.apt:
     name:
       - nodejs
+      - npm
     state: present
 
 - name: Install node.js packages
