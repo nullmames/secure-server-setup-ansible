@@ -37,8 +37,10 @@
     - name: Create and send execution archive
       become: true
       ansible.builtin.shell:
-        cmd: "tar --use-compress-program=lz4 -cf - {{ execution_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}"
+        cmd: "set -o pipefail && tar --use-compress-program=lz4 -cf - {{ execution_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}"
         chdir: "{{ execution_snapshot_location | dirname }}"
+      args:
+        executable: /usr/bin/bash
       environment:
         PATH: "{{ path }}"
 
