@@ -4,5 +4,18 @@
   gather_facts: true
   vars_files:
     - "group_vars/erc20_mainnet/{{ target }}.yml"
+
+  pre_tasks:
+    - name: Ensure chain exists on source
+      become: true
+      ansible.builtin.stat:
+        path: "{{ execution_snapshot_location }}"
+      register: snapshot_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ execution_snapshot_location }} does not exist. Wrong --limit?"
+      when: not snapshot_folder.stat.exists
+
   roles:
     - chainlink_support_take_snapshot
