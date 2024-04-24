@@ -5,6 +5,6 @@
   vars_files:
     - "group_vars/erc20_mainnet/solana.yml"
   roles:
-    # - util_install_rust
+    - util_install_rust
     - solana_node_install
     - solana_node_launch
