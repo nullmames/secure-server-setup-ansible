@@ -1,11 +1,17 @@
 ---
 - name: Install seed
-  hosts: "{{ target }}"
+  hosts: all
   gather_facts: false
-  vars_files:
-    - "{{ var_file }}"
 
   pre_tasks:
+    - name: Set the network to the target network
+      ansible.builtin.set_fact:
+        network: "{{ target }}"
+
+    - name: Include vars_file
+      include_vars:
+        file: "group_vars/{% if 'Testnet' in group_names %}testnets{% else %}mainnets{% endif %}/{{ network }}.yml"
+
     - name: Verify seeds are set
       ansible.builtin.fail:
         msg: seeds is not set in config.  Cannot continue.
