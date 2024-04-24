@@ -2,7 +2,8 @@ network: kujira
 folder: .kujira
 daemon: kujirad
 chain_id: kaiyo-1
-node_version: v0.9.3-1
+node_version: v1.0.2
+
 repo: "https://github.com/Team-Kujira/core"
 genesis: "https://raw.githubusercontent.com/Team-Kujira/networks/master/mainnet/kaiyo-1.json"
 peers: ""
@@ -12,5 +13,4 @@ custom_port_prefix: 118
 
 snapshot_url: https://snapshots.lavenderfive.com/snapshots/kujira/kujira_17824875.tar.lz4
 
-# Annoying
-go_release: "go1.20.8"
+upgrade_name: v1.0.2
