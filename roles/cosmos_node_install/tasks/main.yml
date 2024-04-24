@@ -1,7 +1,7 @@
 ---
 # Install binary
 - name: Install or build binary
-  when: not tracing
+  when: tracing is undefined
   block:
     - name: Install from binary
       ansible.builtin.include_tasks: binary_default.yml
@@ -55,4 +55,4 @@
 
 - name: Install from tracing
   ansible.builtin.include_tasks: binary_tracing.yml
-  when: tracing
+  when: tracing is defined and tracing
