@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 User={{ ansible_user }}
-ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }} {{ '--trace --twasm.open-tracing' if tracing }}
+ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }} {{ '--trace --twasm.open-tracing' if tracing is defined and tracing }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=5
@@ -22,7 +22,7 @@ Environment="LD_LIBRARY_PATH={{ user_dir }}/{{ folder }}/cosmovisor/current/bin/
 {% endif %}
 LogNamespace=noisy
 
-{% if tracing %}
+{% if tracing is defined and tracing %}
 Environment="no_tracing_ibcreceive_capture=true"
 Environment="no_tracing_ibcreceive_log=true"
 Environment="JAEGER_SERVICE_NAME={{ network }}-{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
