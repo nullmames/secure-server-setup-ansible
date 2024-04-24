@@ -6,7 +6,7 @@ custom_port_prefix: 136
 # Execution
 execution_container_name: celo_geth
 execution_container_version: mainnet
-execution_snapshot_location: "{{ folder }}/execution-data/data/chainData"
+execution_snapshot_location: "{{ folder }}/execution-data/celo/chaindata"
 # Consensus
 # consensus_container_name: heimdall
 # consensus_container_version: 1.0.4
