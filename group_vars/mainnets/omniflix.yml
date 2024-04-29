@@ -2,14 +2,14 @@ network: omniflix
 folder: ".omniflixhub"
 daemon: omniflixhubd
 chain_id: omniflixhub-1
-node_version: v3.3.0
+node_version: v4.0.0
 repo: https://github.com/OmniFlix/omniflixhub
 genesis: https://raw.githubusercontent.com/OmniFlix/mainnet/main/omniflixhub-1/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:16956,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:16956"
 minimum_gas_price: "0.001uflix"
 custom_port_prefix: 169
 
-upgrade_name: v3
+upgrade_name: v4
 
 snap_rpc: https://rpc.cosmos.directory:443/omniflixhub
 snapshot_url:

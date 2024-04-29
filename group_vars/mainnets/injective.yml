@@ -17,6 +17,6 @@ custom_port_prefix: 143
 
 snap_rpc: https://rpc.cosmos.directory:443/injective
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_66166528.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_67318688.tar.lz4
 
 upgrade_name: v1.12.0
