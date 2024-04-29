@@ -32,7 +32,7 @@
 
 - name: Download snapshot
   ansible.builtin.shell:
-    cmd: "aria2c -x5 -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
+    cmd: "aria2c -x10 -c -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
   environment:
     PATH: "{{ path }}"
 
