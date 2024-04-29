@@ -1,35 +1,49 @@
 ---
 # Geth/Lighthouse support structure with host networking
+# custom_port_prefix not in use
+# Ports: geth: 30303 (p2p), 8545 (rpc), 8546 (ws), lighthouse: 9000 (p2p), 5052 (rpc)
 
-- name: Open p2p ports for geth and lighthouse_version
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 30303
-      comment: External - geth p2p
-    - port: 9000
-      comment: External - lighthouse p2p
-
-- name: Add docker-compose and docker-data folders
+- name: Create jwtsecret
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
     executable: /bin/bash
 
+- name: Create folder
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/geth"
+    - "{{ folder }}/lighthouse"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: ethereum_net
+
 - name: Run geth container
   community.docker.docker_container:
-    name: geth
-    image: ethereum/client-go:{{ geth_version }}
+    name: "{{ execution_container_name }}"
+    image: ethereum/client-go:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
+    networks:
+      - name: ethereum_net
+    ports:
+      # p2p
+      - 30303:30303/tcp
+      - 30303:30303/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:8545:8545"
+      - 127.0.0.1:8545:8545
+      - "{{ nebula_internal_ip_addr }}:8546:8546"
+      - 127.0.0.1:8546:8546
     volumes:
-      - "{{ user_dir }}/docker-compose/geth:/geth"
+      - "{{ folder }}/geth:/geth"
       - "{{ user_dir }}/docker-compose/jwtsecret:/geth/jwtsecret"
     command:
       # p2p
@@ -58,14 +72,23 @@
 
 - name: Run lighthouse container
   community.docker.docker_container:
-    name: lighthouse
-    image: sigp/lighthouse:{{ lighthouse_version }}
+    name: "{{ consensus_container_name }}"
+    image: sigp/lighthouse:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
+    networks:
+      - name: ethereum_net
+    ports:
+      # p2p
+      - 9000:9000/tcp
+      - 9000:9000/udp
+      - 9001:9001/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:5052:5052"
+      - 127.0.0.1:5052:5052
     volumes:
-      - "{{ user_dir }}/docker-compose/lighthouse:/root/.lighthouse"
+      - "{{ folder }}/lighthouse:/root/.lighthouse"
       - "{{ user_dir }}/docker-compose/jwtsecret:/root/.lighthouse/jwtsecret"
     command:
       - /usr/local/bin/lighthouse
@@ -73,7 +96,7 @@
       - --network=mainnet
       - --http
       - --http-address=0.0.0.0
-      - --execution-endpoint=http://localhost:8551
+      - --execution-endpoint=http://{{ execution_container_name }}:8551
       - --execution-jwt=/root/.lighthouse/jwtsecret
       - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
       - --disable-deposit-contract-sync

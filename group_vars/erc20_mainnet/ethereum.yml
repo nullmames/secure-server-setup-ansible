@@ -1,0 +1,14 @@
+# Ethereum versions and approach
+network: ethereum
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+# No custom_port_prefix for Ethereum
+
+# Execution
+execution_container_name: geth
+execution_container_version: v1.14.0
+execution_snapshot_location: "{{ folder }}/geth/bor/chaindata"
+
+# Consensus
+consensus_container_name: lighthouse
+consensus_container_version: v5.1.3
+consensus_snapshot_location: "{{ folder }}/lighthouse/data"
