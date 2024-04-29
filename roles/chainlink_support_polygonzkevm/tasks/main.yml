@@ -1,0 +1,50 @@
+---
+# Polygon zkEVM Support with custom ports (119)
+# url: https://github.com/0xPolygonHermez/cdk-erigon
+# Ports:
+#  - Erigon:
+#    - 11945 (rpc, internal)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Get current user and group
+  ansible.builtin.shell:
+    cmd: echo "$(id -u):$(id -g)"
+  register: current_user
+
+- name: Create Polygon zkEVM folder
+  ansible.builtin.file:
+    path: "{{ folder }}"
+    state: directory
+    mode: "0755"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Run erigon container for Polygon zkEVM
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: "hermeznetwork/cdk-erigon:{{ execution_container_version }}"
+    state: started
+    restart_policy: unless-stopped
+    stop_timeout: 600
+    pull: true
+    user: "{{ current_user.stdout }}"
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+    volumes:
+      - "{{ folder }}:/home/erigon/.local/share/erigon"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - --config=./mainnet.yaml
+      - --zkevm.l1-rpc-url={{ ethereum_l1 }}
