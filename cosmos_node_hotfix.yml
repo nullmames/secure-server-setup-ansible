@@ -14,4 +14,5 @@
   roles:
     - util_go_install
     - cosmos_node_install
+    - cosmos_node_cosmovisor
     - cosmos_node_hotfix
