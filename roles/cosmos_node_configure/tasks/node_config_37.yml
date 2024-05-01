@@ -227,7 +227,7 @@
   when: minimum_gas_price is defined
 
 - name: Set signing port address for horcrux
-  when: ( sentries is defined ) and ( nebula_internal_ip_addr in sentries )
+  when: ( nebula_internal_ip_addr is defined ) and ( sentries is defined ) and ( nebula_internal_ip_addr in sentries )
   community.general.ini_file:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     section: priv-validator
