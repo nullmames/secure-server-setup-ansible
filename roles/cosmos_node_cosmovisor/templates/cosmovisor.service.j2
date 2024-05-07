@@ -1,5 +1,5 @@
 [Unit]
-Description=Cosmovisor service file for {{ network}} on {% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}
+Description=Cosmovisor service file for {{ network }} on {% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %} - chain-id: {{ chain_id }}
 
 After=network-online.target
 
@@ -22,12 +22,21 @@ Environment="LD_LIBRARY_PATH={{ user_dir }}/{{ folder }}/cosmovisor/current/bin/
 {% endif %}
 LogNamespace=noisy
 
+{% if memory_high_mb is defined %}
+MemoryAccounting=true
+MemoryHigh={{ memory_high_mb }}M
+MemoryMax={{ memory_max_mb }}M
+{% endif %}
+
 {% if tracing is defined and tracing %}
 Environment="no_tracing_ibcreceive_capture=true"
 Environment="no_tracing_ibcreceive_log=true"
+Environment="JAEGER_SAMPLER_TYPE=const"
+Environment="JAEGER_SAMPLER_PARAM=1"
+Environment="JAEGER_REPORTER_LOG_SPANS=true"
+Environment="JAEGER_REPORTER_MAX_QUEUE_SIZE=100"
 Environment="JAEGER_SERVICE_NAME={{ network }}-{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
 {% endif %}
-
 
 [Install]
 WantedBy=multi-user.target
