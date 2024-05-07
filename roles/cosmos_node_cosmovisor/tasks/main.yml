@@ -1,4 +1,19 @@
 ---
+- name: Set facts for memory limits # 90% of memory if 32GB or less, else 50% and 70%
+  ansible.builtin.set_fact:
+    memory_high_mb: >-
+      {%- if ansible_memory_mb.real.total < 32768 -%}
+        {{ (ansible_memory_mb.real.total * 0.9) | round | int }}
+      {%- else -%}
+        {{ (ansible_memory_mb.real.total * 0.5) | round | int }}
+      {%- endif -%}
+    memory_max_mb: >-
+      {%- if ansible_memory_mb.real.total < 32768 -%}
+        {{ (ansible_memory_mb.real.total * 0.9) | round | int }}
+      {%- else -%}
+        {{ (ansible_memory_mb.real.total * 0.7) | round | int }}
+      {%- endif -%}
+
 - name: Install cosmovisor
   ansible.builtin.shell: "go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@{{ cosmovisor_version }}"
   environment:
