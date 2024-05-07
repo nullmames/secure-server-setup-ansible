@@ -30,7 +30,7 @@
 
 - name: Prepare network upgrade using cosmovisor
   hosts: all
-  gather_facts: false
+  gather_facts: true
   vars_files:
     - "{{ var_file }}"
   roles:

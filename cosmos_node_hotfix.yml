@@ -4,7 +4,7 @@
 # ansible-playbook main_cosmos_node_hotfix.yml -i inventory-testnet.ini --limit testnet_juno"
 - name: Deploy hotfix to node
   hosts: all
-  gather_facts: false
+  gather_facts: true
   vars_files:
     - "{{ var_file }}"
   pre_tasks:

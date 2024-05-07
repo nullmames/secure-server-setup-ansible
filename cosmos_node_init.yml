@@ -1,7 +1,7 @@
 ---
 - name: Cosmos Install and Init
   hosts: all
-  gather_facts: false
+  gather_facts: true
   vars_files:
     - "{{ var_file }}"
     - "{{ user_file }}"
