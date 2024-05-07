@@ -41,11 +41,11 @@
     executable: /usr/bin/bash
   register: currentheight
 
-- name: Assert height is viable
-  ansible.builtin.assert:
-    that:
-      - (currentheight.stdout | int) >= 1
-    fail_msg: "Current height of chain is incorrect"
+- name: Double check we want to continue
+  when: currentheight.stdout == "null"
+  ansible.builtin.pause:
+    prompt: "Current height is undefined.  Are you sure you want to take a snapshot?"
+    echo: true
 
 - name: Stop cosmovisor
   become: true
@@ -57,12 +57,12 @@
   ansible.builtin.pause:
     seconds: 5
 
-- name: Run cosmprund
-  ansible.builtin.command:
-    cmd: "{{ user_dir }}/go/bin/cosmprund prune ~/{{ folder }}/data"
-    chdir: "{{ user_dir }}"
-  environment:
-    PATH: "{{ path }}"
+# - name: Run cosmprund
+#   ansible.builtin.command:
+#     cmd: "{{ user_dir }}/go/bin/cosmprund prune ~/{{ folder }}/data"
+#     chdir: "{{ user_dir }}"
+#   environment:
+#     PATH: "{{ path }}"
 
 - name: Check for external wasm
   ansible.builtin.stat:
@@ -76,7 +76,7 @@
 
 - name: Set fact
   ansible.builtin.set_fact:
-    snapshot_filename: "{{ network }}-snapshot.{{ currentheight.stdout }}.tar.lz4"
+    snapshot_filename: "{{ network }}-snapshot.{{ currentheight.stdout | default('STALLED') }}.tar.lz4"
 
 - name: Create archive - external wasm
   when: wasm_outside.stat.exists
