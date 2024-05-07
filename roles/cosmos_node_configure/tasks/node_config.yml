@@ -192,6 +192,10 @@
     backrefs: true
   with_items:
     - { regexp: "^iavl-cache-size", line: "iavl-cache-size = 3906250" }
+    - {
+        regexp: "^iavl-fastnode-module-whitelist",
+        line: "iavl-fastnode-module-whitelist = []",
+      }
     - { regexp: "^memory_cache_size", line: "memory_cache_size = 8000" }
     - { regexp: "^query_gas_limit", line: "query_gas_limit = 5000000" }
     - {
