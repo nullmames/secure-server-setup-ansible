@@ -5,6 +5,8 @@ daemon: seid
 chain_id: "pacific-1"
 node_version: v3.9.0
 repo: https://github.com/sei-protocol/sei-chain.git
+
+binary: https://snapshots.rhinostake.com/rhinoshare/seid
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
 # peers: 42f5(polka), d7ad(sei-p2p), 5c1f14,80139(kucoin). 4d5f(mexc), c5a0(upbit), 7602,f303(binance), 6106,9ebc(sei), 2639(schultzie), b329(strangelove)
