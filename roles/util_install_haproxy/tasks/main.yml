@@ -108,6 +108,7 @@
     mode: "0644"
 
 - name: Copy haproxy config
+  notify: Restart haproxy
   become: true
   ansible.builtin.template:
     src: "haproxy-{{ haproxy_config }}.cfg"
@@ -115,7 +116,6 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart haproxy
 
 - name: Stat local map file
   delegate_to: localhost
