@@ -3,7 +3,7 @@
 go_release: "go1.21.8"
 
 # node
-node_release: "node_18.x"
+node_release: "18"
 
 # cosmovisor
 cosmovisor_version: "v1.0.0"
