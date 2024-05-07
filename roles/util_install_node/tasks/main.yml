@@ -1,28 +1,47 @@
 ---
+- name: Remove old nodesource key if exists
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/keyrings/nodesource.asc
+    state: absent
+
 - name: Install nodesource repository key
   become: true
-  ansible.builtin.get_url:
-    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-    dest: /usr/share/keyrings/nodesource.asc
-    mode: "0644"
-    force: true
+  ansible.builtin.shell:
+    cmd: "set -o pipefail &&curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg"
+    creates: /etc/apt/keyrings/nodesource.gpg
+  args:
+    executable: /bin/bash
+
+- name: Find old nodesource repositories
+  become: true
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    file_type: file
+    patterns: "deb_nodesource_com_node_*"
+    excludes:
+      - "deb_nodesource_com_node_{{ node_release }}_x.list"
+  register: nodesource_repo_files
+
+- name: Disable sites
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ nodesource_repo_files['files'] }}"
 
 - name: Install nodesource repository
   become: true
   ansible.builtin.apt_repository:
-    repo: "{{ item }}"
+    repo: deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ node_release }}.x nodistro main
     state: present
     update_cache: true
-  with_items:
-    - deb [signed-by=/usr/share/keyrings/nodesource.asc] https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
-    - deb-src [signed-by=/usr/share/keyrings/nodesource.asc] https://deb.nodesource.com/{{ node_release }} {{ ansible_distribution_release }} main
 
 - name: Install nodejs
   become: true
   ansible.builtin.apt:
     name:
       - nodejs
-      - npm
     state: present
 
 - name: Install node.js packages
