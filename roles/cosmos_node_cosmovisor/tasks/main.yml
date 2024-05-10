@@ -31,6 +31,7 @@
 
 - name: Copy cosmovisor systemctl service file for binary
   become: true
+  notify: Restart cosmovisor
   ansible.builtin.template:
     src: "cosmovisor.service.j2"
     dest: "/etc/systemd/system/{{ daemon }}.service"
