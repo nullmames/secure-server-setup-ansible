@@ -9,30 +9,6 @@
     return_content: true
   register: public_ip
 
-- name: Open p2p ports
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    proto: "{{ item.proto }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 30303
-      proto: tcp
-      comment: External - erigon p2p
-    - port: 30303
-      proto: udp
-      comment: External - erigon p2p
-    - port: 42069
-      proto: tcp
-      comment: External - erigon torrent
-    - port: 13000
-      proto: tcp
-      comment: External - prysm p2p
-    - port: 12000
-      proto: udp
-      comment: External - prysm p2p
-
 - name: Add docker-compose and docker-data folders
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
@@ -68,10 +44,10 @@
       - 30303:30303/tcp
       - 30303:30303/udp
       # rpc
-      - 8545:8545
-      # - 127.0.0.1:8545:8545
-      - 8546:8546
-      # - 127.0.0.1:8546:8546
+      - "{{ nebula_internal_ip_addr }}:8545:8545"
+      - 127.0.0.1:8545:8545
+      - "{{ nebula_internal_ip_addr }}:8546:8546"
+      - 127.0.0.1:8546:8546
     volumes:
       - "{{ user_dir }}/docker-compose/erigon-data:/erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/erigon-data/jwtsecret"
@@ -110,8 +86,8 @@
       - 13000:13000/tcp
       - 12000:12000/udp
       # rpc
-      - 3500:3500
-      # - 127.0.0.1:3500:3500
+      - "{{ nebula_internal_ip_addr }}:3500:3500"
+      - 127.0.0.1:3500:3500
     volumes:
       - "{{ user_dir }}/docker-compose/prysm/data:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
