@@ -1,0 +1,135 @@
+---
+# For updating the CCIP keystore file with new configurations for chain growth
+# Will use all templates from chainlink_afn_node_configure
+
+- name: Verify that keygen_flags is set
+  ansible.builtin.assert:
+    that:
+      - keygen_flags is defined
+      - keygen_flags is not none
+      - keygen_flags != ""
+      - node_version_keygen_prep is defined
+      - node_version_keygen_prep is not none
+      - node_version_keygen_prep != ""
+    fail_msg: "keygen_flags or node_version_keygen_prep is not set"
+
+- name: Set fact for localhost execution
+  ansible.builtin.set_fact:
+    user_dir: "{{ lookup('env', 'HOME') }}"
+
+- name: Create temporary chainlink_afn folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/chainlink_afn"
+    state: directory
+    mode: "0755"
+
+- name: Copy env file and current keystore to chainlink_afn folder
+  ansible.builtin.template:
+    src: "{{ role_path }}/../chainlink_afn_node_configure/templates/{{ item.source }}"
+    dest: "{{ user_dir }}/chainlink_afn/{{ item.dest }}"
+    mode: "0644"
+  with_items:
+    - source: "keystore-file"
+      dest: "keystore-old"
+    - source: "local-config.toml.j2"
+      dest: "local-config.toml"
+    - source: "env-vars.env"
+      dest: "env-vars"
+
+- name: Build keygen version of afn
+  block:
+    - name: Upload github ssh key
+      ansible.builtin.copy:
+        src: "{{ role_path }}/../chainlink_afn_node_install/keys/github-ssh-key"
+        dest: "{{ user_dir }}/.ssh/github-ssh-key"
+        mode: "600"
+
+    - name: Update chainlink_afn repo for node install
+      ansible.builtin.git:
+        repo: "git@github.com:{{ repo }}"
+        dest: "{{ user_dir }}/source/{{ network }}"
+        version: "{{ node_version_keygen_prep }}"
+        key_file: "{{ user_dir }}/.ssh/github-ssh-key"
+        clone: true
+        accept_hostkey: true
+        update: true
+        force: true
+        recursive: true
+
+    - name: Build chainlink_afn
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ user_dir }}/source/{{ network }}"
+      with_items:
+        - "nice -n 15 cargo install --bin afn --locked --path afn/"
+      environment:
+        PATH: "{{ path }}"
+
+    - name: Copy chainlink_afn binary
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/{{ network }}/target/release/afn"
+        dest: "{{ user_dir }}/chainlink_afn/afn"
+        mode: "0755"
+        remote_src: true
+        force: true
+
+- name: Slurp environment file
+  ansible.builtin.slurp:
+    src: "{{ user_dir }}/chainlink_afn/env-vars"
+  register: env_file_content
+
+- name: Parse environment
+  ansible.builtin.set_fact:
+    env_vars: "{{ (env_file_content.content | b64decode).split('\n') | map('regex_replace', '^#.*', '') | select | map('regex_replace', '([^=]*)=(.*)', '\\1: \\2') | join('\n') | from_yaml }}"
+
+- name: Generate new keys
+  ansible.builtin.shell:
+    cmd: "AFN_PASSPHRASE={{ env_vars.AFN_PASSPHRASE }} ./afn keystore update keystore-old -o keystore-new {{ keygen_flags }}"
+    creates: "{{ user_dir }}/chainlink_afn/keystore-new"
+  args:
+    chdir: "{{ user_dir }}/chainlink_afn"
+
+- name: Display keys
+  ansible.builtin.shell:
+    cmd: "AFN_PASSPHRASE={{ env_vars.AFN_PASSPHRASE }} ./afn keystore addrs keystore-new"
+  args:
+    chdir: "{{ user_dir }}/chainlink_afn"
+  register: keystore_output
+
+- name: New keys
+  ansible.builtin.debug:
+    msg: "{{ keystore_output.stdout_lines }}"
+
+- name: Confirm that keys look correct
+  ansible.builtin.pause:
+    prompt: Please confirm that keystore will be replaced with new keystore. Press Ctrl+c and then "a" to abort.
+
+- name: Take backup of old keystore
+  delegate_to: localhost
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../chainlink_afn_node_configure/templates/keystore-file"
+    dest: "{{ role_path }}/../chainlink_afn_node_configure/templates/keystore-file.bak.{{ ansible_date_time.iso8601_micro }}"
+    mode: "0644"
+
+- name: Copy new keystore to old keystore
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/chainlink_afn/keystore-new"
+    dest: "{{ role_path }}/../chainlink_afn_node_configure/templates/keystore-file"
+    mode: "0644"
+
+- name: Vault all keystore files
+  ansible.builtin.shell:
+    cmd: "ansible-vault encrypt {{ item }}"
+  with_fileglob: "{{ role_path }}/../chainlink_afn_node_configure/templates/keystore*"
+
+- name: Confirm deletion of temp files
+  ansible.builtin.pause:
+    prompt: Confirm deletion of temp directory
+
+- name: Delete temp directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ user_dir }}/chainlink_afn"
+    - "{{ user_dir }}/source/{{ network }}"
