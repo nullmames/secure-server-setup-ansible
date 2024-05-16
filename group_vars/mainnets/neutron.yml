@@ -10,7 +10,7 @@ seeds: "74f3a4a0423e72334f4439b438b29934e5f0dbbd@p2p-xyphion.neutron-1.neutron.o
 minimum_gas_price: "0untrn"
 custom_port_prefix: 191
 
-snap_rpc: https://neutron-rpc.cosmos-apis.com:443
+snap_rpc: https://neutron-rpc.polkachu.com:443
 
 snapshot_url: https://snapshots.lavenderfive.com/snapshots/neutron/latest.tar.lz4
 
