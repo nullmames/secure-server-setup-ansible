@@ -34,7 +34,7 @@
 
 - name: Copy local-config.toml
   notify: Restart chainlink_afn
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: "templates/local-config.toml.j2"
     dest: "{{ user_dir }}/{{ folder }}/local-config.toml"
     owner: "{{ ansible_user }}"
@@ -44,7 +44,7 @@
 - name: Copy env-vars
   become: true
   notify: Restart chainlink_afn
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: "templates/env-vars.env"
     dest: "{{ user_dir }}/{{ folder }}/env-vars"
     owner: "root"
