@@ -20,7 +20,7 @@
 
     - name: Update and launch containers
       ansible.builtin.command:
-        cmd: "docker compose up -d"
+        cmd: "docker compose up --build -d"
       args:
         chdir: "{{ user_dir }}/docker-compose"
       environment:

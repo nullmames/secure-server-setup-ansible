@@ -14,7 +14,7 @@ volumes:
 
 services:
   tenderduty:
-    image: ghcr.io/blockpane/tenderduty:latest
+    build: "{{ user_dir }}/docker-compose/tenderduty/."
     command: ""
     ports:
       - "{{ ansible_host }}:8888:8888" # Dashboard
