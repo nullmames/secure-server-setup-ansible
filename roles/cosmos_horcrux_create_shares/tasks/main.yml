@@ -11,8 +11,8 @@
   block:
     - name: Move multi-signer shares
       ansible.builtin.import_tasks: create_multi_share.yml
-      when: shares > 1
+      when: shares | int > 1
 
     - name: Move single-signer shares
       ansible.builtin.import_tasks: create_single_share.yml
-      when: shares == 1
+      when: shares | int == 1

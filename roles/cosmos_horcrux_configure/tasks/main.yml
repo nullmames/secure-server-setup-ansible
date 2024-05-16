@@ -41,8 +41,8 @@
   block:
     - name: Configure multi-signer horcrux
       ansible.builtin.import_tasks: configure_multi_signer.yml
-      when: shares > 1
+      when: shares | int > 1
 
     - name: Configure single-signer horcrux
       ansible.builtin.import_tasks: configure_single_signer.yml
-      when: shares == 1
+      when: shares | int == 1
