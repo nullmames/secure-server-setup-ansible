@@ -1,27 +1,41 @@
 ---
-# Scroll Blockchain support structure with host networking
-# Ports: p2p: 50303, rpc: 58545, ws: 59546
+# Scroll Blockchain support structure
+# custom_port_prefix: 134
+# Ports: p2p: 13403, rpc: 13445, ws: 13446
 
-- name: Open p2p ports for l2geth
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    comment: "{{ item.comment }}"
+- name: Create folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
   loop:
-    - port: 50303
-      comment: External - Scroll l2geth p2p
+    - "{{ folder }}"
+    - "{{ folder }}/scroll-geth"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: scroll_net
 
 - name: Run l2geth container
   community.docker.docker_container:
-    name: scroll-geth
-    image: scrolltech/l2geth:scroll-{{ scroll_l2geth_version }}
+    name: "{{ execution_container_name }}"
+    image: scrolltech/l2geth:scroll-{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
-    network_mode: host
+    networks:
+      - name: scroll_net
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:30303/tcp"
+      - "{{ custom_port_prefix }}03:30303/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - 127.0.0.1:{{ custom_port_prefix }}45:8545
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      - 127.0.0.1:{{ custom_port_prefix }}46:8546
     volumes:
-      - "{{ user_dir }}/docker-compose/scroll-geth:/scroll-geth"
+      - "{{ folder }}/scroll-geth:/scroll-geth"
     command:
       # Scroll chain specific
       - --scroll
@@ -31,15 +45,15 @@
       # General
       - --datadir=/scroll-geth
       - --gcmode=archive
-      - --port=50303
+      - --port=30303
       # RPC/WS
       - --http
-      - --http.port=58545
+      - --http.port=8545
       - --http.addr=0.0.0.0
       - --http.vhosts=*
       - --http.corsdomain=*
       - --http.api=eth,net,web3,debug,scroll
       - --ws
-      - --ws.port=58546
+      - --ws.port=8546
       - --ws.addr=0.0.0.0
       - --ws.origins=*
