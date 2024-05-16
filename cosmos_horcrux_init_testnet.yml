@@ -17,22 +17,32 @@
     - name: Add all signers
       ansible.builtin.add_host:
         hostname: "{{ item }}"
-        group: signers
+        group: horcrux_signers_for_play
       loop: "{{ groups[horcrux_group] }}"
 
     - name: Set shares when in degen mode
-      when: groups['signers'] | length == 1
+      when: groups['horcrux_signers_for_play'] | length == 1
       ansible.builtin.set_fact:
         shares: 1
 
+    - name: Set shares when in raft mode
+      when: groups['horcrux_signers_for_play'] | length > 1
+      ansible.builtin.set_fact:
+        shares: 3
+        threshold: 2
+
 - name: Install Horcrux
-  hosts: signers
+  hosts: horcrux_signers_for_play
   become: true
   gather_facts: false
   vars_files:
     - "group_vars/testnets/{{ target }}.yml"
 
   pre_tasks:
+    - name: Set shares
+      ansible.builtin.set_fact:
+        shares: "{{ hostvars.localhost.shares }}"
+
     - name: Check for key
       become: true
       delegate_to: localhost
@@ -43,7 +53,7 @@
     - name: There is no key file present
       when: not key_exists.stat.exists
       ansible.builtin.pause:
-        prompt: There is no priv_validator key to process.  Continue? Press return to continue. Press Ctrl+c and then "a" to abort
+        prompt: There is no priv_validator key to process.  Continue? Press return to continue. Press Ctrl+c and then "a" to abort.
 
   roles:
     - util_go_install

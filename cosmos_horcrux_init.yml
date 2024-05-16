@@ -20,6 +20,17 @@
         group: horcrux_signers_for_play
       loop: "{{ groups[horcrux_group] }}"
 
+    - name: Set shares when in degen mode
+      when: groups['horcrux_signers_for_play'] | length == 1
+      ansible.builtin.set_fact:
+        shares: 1
+
+    - name: Set shares when in raft mode
+      when: groups['horcrux_signers_for_play'] | length > 1
+      ansible.builtin.set_fact:
+        shares: 3
+        threshold: 2
+
 - name: Install Horcrux
   hosts: horcrux_signers_for_play
   become: true
@@ -28,6 +39,10 @@
     - "group_vars/mainnets/{{ target }}.yml"
 
   pre_tasks:
+    - name: Set shares
+      ansible.builtin.set_fact:
+        shares: "{{ hostvars.localhost.shares }}"
+
     - name: Check for key
       become: true
       delegate_to: localhost
