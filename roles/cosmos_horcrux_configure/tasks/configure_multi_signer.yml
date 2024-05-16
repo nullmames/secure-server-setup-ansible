@@ -1,5 +1,5 @@
 ---
-- name: Copy config
+- name: Multi-signers Copy config
   ansible.builtin.template:
     backup: true
     src: config.yaml.j2
