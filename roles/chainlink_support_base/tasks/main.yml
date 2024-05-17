@@ -1,5 +1,6 @@
 ---
 # Base with op-node, op-geth.  Utilized snap-sync for sync
+# Per https://github.com/base-org/node/releases
 # Base port prefix: 135
 # Ports:
 #  - Geth: 13503 (p2p - public), 13545 (rpc), 13546 (ws), 8551 (authrpc)
@@ -11,20 +12,20 @@
     return_content: true
   register: public_ip
 
-- name: Ensure op-geth-data exists
+- name: Ensure base folders exists
   ansible.builtin.file:
     path: "{{ user_dir }}/docker-compose/{{ item }}"
     state: directory
     mode: "0755"
   loop:
     - base
-    - base/op-geth-data
-    - base/op-node-config
+    - base/base-geth-data
+    - base/base-node-config
 
 - name: Copy node config files
   ansible.builtin.copy:
     src: "files/{{ item }}"
-    dest: "{{ user_dir }}/docker-compose/base/op-node-config/{{ item }}"
+    dest: "{{ folder }}/base-node-config/{{ item }}"
     mode: "0644"
   loop:
     - rollup.json
@@ -42,8 +43,8 @@
 
 - name: Run base-op-geth container
   community.docker.docker_container:
-    name: base-op-geth
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ base_geth_version }}
+    name: "{{ execution_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -63,12 +64,12 @@
       - 127.0.0.1:13560:6060
       - "{{ nebula_internal_ip_addr }}:13560:6060"
     volumes:
-      - "{{ user_dir }}/docker-compose/base/op-geth-data:/op-geth-data"
+      - "{{ user_dir }}/docker-compose/base/base-geth-data:/base-geth-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
-      - --datadir=/op-geth-data
+      - --datadir=/base-geth-data
       - --syncmode=snap
       - --bootnodes=enode://87a32fd13bd596b2ffca97020e31aef4ddcc1bbd4b95bb633d16c1329f654f34049ed240a36b449fda5e5225d70fe40bc667f53c304b71f8e68fc9d448690b51@3.231.138.188:30301,enode://ca21ea8f176adb2e229ce2d700830c844af0ea941a1d8152a9513b966fe525e809c3a6c73a2c18a12b74ed6ec4380edf91662778fe0b79f6a591236e49e176f9@184.72.129.189:30301,enode://acf4507a211ba7c1e52cdf4eef62cdc3c32e7c9c47998954f7ba024026f9a6b2150cd3f0b734d9c78e507ab70d59ba61dfe5c45e1078c7ad0775fb251d7735a2@3.220.145.177:30301,enode://8a5a5006159bf079d06a04e5eceab2a1ce6e0f721875b2a9c96905336219dbe14203d38f70f3754686a6324f786c2f9852d8c0dd3adac2d080f4db35efc678c5@3.231.11.52:30301,enode://cdadbe835308ad3557f9a1de8db411da1a260a98f8421d62da90e71da66e55e98aaa8e90aa7ce01b408a54e4bd2253d701218081ded3dbe5efbbc7b41d7cef79@54.198.153.150:30301
       - --op-network=base-mainnet
@@ -111,8 +112,8 @@
 
 - name: Run base-op-node container
   community.docker.docker_container:
-    name: base-op-node
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ base_node_version }}
+    name: "{{ consensus_container_name }}"
+    image: ghcr.io/base-org/node:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -127,15 +128,15 @@
       - "{{ nebula_internal_ip_addr }}:13549:9545"
     volumes:
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
-      - "{{ user_dir }}/docker-compose/base/op-node-config/rollup.json:/rollup.json"
+      - "{{ user_dir }}/docker-compose/base/base-node-config/rollup.json:/rollup.json"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
-      - op-node
+      - ./op-node
       - --l1={{ ethereum_l1 }}
       - --l1.beacon={{ ethereum_l1_beacon }}
       - --l1.trustrpc=true
-      - --l2=http://base-op-geth:8551
+      - --l2=http://{{ execution_container_name }}:8551
       - --l2.jwt-secret=/jwtsecret
       - --network=base-mainnet
       - --rollup.load-protocol-versions=true
