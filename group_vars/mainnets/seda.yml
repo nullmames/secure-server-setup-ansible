@@ -12,4 +12,10 @@ custom_port_prefix: 258
 minimum_gas_price: "10000000000aseda"
 
 # StateSync
-snap_rpc:
+snap_rpc: https://seda-rpc.polkachu.com:443
+
+# Horcrux
+horcrux_group: horcrux_alpha
+sentries:
+  - 100.100.1.203
+  - 100.100.1.205
