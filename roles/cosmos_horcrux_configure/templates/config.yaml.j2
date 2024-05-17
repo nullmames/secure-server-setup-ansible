@@ -1,6 +1,6 @@
 signMode: threshold
 thresholdMode:
-  threshold: {{ threshold }}
+  threshold: {{ threshold | int }}
   cosigners:
 {% for peer in horcrux_peers %}
   - shardID: {{ peer.share_id }}
