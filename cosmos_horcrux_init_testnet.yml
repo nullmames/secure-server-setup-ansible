@@ -24,6 +24,7 @@
       when: groups['horcrux_signers_for_play'] | length == 1
       ansible.builtin.set_fact:
         shares: 1
+        threshold: 1
 
     - name: Set shares when in raft mode
       when: groups['horcrux_signers_for_play'] | length > 1
@@ -42,6 +43,7 @@
     - name: Set shares
       ansible.builtin.set_fact:
         shares: "{{ hostvars.localhost.shares }}"
+        threshold: "{{ hostvars.localhost.threshold }}"
 
     - name: Check for key
       become: true
