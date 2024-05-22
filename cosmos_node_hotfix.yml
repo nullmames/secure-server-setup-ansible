@@ -11,6 +11,17 @@
     - name: Confirm with User
       ansible.builtin.pause:
         prompt: Please confirm that {{ network }} version {{ node_version }} will replace contents in current directory! Ensure this change is NON-BREAKING! Press return to continue. Press Ctrl+c and then "a" to abort
+
+    - name: Verify we're on the right node
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
+
   roles:
     - util_go_install
     - cosmos_node_install
