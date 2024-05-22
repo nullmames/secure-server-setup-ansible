@@ -1,7 +1,7 @@
 network: aptos
 folder: mainnet
 repo: https://github.com/aptos-labs/aptos-core
-node_version: a1cda42dfe78f4c7ed13eec6b49604a21e2a0f2c # 2024.04.25 - 1.11
+node_version: 4b9a2593facaee92b28df2e99b2773a7e4f930f5 # 1.12.1 - 05/21/2024
 genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/genesis.blob
 waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/waypoint.txt
 p2p_port: 6180
@@ -13,6 +13,5 @@ build_profile: release
 
 # Grafana dashboard
 dashboardUID: bz8kPr673
-
 # Hotfix on 2024.04.02
-hotfix_binary_url: https://github.com/aptos-labs/aptos-core/releases/download/adhoc-20240328/aptos-node-ubuntu-22.04.tgz
+# hotfix_binary_url: https://github.com/aptos-labs/aptos-core/releases/download/adhoc-20240328/aptos-node-ubuntu-22.04.tgz
