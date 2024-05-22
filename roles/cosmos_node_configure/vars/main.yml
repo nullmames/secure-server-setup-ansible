@@ -14,6 +14,7 @@ config_toml:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
     max_num_inbound_peers: 27
     max_num_outbound_peers: 34
+    flush_throttle_timeout: '"10ms"'
   instrumentation:
     prometheus: "true"
     prometheus_listen_addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
@@ -24,7 +25,7 @@ config_toml_37:
     moniker: '"{{ network }}"'
     proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
   priv-validator:
-    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}59"'
+    laddr: '"tcp://{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}59"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
     cors-allowed-origins: "'[]'"
@@ -36,6 +37,7 @@ config_toml_37:
   p2p:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
     max-connections: 51
+    flush-throttle-timeout: "10ms"
   instrumentation:
     prometheus: "true"
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
