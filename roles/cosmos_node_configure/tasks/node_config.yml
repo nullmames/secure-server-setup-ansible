@@ -173,6 +173,15 @@
     state: present
     backrefs: true
 
+- name: Disable ABCI Responses on validator nodes
+  when: (rpc is undefined) and (archive is undefined)
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^discard_abci_responses ="
+    line: "discard_abci_responses = true"
+    state: present
+    backrefs: true
+
 - name: Set indexer to kv for RPC and archive nodes
   when: (rpc is defined) or (archive is defined)
   ansible.builtin.lineinfile:
@@ -216,5 +225,5 @@
   ansible.builtin.lineinfile:
     path: "{{ user_dir }}/{{ folder }}/config/config.toml"
     regexp: "^priv_validator_laddr ="
-    line: 'priv_validator_laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}59"'
+    line: 'priv_validator_laddr = "tcp://{{ nebula_internal_ip_addr }}{{ custom_port_prefix }}59"'
     state: present

@@ -193,6 +193,15 @@
     state: present
     backrefs: true
 
+- name: Disable ABCI Responses on validator nodes
+  when: (rpc is undefined) and (archive is undefined)
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+    regexp: "^discard-abci-responses ="
+    line: "discard-abci-responses = true"
+    state: present
+    backrefs: true
+
 - name: Set indexer to kv for RPC and archive nodes
   when: (rpc is defined) or (archive is defined)
   ansible.builtin.lineinfile:
