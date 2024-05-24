@@ -5,25 +5,15 @@ ethereum_l1: "http://100.100.3.110:5000"
 ethereum_l1_ws: "ws://100.100.3.110:5001"
 ethereum_l1_beacon: "http://100.100.3.110:5002"
 
-# Arbitrum version - offchainlabs/nitro-node
-nitro_version: v2.3.2-064fa11
-
 # Optimism versions
 op_node_version: v1.7.2
 #
 op_geth_version: v1.101308.2
 op_erigon_version: 2.55.1-0.4.3-amd64
 
-# Base versions
-base_node_version: v1.7.2
-base_geth_version: v1.101308.2
-
 # Polygon versions
 bor_version: 1.2.7
 heimdall_version: 1.0.4
-
-# Base version
-base_version: v0.8.0
 
 # BNBChain
 # Versions pulled from https://api.github.com/repos/bnb-chain/bsc/releases/latest
