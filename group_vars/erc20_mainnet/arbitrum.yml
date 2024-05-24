@@ -1,0 +1,9 @@
+# Arbitrum versions and approach
+network: arbitrum
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 118
+
+# Avalanche version
+execution_container_name: arbitrum
+execution_container_version: v2.3.4-b4cc111
+execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"

@@ -1,0 +1,15 @@
+# Polygon versions and approach
+network: optimism
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 133
+consensus_port_prefix: 233
+
+# Execution
+execution_container_name: op-geth
+execution_container_version: v1.101311.0
+execution_snapshot_location: "{{ folder }}/tbd"
+
+# Consensus
+consensus_container_name: op-node
+consensus_container_version: v1.7.4
+consensus_snapshot_location: "{{ folder }}/tbd"

@@ -39,7 +39,11 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: base_net
+    name: "{{ network }}_net"
+    state: present
+    ipam_config:
+      - subnet: 172.0.{{ custom_port_prefix }}.0/24
+        gateway: 172.0.{{ custom_port_prefix }}.1
 
 - name: Run base-op-geth container
   community.docker.docker_container:
@@ -50,7 +54,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: base_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 13503:13503/tcp
@@ -119,7 +123,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: base_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 13509:13509
@@ -141,7 +145,6 @@
       - --network=base-mainnet
       - --rollup.load-protocol-versions=true
       - --rollup.config=/rollup.json
-      - --rollup.load-protocol-versions=true
       # Syncing
       - --syncmode=execution-layer
       - --l1.max-concurrency=64

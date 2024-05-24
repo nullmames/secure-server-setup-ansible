@@ -1,0 +1,8 @@
+---
+- name: Install bitcoin-core from compiled binary
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/bitcoin.yml"
+  roles:
+    - bitcoin_node_install

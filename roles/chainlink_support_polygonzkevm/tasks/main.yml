@@ -20,11 +20,17 @@
   ansible.builtin.file:
     path: "{{ folder }}"
     state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0755"
 
 - name: Create a network
   community.docker.docker_network:
     name: "{{ network }}_net"
+    state: present
+    ipam_config:
+      - subnet: 172.0.{{ custom_port_prefix }}.0/24
+        gateway: 172.0.{{ custom_port_prefix }}.1
 
 - name: Run erigon container for Polygon zkEVM
   community.docker.docker_container:

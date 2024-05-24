@@ -16,8 +16,8 @@
     state: directory
     mode: "0755"
   loop:
-    - optimism
-    - optimism/op-geth-data
+    - "{{ folder }}"
+    - "{{ folder }}/op-geth"
 
 - name: Create jwtsecret if it does not exist
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
@@ -32,8 +32,8 @@
 
 - name: Run op-geth container
   community.docker.docker_container:
-    name: op-geth
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ op_geth_version }}
+    name: "{{ execution_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -42,18 +42,18 @@
       - name: optimism_net
     ports:
       # p2p
-      - 13303:13303/tcp
-      - 13303:13303/udp
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
       # rpc
-      - 127.0.0.1:13045:8545
-      - "{{ nebula_internal_ip_addr }}:13045:8545"
-      - 127.0.0.1:13046:8546
-      - "{{ nebula_internal_ip_addr }}:13046:8546"
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}46:8546"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
       # metrics
-      - 127.0.0.1:13060:6060
-      - "{{ nebula_internal_ip_addr }}:13060:6060"
+      - "127.0.0.1:{{ custom_port_prefix }}60:6060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
     volumes:
-      - "{{ user_dir }}/docker-compose/optimism/op-geth-data:/op-geth-data"
+      - "{{ folder }}/op-geth:/op-geth-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
@@ -81,8 +81,8 @@
       - --ws.origins=*
       - --ws.api=web3,debug,eth,txpool,net,engine
       # P2P
-      - --port=13303
-      - --discovery.port=13303
+      - --port={{ custom_port_prefix }}03
+      - --discovery.port={{ custom_port_prefix }}03
       # Metrics
       - --metrics
       - --metrics.addr=0.0.0.0
@@ -99,8 +99,8 @@
 
 - name: Run op-node container
   community.docker.docker_container:
-    name: op-node
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ op_node_version }}
+    name: "{{ consensus_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -109,10 +109,10 @@
       - name: optimism_net
     ports:
       # p2p
-      - 9003:9003
+      - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
       # rpc
-      - 127.0.0.1:9545:9545
-      - "{{ nebula_internal_ip_addr }}:9545:9545"
+      - 127.0.0.1:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55"
     volumes:
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
@@ -133,6 +133,7 @@
       - --l1.rpc-max-batch-size=500
       # p2p
       - --p2p.advertise.ip={{ public_ip.content | trim }}
+      - --p2p.listen.tcp={{ custom_port_prefix }}13
       ## Interfaces
       - --rpc.addr=0.0.0.0
-      - --rpc.port=9545
+      - --rpc.port={{ custom_port_prefix }}55

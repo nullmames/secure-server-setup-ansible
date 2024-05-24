@@ -1,28 +1,41 @@
 ---
 # Arbitrum support structure with host networking
 # Ports:
-#  - Nitro: 8547/tcp (rpc), 9642 (sequencer)
+#  - custom_port_prefix: 118
+#  - Nitro: 11847/tcp (rpc)
 
-- name: Create and adjust permissions on arbitrum data folder
-  become: true
+- name: Create arbitrum data folder
   ansible.builtin.file:
     dest: "{{ item }}"
     state: directory
     mode: "0755"
-    recurse: true
   loop:
-    - "{{ user_dir }}/docker-compose/arbitrum"
+    - "{{ folder }}"
+    - "{{ folder }}/arbitrum-data"
     - "{{ user_dir }}/docker-compose/tmp"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+    state: present
+    ipam_config:
+      - subnet: 172.0.{{ custom_port_prefix }}.0/24
+        gateway: 172.0.{{ custom_port_prefix }}.1
 
 - name: Pull and run nitro container
   community.docker.docker_container:
-    name: arbitrum
-    image: offchainlabs/nitro-node:{{ nitro_version }}
+    name: "{{ execution_container_name }}"
+    image: offchainlabs/nitro-node:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
-    network_mode: host
     stop_timeout: 600
     pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47"
+      - 127.0.0.1:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47
     volumes:
       - "{{ user_dir }}/docker-compose/arbitrum:/home/user/.arbitrum"
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
@@ -30,12 +43,12 @@
       - --parent-chain.connection.url={{ ethereum_l1 }}
       - --parent-chain.blob-client.beacon-url={{ ethereum_l1_beacon }}
       - --chain.name=arb1
-      - --http.port=8547
+      - --http.port={{ custom_port_prefix }}47
       - --http.addr=0.0.0.0
       - --http.vhosts=*
       - --http.corsdomain=*
       - --http.api=net,web3,eth,arb
-      - --ws.port=8548
+      - --ws.port={{ custom_port_prefix }}48
       - --ws.addr=0.0.0.0
       - --ws.origins=*
       - --execution.rpc.gas-cap=0
