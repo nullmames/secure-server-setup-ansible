@@ -6,7 +6,7 @@ shared_config_version: a7b2c3ba023d94abe96775729bfec43d2155f0c3 # 05/20/2024 Cel
 
 # For generating new keys
 node_version_keygen_prep: 6b2890beda189196982168c7fee8c9e4e8b0d2ca
-# keygen_flags: "--add Celo --add Linea"
+# keygen_flags: "--add Mode"
 
 # Grafana dashboard
 dashboardUID: NGatdDfnk
