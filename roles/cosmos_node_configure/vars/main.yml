@@ -54,6 +54,7 @@ app_toml:
   grpc:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}90"'
+    max-recv-msg-size: 16777216
   grpc-web:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}91"'
