@@ -2,12 +2,18 @@ network: union
 folder: ".union"
 daemon: uniond
 chain_id: "union-testnet-8"
-node_version: v0.21.0
+node_version: v0.24.0
 repo: TBD
-binary: https://snapshots.rhinostake.com/testnet-union/uniond-v0.21.0
+# Binary processing
+binary: https://snapshot-de-1.genznodes.dev/union/binary/uniond-v0.24.0
+# binary_processing: targz
+binary_name: uniond-v0.24.0
+
 genesis: "https://union.build/genesis.json"
 seeds: "c2bf0d5b2ad3a1df0f4e9cc32debffa239c0af90@testnet.seed.poisonphang.com:26656"
 custom_port_prefix: 246
 minimum_gas_price: "0muno"
 
 snap_rpc: https://rpc.testnet.seed.poisonphang.com:443
+
+upgrade_name: v0.24.0

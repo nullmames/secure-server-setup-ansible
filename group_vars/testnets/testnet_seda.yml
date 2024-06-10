@@ -10,7 +10,6 @@ peers: ""
 custom_port_prefix: 258
 minimum_gas_price: "100000000000aseda"
 
+snap_rpc: https://seda-testnet-rpc.polkachu.com:443
+
 upgrade_name: v0.0.7
-# StateSync
-snap_rpc:
-p2p_state_sync: false

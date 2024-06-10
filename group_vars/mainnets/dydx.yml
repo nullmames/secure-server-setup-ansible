@@ -2,18 +2,20 @@ network: "dydx"
 folder: ".dydxprotocol"
 daemon: dydxprotocold
 chain_id: "dydx-mainnet-1"
-node_version: "protocol/v4.1.2"
+node_version: "protocol/v5.0.0"
 repo: ""
-binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv4.1.0/dydxprotocold-v4.1.0-linux-amd64.tar.gz"
+binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.0.0/dydxprotocold-v5.0.0-linux-amd64.tar.gz"
+# binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv4.1.0/dydxprotocold-v4.1.0-linux-amd64.tar.gz"
 binary_processing: targz
-binary_name: "build/dydxprotocold-v4.1.0-linux-amd64"
+binary_name: "build/dydxprotocold-v5.0.0-linux-amd64"
+# binary_name: "build/dydxprotocold-v4.1.0-linux-amd64"
 genesis: "https://raw.githubusercontent.com/dydxopsdao/networks/main/dydx-mainnet-1/genesis.json"
 seeds: "65b740ee326c9260c30af1f044e9cda63c73f7c1@seeds.kingnodes.net:23856,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:23856"
-peers: "f0551461cc24faf6ef1aed779ec207bec48f591b@dydx.validator.neuler.xyz:26656,58fc0e934558740d76e07dba2c25bb19ce73fc5c@141.95.85.165:26656,f1fd898d7f16fc63a43b25b62707032749f6e728@181.41.140.170:26656,801054b990e190c4b443e3332c5e44cd519e27c5@172.105.219.146:26656"
+peers: "c899bc89c1b53e90bc7c94ca464188765c1a000e@45.76.198.139:26656"
 min_gas_prices: "0.025ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5,12500000000adydx"
 custom_port_prefix: 238
 
-upgrade_name: v4.1.0
+upgrade_name: v5.0.0
 
 # Add eth endpoint
 launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000"
