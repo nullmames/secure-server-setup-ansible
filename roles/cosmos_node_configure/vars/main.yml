@@ -1,11 +1,11 @@
-config_toml:
-  no_section:
+cosmos_node_configure_config_toml:
+  nosection:
     moniker: '"{{ network }}"'
     proxy_app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
     cors_allowed_origins: "'[]'"
-    cors-allowed-headers: "'[]'"
+    cors_allowed_headers: "'[]'"
     max_open_connections: 10000
     max_body_bytes: 2000000
     max_header_bytes: 1048576
@@ -16,34 +16,11 @@ config_toml:
     max_num_outbound_peers: 34
     flush_throttle_timeout: '"10ms"'
   instrumentation:
-    prometheus: "true"
+    prometheus: '"true"'
     prometheus_listen_addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
     namespace: '"tendermint"'
 
-config_toml_37:
-  no_section:
-    moniker: '"{{ network }}"'
-    proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
-  priv-validator:
-    laddr: '"tcp://{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}59"'
-  rpc:
-    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
-    cors-allowed-origins: "'[]'"
-    cors-allowed-headers: "'[]'"
-    max-open-connections: 10000
-    max-body-bytes: 2000000
-    max-header-bytes: 1048576
-    pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
-  p2p:
-    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
-    max-connections: 51
-    flush-throttle-timeout: "10ms"
-  instrumentation:
-    prometheus: "true"
-    prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
-    namespace: '"tendermint"'
-
-app_toml:
+cosmos_node_configure_app_toml:
   api:
     enable: "true"
     swagger: "false"
@@ -65,8 +42,31 @@ app_toml:
   state-commit:
     sc-enable: "true"
 
+cosmos_node_configure_37_config_toml:
+  nosection:
+    moniker: '"{{ network }}"'
+    proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+    priv_validator:
+      laddr: "tcp://{{ nebula_internal_ip_addr | default('0.0.0.0') }}:{{ custom_port_prefix }}59"
+  rpc:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+    cors-allowed-origins: "'[]'"
+    cors-allowed-headers: "'[]'"
+    max-open-connections: 10000
+    max-body-bytes: 2000000
+    max-header-bytes: 1048576
+    pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
+  p2p:
+    laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
+    max-connections: 51
+    flush-throttle-timeout: '"10ms"'
+  instrumentation:
+    prometheus: '"true"'
+    prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
+    namespace: '"tendermint"'
+
 # Pruning
-pruning_default:
+cosmos_node_configure_pruning_default:
   no_section:
     pruning: '"custom"'
     pruning-keep-recent: "{{ pruninginterval.stdout }}" # prime between 100 and 200
@@ -74,7 +74,7 @@ pruning_default:
   state-sync:
     snapshot-interval: 0
 
-pruning_custom_rpc:
+cosmos_node_configure_pruning_custom_rpc:
   no_section:
     pruning: '"custom"'
     pruning-keep-recent: "40000"
@@ -83,18 +83,18 @@ pruning_custom_rpc:
     snapshot-interval: "{{ custom_snapshot_interval | default('0', true) }}"
     snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"
 
-pruning_nothing:
+cosmos_node_configure_pruning_nothing:
   no_section:
     pruning: '"nothing"'
   state-sync:
     snapshot-interval: "{{ custom_snapshot_interval | default('0') }}"
     snapshot-keep-recent: "{{ custom_snapshot_keep_recent | default('5', true) }}"
 
-state_store_enabled:
+cosmos_node_configure_state_store_enabled:
   state-store:
     ss-enable: "true"
     ss-keep-recent: 100000
 
-state_store_disabled:
+cosmos_node_configure_state_store_disabled:
   state-store:
     ss-enable: "false"

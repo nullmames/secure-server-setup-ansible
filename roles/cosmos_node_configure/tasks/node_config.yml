@@ -1,7 +1,7 @@
 ---
 - name: Read vars
   ansible.builtin.include_vars:
-    file: ../vars/main.yml
+    file: vars/main.yml
     name: config_changes
 
 - name: Register public ip
@@ -22,11 +22,12 @@
     - name: Adjust null section
       community.general.ini_file:
         path: "{{ user_dir }}/{{ folder }}/config/config.toml"
-        section: null
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.config_toml["no_section"] | dict2items }}'
+        state: present
+        section:
+      loop: '{{ config_changes.cosmos_node_configure_config_toml["nosection"] | dict2items }}'
 
     - name: Adjust rpc section
       community.general.ini_file:
@@ -35,7 +36,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.config_toml["rpc"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_config_toml["rpc"] | dict2items }}'
 
     - name: Adjust p2p section
       community.general.ini_file:
@@ -44,7 +45,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.config_toml["p2p"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_config_toml["p2p"] | dict2items }}'
 
     - name: Adjust instrumentation section
       community.general.ini_file:
@@ -53,7 +54,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.config_toml["instrumentation"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_config_toml["instrumentation"] | dict2items }}'
 
 - name: Adjust app.toml for generic items
   block:
@@ -64,7 +65,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.app_toml["api"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_app_toml["api"] | dict2items }}'
 
     - name: Adjust grpc section
       community.general.ini_file:
@@ -73,7 +74,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.app_toml["grpc"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_app_toml["grpc"] | dict2items }}'
 
     - name: Adjust grpc-web section
       community.general.ini_file:
@@ -82,7 +83,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         mode: "0644"
-      loop: '{{ config_changes.app_toml["grpc-web"] | dict2items }}'
+      loop: '{{ config_changes.cosmos_node_configure_app_toml["grpc-web"] | dict2items }}'
 
 - name: Verify if evm-rpc exists
   ansible.builtin.lineinfile:
@@ -99,7 +100,7 @@
     option: "{{ item.key }}"
     value: "{{ item.value }}"
     create: false
-  loop: '{{ config_changes.app_toml["evm-rpc"] | dict2items }}'
+  loop: '{{ config_changes.cosmos_node_configure_app_toml["evm-rpc"] | dict2items }}'
 
 - name: Adjust pruning and state-sync settings for default pruning
   when: (rpc is undefined) and (archive is undefined)
@@ -111,7 +112,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_default["no_section"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_default["no_section"] | dict2items }}'
 
     - name: Update state-sync (default)
       community.general.ini_file:
@@ -120,7 +121,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_default["state-sync"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_default["state-sync"] | dict2items }}'
 
 - name: Adjust pruning and state-sync settings for rpc pruning
   when: (rpc is defined) and (archive is undefined)
@@ -132,7 +133,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_custom_rpc["no_section"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_custom_rpc["no_section"] | dict2items }}'
 
     - name: Update state-sync (rpc)
       community.general.ini_file:
@@ -141,7 +142,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_custom_rpc["state-sync"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_custom_rpc["state-sync"] | dict2items }}'
 
 - name: Adjust pruning and state-sync settings for archive
   when: archive is defined
@@ -153,7 +154,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_nothing["no_section"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_nothing["no_section"] | dict2items }}'
 
     - name: Update state-sync (archive)
       community.general.ini_file:
@@ -162,7 +163,7 @@
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
-      loop: '{{ config_changes.pruning_nothing["state-sync"] | dict2items }}'
+      loop: '{{ cosmos_node_configure_pruning_nothing["state-sync"] | dict2items }}'
 
 - name: Set indexer to null for validator nodes
   when: (rpc is undefined) and (archive is undefined)
