@@ -1,0 +1,170 @@
+---
+# Blast with bl-node, op-geth.  custom_port_prefix: 141, consensus_port_prefix: 241
+# Ports:
+#  - Geth: 14103 (p2p - public), 14145 (rpc), 14146 (ws), 8551 (authrpc)
+#  - Node: 24103 (p2p - public), 24105 (rpc)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Ensure folders exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/bl-geth"
+    - "{{ folder }}/bl-node"
+
+- name: Create jwtsecret if it does not exist
+  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Download rollup.json
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/blast-io/deployment/master/mainnet/rollup.json"
+    dest: "{{ folder }}/bl-node/rollup.json"
+    mode: "0644"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: blast_net
+
+- name: Determine if data exists
+  become: true
+  ansible.builtin.find:
+    paths: "{{ folder }}/bl-geth/geth"
+    file_type: any
+    hidden: true
+  register: chaindata
+
+- name: Init geth if data does not exist
+  when: chaindata.matched == 0
+  block:
+    - name: Download genesis
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/blast-io/deployment/master/mainnet/genesis.json"
+        dest: "{{ folder }}/bl-geth/genesis.json"
+        mode: "0644"
+
+    - name: Init geth container
+      community.docker.docker_container:
+        name: "{{ execution_container_name }}-init"
+        image: blastio/blast-geth:{{ execution_container_version }}
+        command: init --datadir=/bl-geth-data --state.scheme=path /bl-geth-data/genesis.json
+        pull: true
+        volumes:
+          - "{{ folder }}/bl-geth:/bl-geth-data"
+          - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+          - /etc/localtime:/etc/localtime:ro
+        state: started
+
+- name: Run bl-geth container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: blastio/blast-geth:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: blast_net
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}46:8546"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      # metrics
+      - "127.0.0.1:{{ custom_port_prefix }}60:6060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
+    volumes:
+      - "{{ folder }}/bl-geth:/bl-geth-data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - --datadir=/bl-geth-data
+      - --syncmode=full
+      ## Interfaces
+      # Consensus Layer Engine API
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/jwtsecret
+      # HTTP/RPC
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.corsdomain=*"
+      - --http.vhosts=*
+      - --http.api=web3,debug,eth,txpool,net,engine
+      # Websocket
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.origins=*
+      - --ws.api=web3,debug,eth,txpool,net,engine
+      # P2P
+      - --port={{ custom_port_prefix }}03
+      - --discovery.port={{ custom_port_prefix }}03
+      # Metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=6060
+      - --metrics.expensive
+      # Transaction & Chain Specific
+      - --rollup.disabletxpoolgossip=true
+      - --rollup.sequencerhttp=https://sequencer.blast.io
+      - --maxpeers=0
+      - --nodiscover
+      - --override.canyon=0
+      - --override.ecotone=1716843599
+
+- name: Run bl-node container
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: blastio/blast-optimism:{{ consensus_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: blast_net
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
+      # rpc
+      - 127.0.0.1:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55"
+    volumes:
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - "{{ folder }}/bl-node/rollup.json:/rollup.json"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - op-node
+      - --l1={{ ethereum_l1 }}
+      - --l1.rpckind=basic
+      # - --l1.beacon={{ ethereum_l1_beacon }}
+      - --l1.beacon=https://rpc.ankr.com/premium-http/eth_beacon/92d36fbb337953a82967850397f63eab46f4a8731426050cb6e552ed2063a2de
+      - --l1.trustrpc
+      - --l2=ws://{{ execution_container_name }}:8551
+      - --l2.jwt-secret=/jwtsecret
+      - --rollup.config=/rollup.json
+      # p2p
+      - --p2p.advertise.ip={{ public_ip.content | trim }}
+      - --p2p.listen.tcp={{ custom_port_prefix }}13
+      ## Interfaces
+      - --rpc.addr=0.0.0.0
+      - --rpc.port={{ custom_port_prefix }}55
