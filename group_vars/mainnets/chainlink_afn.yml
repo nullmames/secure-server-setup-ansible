@@ -2,11 +2,11 @@ network: chainlink_afn
 folder: chainlink_afn
 repo: smartcontractkit/risk-management-network-nop-release.git
 node_version: 6b2890beda189196982168c7fee8c9e4e8b0d2ca # 05/14/2024
-shared_config_version: a7b2c3ba023d94abe96775729bfec43d2155f0c3 # 05/20/2024 Celo
+shared_config_version: f4aa40d7888f03567b19e6fe8336f78040702fca # 06/06/2024 Mode
 
 # For generating new keys
 node_version_keygen_prep: 6b2890beda189196982168c7fee8c9e4e8b0d2ca
-# keygen_flags: "--add Mode"
+#keygen_flags: "--add Blast"
 
 # Grafana dashboard
 dashboardUID: NGatdDfnk
