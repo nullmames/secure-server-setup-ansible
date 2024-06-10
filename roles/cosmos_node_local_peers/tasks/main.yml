@@ -105,3 +105,7 @@
   loop:
     - seeds
     - bootstrap-peers
+
+- name: Print out the node dictionary
+  ansible.builtin.debug:
+    var: node_dict
