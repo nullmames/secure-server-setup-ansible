@@ -120,6 +120,7 @@
 - name: Vault all keystore files
   ansible.builtin.shell:
     cmd: "ansible-vault encrypt {{ item }}"
+  ignore_errors: true
   with_fileglob: "{{ role_path }}/../chainlink_afn_node_configure/templates/keystore*"
 
 - name: Confirm deletion of temp files
