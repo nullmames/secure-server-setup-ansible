@@ -1,0 +1,14 @@
+# Blast network
+network: blast
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 141
+consensus_port_prefix: 241
+
+# Execution
+execution_container_name: bl-geth
+execution_container_version: mainnet
+execution_snapshot_location: "{{ folder }}/tbd"
+
+# Consensus
+consensus_container_name: bl-node
+consensus_container_version: mainnet
