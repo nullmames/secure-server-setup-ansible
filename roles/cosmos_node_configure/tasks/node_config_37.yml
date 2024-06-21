@@ -20,7 +20,7 @@
 
 - name: Adjust config.toml for generic items (config_toml_37)
   block:
-    - name: Adjust null section
+    - name: Adjust null section on 37
       community.general.ini_file:
         path: "{{ user_dir }}/{{ folder }}/config/config.toml"
         option: "{{ item.key }}"
@@ -47,6 +47,15 @@
         value: "{{ item.value }}"
         mode: "0644"
       loop: '{{ config_changes.cosmos_node_configure_config_toml_37["p2p"] | dict2items }}'
+
+    - name: Adjust mempool section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: mempool
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.cosmos_node_configure_config_toml_37["mempool"] | dict2items }}'
 
     - name: Adjust instrumentation section
       community.general.ini_file:
