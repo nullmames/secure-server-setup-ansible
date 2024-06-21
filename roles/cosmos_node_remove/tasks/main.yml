@@ -36,3 +36,12 @@
   ansible.builtin.file:
     path: "{{ user_dir }}/source/{{ network }}"
     state: absent
+
+- name: Remove ufw rule
+  become: true
+  community.general.ufw:
+    delete: true
+    rule: allow
+    proto: tcp
+    port: "{{ custom_port_prefix }}56"
+    comment: p2p port for {{ network }}
