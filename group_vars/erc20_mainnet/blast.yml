@@ -7,7 +7,7 @@ consensus_port_prefix: 241
 # Execution
 execution_container_name: bl-geth
 execution_container_version: mainnet
-execution_snapshot_location: "{{ folder }}/tbd"
+execution_snapshot_location: "{{ folder }}/bl-geth/geth/chaindata"
 
 # Consensus
 consensus_container_name: bl-node
