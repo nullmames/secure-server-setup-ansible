@@ -7,6 +7,7 @@
     - role: util_zabbix_prepare
 
     - role: community.zabbix.zabbix_agent
+      zabbix_agent_version: 6.4
       zabbix_agent2: true
       zabbix_agent2_server: "{{ zabbix_server_agent_addresses }}"
       zabbix_agent2_serveractive: "{{ zabbix_server_agent_addresses }}"
@@ -27,6 +28,7 @@
       zabbix_agent_host_state: present
       zabbix_agent_become_on_localhost: false
       zabbix_agent_inventory_mode: automatic
+      zabbix_agent_tlspsk_auto: false
       zabbix_agent_inventory_zabbix:
         alias: "{{ inventory_hostname }}"
         software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
