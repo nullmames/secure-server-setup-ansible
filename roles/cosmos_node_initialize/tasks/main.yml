@@ -54,9 +54,15 @@
       when: genesis_processing is defined and genesis_processing == "tarbz2"
 
 - name: Set chain_id
-  ansible.builtin.command: "{{ user_dir }}/go/bin/{{ daemon }} config chain-id {{ chain_id }}"
+  ansible.builtin.command: "{{ item }}"
   ignore_errors: true
+  with_items:
+    - "{{ user_dir }}/go/bin/{{ daemon }} config chain-id {{ chain_id }}"
+    - "{{ user_dir }}/go/bin/{{ daemon }} config set client chain-id {{ chain_id }}"
 
-- name: Set local node
-  ansible.builtin.command: "{{ user_dir }}/go/bin/{{ daemon }} config node tcp://localhost:{{ custom_port_prefix }}57"
+- name: Set local node RPC address
+  ansible.builtin.command: "{{ item }}"
   ignore_errors: true
+  with_items:
+    - "{{ user_dir }}/go/bin/{{ daemon }} config node tcp://localhost:{{ custom_port_prefix }}57"
+    - "{{ user_dir }}/go/bin/{{ daemon }} config set client node tcp://localhost:{{ custom_port_prefix }}57"
