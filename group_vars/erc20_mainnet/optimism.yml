@@ -6,10 +6,9 @@ consensus_port_prefix: 233
 
 # Execution
 execution_container_name: op-geth
-execution_container_version: v1.101311.0
-execution_snapshot_location: "{{ folder }}/tbd"
+execution_container_version: v1.101315.2
+execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
 consensus_container_name: op-node
-consensus_container_version: v1.7.4
-consensus_snapshot_location: "{{ folder }}/tbd"
+consensus_container_version: v1.7.7

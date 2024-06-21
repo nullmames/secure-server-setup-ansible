@@ -2,13 +2,13 @@ network: "dydx"
 folder: ".dydxprotocol"
 daemon: dydxprotocold
 chain_id: "dydx-mainnet-1"
-node_version: "protocol/v5.0.0"
 repo: ""
-binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.0.0/dydxprotocold-v5.0.0-linux-amd64.tar.gz"
-# binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv4.1.0/dydxprotocold-v4.1.0-linux-amd64.tar.gz"
+#
+node_version: "protocol/v5.0.4"
+binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv5.0.4/dydxprotocold-v5.0.4-linux-amd64.tar.gz"
 binary_processing: targz
-binary_name: "build/dydxprotocold-v5.0.0-linux-amd64"
-# binary_name: "build/dydxprotocold-v4.1.0-linux-amd64"
+binary_name: "build/dydxprotocold-v5.0.4-linux-amd64"
+#
 genesis: "https://raw.githubusercontent.com/dydxopsdao/networks/main/dydx-mainnet-1/genesis.json"
 seeds: "65b740ee326c9260c30af1f044e9cda63c73f7c1@seeds.kingnodes.net:23856,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:23856"
 peers: "c899bc89c1b53e90bc7c94ca464188765c1a000e@45.76.198.139:26656"

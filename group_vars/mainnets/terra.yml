@@ -9,6 +9,6 @@ seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:11756"
 minimum_gas_price: "0.015uluna"
 custom_port_prefix: 117
 
-snapshot_url: https://snapshots.lavenderfive.com/snapshots/terra2/latest.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/terra/terra_10722908.tar.lz4
 
 upgrade_name: v2.11
