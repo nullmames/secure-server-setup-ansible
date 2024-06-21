@@ -42,12 +42,12 @@ cosmos_node_configure_app_toml:
   state-commit:
     sc-enable: "true"
 
-cosmos_node_configure_37_config_toml:
+cosmos_node_configure_config_toml_37:
   nosection:
     moniker: '"{{ network }}"'
     proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
-    priv_validator:
-      laddr: "tcp://{{ nebula_internal_ip_addr | default('0.0.0.0') }}:{{ custom_port_prefix }}59"
+  priv_validator:
+    laddr: "tcp://{{ nebula_internal_ip_addr | default('0.0.0.0') }}:{{ custom_port_prefix }}59"
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
     cors-allowed-origins: "'[]'"
@@ -60,6 +60,10 @@ cosmos_node_configure_37_config_toml:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
     max-connections: 51
     flush-throttle-timeout: '"10ms"'
+  mempool:
+    keep-invalid-txs-in-cache: "false"
+    ttl-duration: '"15s"'
+    ttl-num-blocks: '"30"'
   instrumentation:
     prometheus: '"true"'
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
@@ -93,7 +97,7 @@ cosmos_node_configure_pruning_nothing:
 cosmos_node_configure_state_store_enabled:
   state-store:
     ss-enable: "true"
-    ss-keep-recent: 100000
+    ss-keep-recent: 2000000
 
 cosmos_node_configure_state_store_disabled:
   state-store:
