@@ -37,7 +37,7 @@
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47"
       - 127.0.0.1:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47
     volumes:
-      - "{{ user_dir }}/docker-compose/arbitrum:/home/user/.arbitrum"
+      - "{{ user_dir }}/docker-compose/arbitrum/arbitrum-data:/home/user/.arbitrum"
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
     command:
       - --parent-chain.connection.url={{ ethereum_l1 }}
