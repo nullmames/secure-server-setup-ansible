@@ -14,7 +14,7 @@ snap_rpc: "https://juno-rpc.polkachu.com:443"
 
 upgrade_name: v22
 
-snapshot_url: https://snapshots.lavenderfive.com/snapshots/juno/latest.tar.lz4
+# snapshot_url: https://snapshots.lavenderfive.com/snapshots/juno/latest.tar.lz4
 
 # Horcrux
 horcrux_group: horcrux_alpha
