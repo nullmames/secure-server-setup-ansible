@@ -20,11 +20,13 @@ alerts:
 
   pagerduty:
     enabled: true
-    api_key: {% if 'Testnet' in group_names %}"{{ testnet_tenderduty_pagerduty_key }}"{% else %} "{{ tenderduty_pagerduty_key }}"{% endif %}
+    api_key: {% if 'Testnet' in group_names %}"{{ testnet_tenderduty_pagerduty_key }}"{% else %}"{{ tenderduty_pagerduty_key }}"{% endif %}
 
   slack:
     enabled: true
 
 nodes:
-  - url: http://{{ ansible_host }}:{{ custom_port_prefix }}57/
+{% for host in groups[group_names[1]] %}
+  - url: http://{{ hostvars[host].ansible_host }}:{{ custom_port_prefix }}57
     alert_if_down: yes
+{% endfor %}
