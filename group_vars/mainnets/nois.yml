@@ -17,4 +17,7 @@ snapshot_url: https://snap.rhinostake.com/nois/nois-snapshot.13912786.tar.lz4
 horcrux_group: horcrux_alpha
 sentries:
   - 100.100.1.203
-  - 100.100.1.209
+  - 100.100.1.204
+
+# go
+go_release: "go1.21.11"
