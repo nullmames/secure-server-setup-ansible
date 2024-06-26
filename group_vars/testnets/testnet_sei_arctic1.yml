@@ -8,7 +8,7 @@ repo: https://github.com/sei-protocol/sei-chain
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/arctic-1/genesis.json
 custom_port_prefix: 119
 peers: "cce0882a656cd97c6bac7f0f0bc04139a3d390f3@p2p.state-sync.arctic-1.seinetwork.io:26656"
-minimum_gas_price: "0.01usei"
+minimum_gas_price: "0.02usei"
 
 # Tendermint config version
 tendermint_config_version: 37
