@@ -34,35 +34,32 @@
       value: "134217728"
     - name: net.core.wmem_max
       value: "134217728"
-    # Set the maximum amount of option memory buffers to 0
-    - name: net.core.optmem_max
-      value: "0"
     # Increase memory mapped files limit
     - name: vm.max_map_count
       value: "1000000"
     - name: fs.nr_open
       value: "1000000"
     ## Additional tweaks
-    - name: kernel.nmi_watchdog
-      value: "0"
-    - name: vm.swappiness
-      value: "30"
-    - name: vm.stat_interval
-      value: "10"
-    - name: vm.dirty_ratio
-      value: "40"
-    - name: vm.dirty_background_ratio
-      value: "10"
-    - name: vm.dirty_expire_centisecs
-      value: "36000"
-    - name: vm.dirty_writeback_centisecs
-      value: "3000"
-    - name: vm.dirtytime_expire_seconds
-      value: "43200"
-    - name: kernel.timer_migration
-      value: "0"
-    - name: kernel.pid_max
-      value: "{{ ansible_processor_vcpus * 1024 | int | abs }}" # 1024 * threads
+    # - name: kernel.nmi_watchdog
+    #   value: "0"
+    # - name: vm.swappiness
+    #   value: "30"
+    # - name: vm.stat_interval
+    #   value: "10"
+    # - name: vm.dirty_ratio
+    #   value: "40"
+    # - name: vm.dirty_background_ratio
+    #   value: "10"
+    # - name: vm.dirty_expire_centisecs
+    #   value: "36000"
+    # - name: vm.dirty_writeback_centisecs
+    #   value: "3000"
+    # - name: vm.dirtytime_expire_seconds
+    #   value: "43200"
+    # - name: kernel.timer_migration
+    #   value: "0"
+    # - name: kernel.pid_max
+    #   value: "{{ ansible_processor_vcpus * 1024 | int | abs }}" # 1024 * threads
     # - name: net.ipv4.tcp_fastopen
     #   value: "3"
 
@@ -79,21 +76,25 @@
     path: "{{ user_dir }}/{{ folder }}/validator-keypair.json"
   register: node_initialized
 
-- name: Update solana repo for node install
-  ansible.builtin.git:
-    repo: "{{ repo }}"
-    dest: "{{ user_dir }}/source/{{ network }}"
-    version: "{{ node_version }}"
-    update: true
-    force: true
-    recursive: true
-  register: git_changed
+- name: Registered installed version of solana-validator
+  ansible.builtin.shell: '/usr/local/bin/solana-validator --version | cut -d " " -f2 | sed "s/^/v/"'
+  register: solana_installed_version
+  ignore_errors: true
 
 - name: Build new version & install
   notify: Restart solana
-  when: git_changed.changed
+  when: solana_installed_version.stdout != node_version
   block:
-    - name: Build solana
+    - name: Update solana repo for node install
+      ansible.builtin.git:
+        repo: "{{ repo }}"
+        dest: "{{ user_dir }}/source/{{ network }}"
+        version: "{{ node_version }}"
+        update: true
+        force: true
+        recursive: true
+
+    - name: Build solana binary
       ansible.builtin.command: "nice -n 15 {{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
@@ -101,13 +102,19 @@
         PATH: "{{ path }}"
       loop:
         - "cargo clean"
-        - "./scripts/cargo-install-all.sh ."
+        - "cargo build --release"
+
+    - name: Check if existing binaries exist
+      ansible.builtin.stat:
+        path: "/usr/local/bin/solana-validator"
+      register: existing_binary
 
     - name: Archive exiting binaries
       become: true
+      when: existing_binary.stat.exists
       ansible.builtin.copy:
         src: "/usr/local/bin/{{ item }}"
-        dest: "/usr/local/bin/{{ item }}-pre"
+        dest: "/usr/local/bin/{{ item }}-{{ solana_installed_version.stdout }}"
         owner: root
         group: root
         mode: "0755"
@@ -119,7 +126,7 @@
     - name: Copy new binaries
       become: true
       ansible.builtin.copy:
-        src: "{{ user_dir }}/source/{{ network }}/bin/{{ item }}"
+        src: "{{ user_dir }}/source/{{ network }}/target/release/{{ item }}"
         dest: "/usr/local/bin"
         owner: root
         group: root

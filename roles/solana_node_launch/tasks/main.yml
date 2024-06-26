@@ -23,6 +23,17 @@
     owner: root
     group: root
     mode: "0644"
+  notify: Restart solana
+
+- name: Copy logrotate file
+  become: true
+  ansible.builtin.template:
+    src: "solana-validator.logrotate.j2"
+    dest: "/etc/logrotate.d/solana-validator"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart logrotate
 
 - name: Enable solana-validator service
   become: true
@@ -30,3 +41,4 @@
     name: solana-validator
     daemon_reload: true
     enabled: true
+    state: started
