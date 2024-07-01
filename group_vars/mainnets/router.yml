@@ -4,8 +4,8 @@ daemon: routerd
 chain_id: router_9600-1
 node_version: latest
 # Binary Management
-binary: https://github.com/router-protocol/router-chain-releases/raw/main/linux/debian/routerd.tar
-binary_processing: tar
+binary: https://github.com/router-protocol/router-chain-binary-release/raw/main/debian/routerd.tar.gz
+binary_processing: targz
 binary_name: routerd
 
 repo: https://github.com/router-protocol/router-chain-releases
@@ -15,9 +15,11 @@ peers: "c97d2a916ff399382be76f15312286748a949dbd@3.143.207.169:26656,3f2556a0e39
 minimum_gas_price: "0route"
 custom_port_prefix: 237
 
+upgrade_name: 2.0.0-nitro-to-2.1.1
+
 # StateSync
 snap_rpc: https://router-rpc.genznodes.dev:443
 p2p_state_sync: false
 
 # Custom snapshot url
-snapshot_url: https://snapshots.routerchain.dev/router_chain_latest.tar.lz4
+snapshot_url: https://ss.router.nodestake.org/2024-06-27_router_7673099.tar.lz4

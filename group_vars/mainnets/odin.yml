@@ -10,7 +10,9 @@ peers: "d23013e1a0a82d71d251f96c63609ee88af2e29c@34.38.73.153:26656,3ae5858dbad9
 minimum_gas_price: "0.0125loki"
 custom_port_prefix: 168
 
-snap_rpc: http://34.79.179.216:26657
+snap_rpc: https://odin-rpc.lavenderfive.com:443
+
+snapshot_url: http://snapshots.autostake.com/lyIs25DaSWMSm8evWKHGQrb/odin-mainnet-freya/latest.tar.lz4
 
 upgrade_name: v0.8.3
 
