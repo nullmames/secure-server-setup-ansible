@@ -104,6 +104,40 @@
         mode: "0644"
       loop: '{{ config_changes.cosmos_node_configure_app_toml["state-commit"] | dict2items }}'
 
+- name: Verify if wasm exists
+  ansible.builtin.lineinfile:
+    dest: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    line: "[wasm]"
+  check_mode: true
+  register: wasmrequired
+
+- name: Adjust wasm section
+  when: wasmrequired.changed is false
+  community.general.ini_file:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    section: "wasm"
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: false
+  loop: '{{ config_changes.cosmos_node_configure_app_toml["wasm"] | dict2items }}'
+
+- name: Verify if evm exists
+  ansible.builtin.lineinfile:
+    dest: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    line: "[evm]"
+  check_mode: true
+  register: evmrequired
+
+- name: Adjust evm section
+  when: evmrequired.changed is false
+  community.general.ini_file:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    section: "evm"
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: false
+  loop: '{{ config_changes.cosmos_node_configure_app_toml["evm"] | dict2items }}'
+
 - name: Adjust pruning and state-sync settings for default pruning
   when: (rpc is undefined) and (archive is undefined)
   block:
@@ -231,11 +265,6 @@
   with_items:
     - { regexp: "^iavl-cache-size", line: "iavl-cache-size = 3906250" }
     - { regexp: "^memory_cache_size", line: "memory_cache_size = 8000" }
-    - { regexp: "^query_gas_limit", line: "query_gas_limit = 10000000" }
-    - {
-        regexp: "^simulation_gas_limit",
-        line: "simulation_gas_limit = 50000000",
-      }
 
 - name: Update minimum gas price on config file
   ansible.builtin.lineinfile:
