@@ -2,7 +2,7 @@ network: chainlink_afn
 folder: chainlink_afn
 repo: smartcontractkit/risk-management-network-nop-release.git
 node_version: 6b2890beda189196982168c7fee8c9e4e8b0d2ca # 05/14/2024
-shared_config_version: 01e7d96a8cd8ebf07216973622aa0f5c0280590f # 06/20/2024 Arbitrum fix
+shared_config_version: 7269a950445f99115023329a605c661e3de97812 # 06/27/2024 Metis enable
 
 # For generating new keys
 node_version_keygen_prep: 6b2890beda189196982168c7fee8c9e4e8b0d2ca
