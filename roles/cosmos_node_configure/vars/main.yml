@@ -35,6 +35,14 @@ cosmos_node_configure_app_toml:
   grpc-web:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}91"'
+  wasm:
+    query_gas_limit: "10000000"
+  evm:
+    http_enabled: "true"
+    http_port: "{{ custom_port_prefix }}45"
+    ws_enabled: "true"
+    ws_port: "{{ custom_port_prefix }}46"
+    simulation_gas_limit: "10000000"
   evm-rpc:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}28"'
