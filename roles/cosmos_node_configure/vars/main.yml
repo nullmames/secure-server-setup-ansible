@@ -71,7 +71,11 @@ cosmos_node_configure_config_toml_37:
   mempool:
     keep-invalid-txs-in-cache: "false"
     ttl-duration: '"15s"'
-    ttl-num-blocks: '"30"'
+    ttl-num-blocks: 30
+    pending-size: 5000
+    max-pending-txs-bytes: 1073741824
+    pending-ttl-duration: '"0s"'
+    pending-ttl-num-blocks: 0
   instrumentation:
     prometheus: '"true"'
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
@@ -82,7 +86,7 @@ cosmos_node_configure_pruning_default:
   no_section:
     pruning: '"custom"'
     pruning-keep-recent: "{{ pruninginterval.stdout }}" # prime between 100 and 200
-    pruning-interval: "19"
+    pruning-interval: 19
   state-sync:
     snapshot-interval: 0
 
