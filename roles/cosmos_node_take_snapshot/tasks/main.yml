@@ -36,7 +36,7 @@
         mode: "0755"
 
 - name: Get current block height
-  ansible.builtin.shell: "set -o pipefail && curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r {% if tendermint_config_version is undefined %}.result{% elseif tendermint_config_version == 37 %}{% endif %}.sync_info.latest_block_height"
+  ansible.builtin.shell: "set -o pipefail && curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r {% if tendermint_config_version is undefined %}.result{% elif tendermint_config_version == 37 %}{% endif %}.sync_info.latest_block_height"
   args:
     executable: /usr/bin/bash
   register: currentheight
