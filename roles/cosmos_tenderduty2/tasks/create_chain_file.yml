@@ -7,6 +7,7 @@
   delegate_to: "{{ tenderduty_host }}"
   block:
     - name: Delete existing chain files
+      run_once: true
       ansible.builtin.file:
         state: "{{ item }}"
         path: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/"
@@ -20,7 +21,7 @@
     - name: Create chain file
       ansible.builtin.template:
         src: chain.yml.j2
-        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}.yml"
+        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}-{{ chain_id }}.yml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: "0644"
@@ -30,6 +31,7 @@
   delegate_to: "{{ testnet_tenderduty_host }}"
   block:
     - name: Delete existing chain files
+      run_once: true
       ansible.builtin.file:
         state: "{{ item }}"
         path: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/"
@@ -43,7 +45,7 @@
     - name: Create chain file
       ansible.builtin.template:
         src: chain.yml.j2
-        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}.yml"
+        dest: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/{{ network }}-{{ chain_id }}.yml"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: "0644"
