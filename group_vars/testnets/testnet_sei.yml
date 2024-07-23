@@ -3,12 +3,13 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "atlantic-2"
-node_version: v5.6.0
+node_version: v5.6.1
 repo: https://github.com/sei-protocol/sei-chain.git
 genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.json
 custom_port_prefix: 119
-peers: "ecdb789058d4a149db4409f122152cd5e66a7cab@136.243.13.36:11956,e54e0aca367aa825245b340314981d7f890ed6d7@sei-t.rpc.manticore.team:38656,94b63fddfc78230f51aeb7ac34b9fb86bd042a77@sei-testnet-2.p2p.brocha.in:30588,de06b69a806e4df2f41ca011ba6e36795408ba1c@35.158.109.187:26656,5c34181454a371267d28fa546a4f91453417220f@136.243.70.112:11956,9ca7ee1fd6a24f59aacd45ff2b47e7d5644b46cc@p2p.db-sync.atlantic-2.seinetwork.io:26656,1d3e3c08e5a39e7f211a1b256739aa2a3704e9e1@sei-testnet.nodejumper.io:26656"
-minimum_gas_price: "0.02usei,0.001ibc/6D45A5CD1AADE4B527E459025AC1A5AEF41AE99091EF3069F3FEAACAFCECCD21"
+peers: "37201fcc556edc6d0a6a9cf4c6324902fb5bc81e@3.67.222.142:26656,80d20d1648b6a182c60c7627f3985c93aecc2665@3.65.226.190:26656"
+minimum_gas_price: "0usei"
+# minimum_gas_price: "0.02usei,0.001ibc/6D45A5CD1AADE4B527E459025AC1A5AEF41AE99091EF3069F3FEAACAFCECCD21"
 
 # Tendermint config version
 tendermint_config_version: 37
@@ -16,8 +17,8 @@ tendermint_config_version: 37
 upgrade_name: v5.6.0
 
 # StateSync
-snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
-#snap_rpc: "http://100.100.3.8:11957"
+# snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
+snap_rpc: "http://3.65.226.190:26657"
 
 p2p_state_sync: true
 snap_rpc_height_buffer: 80000

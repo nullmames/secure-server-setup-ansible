@@ -3,17 +3,17 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "arctic-1"
-node_version: v5.6.0
+node_version: v5.6.1
 repo: https://github.com/sei-protocol/sei-chain
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/arctic-1/genesis.json
 custom_port_prefix: 119
-peers: "cce0882a656cd97c6bac7f0f0bc04139a3d390f3@p2p.state-sync.arctic-1.seinetwork.io:26656"
+peers: "836213055dc975fe93acd97a21ba3ad3bc8a2985@3.20.239.96:26656,cce0882a656cd97c6bac7f0f0bc04139a3d390f3@3.145.4.178:26656"
 minimum_gas_price: "0.02usei"
 
 # Tendermint config version
 tendermint_config_version: 37
 
-snap_rpc: https://rpc.arctic-1.seinetwork.io:443
+snap_rpc: http://3.20.239.96:26657
 
 upgrade_name: v5.6.0
 
