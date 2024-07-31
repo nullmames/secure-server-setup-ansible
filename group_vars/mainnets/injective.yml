@@ -3,9 +3,9 @@ folder: ".injectived"
 daemon: injectived
 chain_id: injective-1
 #
-node_version: v1.12.0
+node_version: v1.12.1
 # BINARY
-binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.12.0-1704530206/linux-amd64.zip
+binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.12.1-1705909076/linux-amd64.zip
 binary_processing: zip
 lib_sidecar: true
 #
@@ -15,8 +15,8 @@ app_file: https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/master/
 minimum_gas_price: "500000000inj"
 custom_port_prefix: 143
 
-snap_rpc: https://rpc.cosmos.directory:443/injective
+snap_rpc: https://injective-rpc.polkachu.com:443
 
-snapshot_url: https://tools.highstakes.ch/files/injective/data_2024-06-28-14.tar.gz
+snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_79876808.tar.lz4
 
 upgrade_name: v1.12.0
