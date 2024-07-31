@@ -38,6 +38,27 @@
     - port: "{{ custom_port_prefix }}56"
       comment: p2p port for heimdall
 
+- name: Check if node has been initialized
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/docker-compose/polygon/heimdall/config"
+  register: node_initialized
+
+- name: Init heimdall container
+  when: not node_initialized.stat.exists
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: 0xpolygon/heimdall:{{ consensus_container_version }}
+    state: started
+    network_mode: host
+    stop_timeout: 600
+    pull: true
+    volumes:
+      - "{{ user_dir }}/docker-compose/polygon/heimdall:/heimdall-home"
+    command:
+      - "init"
+      - "--home=/heimdall-home"
+      - "--chain=mainnet"
+
 - name: Pull and run heimdall container
   community.docker.docker_container:
     name: "{{ consensus_container_name }}"
@@ -85,3 +106,6 @@
     command:
       - "server"
       - "--config=/bor-home/config.toml"
+      - "--db.engine=pebble"
+      - "--state.scheme=path"
+      - "--bootnodes=enode://a7f59b918fe19b5448b6dfbb35d5096eaffcdf20050f41f442c4a72377f7634da10fe23b1a405f72f6146b3c78738160c98c2c47d60a81e489fa47a50fe8700c@77.172.185.210:30303"
