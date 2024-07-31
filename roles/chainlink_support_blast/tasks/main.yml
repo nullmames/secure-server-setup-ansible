@@ -156,8 +156,8 @@
       - op-node
       - --l1={{ ethereum_l1 }}
       - --l1.rpckind=basic
-      # - --l1.beacon={{ ethereum_l1_beacon }}
-      - --l1.beacon=https://rpc.ankr.com/premium-http/eth_beacon/92d36fbb337953a82967850397f63eab46f4a8731426050cb6e552ed2063a2de
+      - --l1.beacon={{ ethereum_l1_beacon }}
+      # - --l1.beacon=https://rpc.ankr.com/premium-http/eth_beacon/92d36fbb337953a82967850397f63eab46f4a8731426050cb6e552ed2063a2de
       - --l1.trustrpc
       - --l2=ws://{{ execution_container_name }}:8551
       - --l2.jwt-secret=/jwtsecret
