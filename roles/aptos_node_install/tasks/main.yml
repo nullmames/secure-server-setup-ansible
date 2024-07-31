@@ -23,8 +23,8 @@
         chdir: "{{ user_dir }}/source/{{ network }}"
       loop:
         - "clean"
-        - "build --package aptos --profile {{ build_profile }}"
-        - "build --package aptos-node --profile {{ build_profile }}"
+        - "build --jobs 24 --package aptos --profile {{ build_profile }}"
+        - "build --jobs 24 --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
 
