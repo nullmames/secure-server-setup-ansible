@@ -3,7 +3,8 @@
   hosts: all
   gather_facts: true
   vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
+    - "group_vars/erc20_mainnet/polygon.yml"
+    - "group_vars/erc20_mainnet/all.yml"
   roles:
     - util_docker_install
     - chainlink_support_polygon
