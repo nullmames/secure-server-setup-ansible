@@ -1,28 +1,32 @@
 ---
+- name: Remove and create temp directory
+  ansible.builtin.file:
+    path: /tmp/binary
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
 - name: Download binary
   ansible.builtin.get_url:
     url: "{{ binary }}"
-    dest: "/tmp/binary.zip"
-    mode: "0700"
-    force: true
+    dest: "/tmp/binary/binary.zip"
+    mode: "0644"
+    force: false
 
-- name: Make temp directory
-  ansible.builtin.file:
-    path: /tmp/binary
-    state: directory
-    mode: "0755"
-
-- name: Unarchive binary
+- name: Unarchive binary file
   ansible.builtin.unarchive:
-    src: "/tmp/binary.zip"
+    src: "/tmp/binary/binary.zip"
     remote_src: true
     dest: "/tmp/binary"
     mode: "0644"
 
-- name: Stat libwasmvm.x86_64.so
-  ansible.builtin.stat:
-    path: "/tmp/binary/libwasmvm.x86_64.so"
-  register: libwasm
+- name: Check if libraries present
+  ansible.builtin.find:
+    paths: /tmp/binary
+    patterns: "*.so"
+  register: libraries
 
 - name: Copy binary
   ansible.builtin.copy:
@@ -31,23 +35,31 @@
     mode: "0755"
     remote_src: true
 
-- name: Copy libwasmvm
-  when: libwasm.stat.exists
+- name: Copy libraries
+  when: libraries.matched != 0
   block:
+    - name: Create lib folder in home dir
+      ansible.builtin.file:
+        path: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+        state: directory
+        mode: "0755"
+
     - name: Copy to home dir
       ansible.builtin.copy:
-        src: "/tmp/binary/libwasmvm.x86_64.so"
-        dest: "{{ user_dir }}/go/bin/libwasmvm.x86_64.so"
+        src: "{{ item.path }}"
+        dest: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
         mode: "0644"
         remote_src: true
+      loop: "{{ libraries.files }}"
 
     - name: Copy to /usr/lib
       become: true
       ansible.builtin.copy:
-        src: "/tmp/binary/libwasmvm.x86_64.so"
-        dest: "/usr/lib/libwasmvm.x86_64.so"
+        src: "{{ item.path }}"
+        dest: "/usr/lib/"
         mode: "0644"
         remote_src: true
+      loop: "{{ libraries.files }}"
 
 - name: Cleanup
   ansible.builtin.file:
