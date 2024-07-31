@@ -8,6 +8,22 @@
     mode: "0755"
   notify: "restart node"
 
+- name: Check if libraries present
+  ansible.builtin.find:
+    path: "{{ user_dir }}/go/bin/{{ daemon }}_libs"
+    patterns: "*.so"
+  register: libraries
+
+- name: Copy libraries
+  when: libraries.matched != 0
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ user_dir }}/{{ folder }}/cosmovisor/current/bin/"
+    mode: "0644"
+    remote_src: true
+  loop: "{{ libraries.files }}"
+  notify: "restart node"
+
 - name: Save version
   ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/current/bin/{{ daemon }} version"
   register: version
