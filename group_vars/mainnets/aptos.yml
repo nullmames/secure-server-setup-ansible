@@ -1,7 +1,7 @@
 network: aptos
 folder: mainnet
 repo: https://github.com/aptos-labs/aptos-core
-node_version: 1ce3930c9e9ea027a1b471730365b5c7992c4169 # 1.16.3 07/17/2024
+node_version: 5970cd3a3d7d8872fad08e77d720bec849ba6993 # 1.17.1 07.31.2024
 genesis_blob: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/genesis.blob
 waypoint: https://github.com/aptos-labs/aptos-networks/raw/main/mainnet/waypoint.txt
 p2p_port: 6180
