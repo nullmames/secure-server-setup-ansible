@@ -9,11 +9,11 @@
     - role: community.zabbix.zabbix_agent
       zabbix_agent_version: 6.4
       zabbix_agent2: true
-      zabbix_agent2_server: "{{ zabbix_server_agent_addresses }}"
-      zabbix_agent2_serveractive: "{{ zabbix_server_agent_addresses }}"
+      zabbix_agent_server: "{{ zabbix_server_agent_addresses }}"
+      zabbix_agent_serveractive: "{{ zabbix_server_agent_addresses }}"
       zabbix_agent_ip: "{{ ansible_host }}"
-      zabbix_agent2_listenport: 10050
-      zabbix_agent2_tlsconnect: unencrypted
+      zabbix_agent_listenport: 10050
+      zabbix_agent_tlsconnect: unencrypted
       zabbix_api_server_host: "{{ zabbix_server_host }}"
       zabbix_api_use_ssl: false
       zabbix_api_server_port: 8080
