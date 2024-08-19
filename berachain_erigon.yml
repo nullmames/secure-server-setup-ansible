@@ -1,0 +1,8 @@
+---
+- name: Berachain Erigon node
+  hosts: all
+  gather_facts: true
+  roles:
+    # - util_docker_install
+    - berachain_erigon
+    - util_docker_prune
