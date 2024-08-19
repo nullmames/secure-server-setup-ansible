@@ -3,9 +3,9 @@ folder: ".injectived"
 daemon: injectived
 chain_id: injective-1
 #
-node_version: v1.12.1
+node_version: v1.13.0
 # BINARY
-binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.12.1-1705909076/linux-amd64.zip
+binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.13.0-1722157491/linux-amd64.zip
 binary_processing: zip
 lib_sidecar: true
 #
@@ -17,6 +17,6 @@ custom_port_prefix: 143
 
 snap_rpc: https://injective-rpc.polkachu.com:443
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_79876808.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/injective/injective_82707684.tar.lz4
 
-upgrade_name: v1.12.0
+upgrade_name: v1.13.0

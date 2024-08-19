@@ -3,7 +3,7 @@ network: quasar
 folder: ".quasarnode"
 daemon: quasarnoded
 chain_id: quasar-1
-node_version: v1.0.1
+node_version: v2.0.1
 repo: https://github.com/quasar-finance/quasar.git
 genesis: https://raw.githubusercontent.com/quasar-finance/networks/main/quasar-1/definitive-genesis.json
 minimum_gas_price: "0.01uqsr"
@@ -11,11 +11,11 @@ seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:18256,ade4d
 peers: ""
 custom_port_prefix: 182
 
-upgrade_name: v1
+upgrade_name: v2
 
-snap_rpc: https://quasar-rpc.polkachu.com:443
+snap_rpc: https://quasar-rpc.publicnode.com:443
 
-snapshot_url: https://snap.rhinostake.com/quasar/quasar-snapshot.5841796.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/quasar/quasar_7480562.tar.lz4
 
 # Horcrux
 horcrux_group: horcrux_alpha
