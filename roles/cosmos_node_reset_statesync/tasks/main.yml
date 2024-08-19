@@ -47,7 +47,7 @@
 - name: Save the state file
   ansible.builtin.copy:
     src: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
-    dest: "{{ user_dir }}/priv_validator_state.json"
+    dest: "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0600"
@@ -65,7 +65,7 @@
 
 - name: Replace the state file
   ansible.builtin.copy:
-    src: "{{ user_dir }}/priv_validator_state.json"
+    src: "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
     dest: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -89,4 +89,4 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ user_dir }}/priv_validator_state.json"
+    - "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
