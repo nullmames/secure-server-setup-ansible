@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Formatting
+RED='\033[1;31m'   # Bold red
+GREEN='\033[1;32m' # Bold green
+NC='\033[0m'       # No color, resets text formatting
+
+
+# Get all listening ports that end in "57"
+ports=$(netstat -nlt | grep 'LISTEN' | awk '{print $4}' | grep ':.*57$' | awk -F':' '{print $NF}')
+
+# Iterate over each port
+echo "----------------------------------------"
+echo " Discovered Cosmos blockchains on this machine"
+echo "----------------------------------------"
+for port in $ports; do
+    # Fetch the JSON data using curl
+    json_output=$(curl -sL 127.0.0.1:$port/status)
+
+    # Check if the JSON contains a "result" key
+    if echo "$json_output" | jq -e '.result' > /dev/null 2>&1; then
+        # If "result" key exists, use it as the base
+        base='.result'
+    else
+        # Otherwise, use the root as the base
+        base='.'
+    fi
+
+    # Extract specific values using the determined base
+    network=$(echo "$json_output" | jq -r "$base.node_info.network")
+    tx_index=$(echo "$json_output" | jq -r "$base.node_info.other.tx_index")
+    latest_block_height=$(echo "$json_output" | jq -r "$base.sync_info.latest_block_height")
+    earliest_block_height=$(echo "$json_output" | jq -r "$base.sync_info.earliest_block_height")
+    catching_up=$(echo "$json_output" | jq -r "$base.sync_info.catching_up")
+    # Extract block times
+    latest_block_time=$(echo "$json_output" | jq -r "$base.sync_info.latest_block_time")
+    earliest_block_time=$(echo "$json_output" | jq -r "$base.sync_info.earliest_block_time")
+
+    # Convert block times to readable format
+    latest_block_time_readable=$(date -d "${latest_block_time}" "+%a %b %d %H:%M:%S %Y")
+    earliest_block_time_readable=$(date -d "${earliest_block_time}" "+%a %b %d %H:%M:%S %Y")
+
+    # Determine color and bold formatting for catching_up
+    if [ "$catching_up" == "true" ]; then
+        catching_up_format="${RED}"
+    else
+        catching_up_format="${GREEN}"
+    fi
+
+    # Output the extracted values
+    echo ""
+    echo "$network discovered on port $port"
+    echo "    Latest Block Height: $latest_block_height"
+    echo "    Latest Block Time: $latest_block_time_readable"
+    echo "    Earliest Block Height: $earliest_block_height"
+    echo "    Earliest Block Time: $earliest_block_time_readable"
+    echo "    Indexing: $tx_index"
+    echo -e "    Catching Up: ${catching_up_format}${catching_up}${NC}"
+    echo ""
+    echo "----------------------------------------"
+done
