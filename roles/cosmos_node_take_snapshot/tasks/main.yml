@@ -40,12 +40,17 @@
   args:
     executable: /usr/bin/bash
   register: currentheight
+  ignore_errors: true
 
 - name: Double check we want to continue
-  when: currentheight.stdout == "null"
-  ansible.builtin.pause:
-    prompt: "Current height is undefined.  Are you sure you want to take a snapshot?"
-    echo: true
+  when: currentheight is undefined or currentheight.stdout == "null"
+  block:
+    ansible.builtin.pause:
+      prompt: "Current height is undefined.  Are you sure you want to take a snapshot?"
+      echo: true
+
+    ansible.builtin.set_fact:
+      currentheight: "unknown"
 
 - name: Stop cosmovisor
   become: true
@@ -57,12 +62,13 @@
   ansible.builtin.pause:
     seconds: 5
 
-# - name: Run cosmprund
-#   ansible.builtin.command:
-#     cmd: "{{ user_dir }}/go/bin/cosmprund prune ~/{{ folder }}/data"
-#     chdir: "{{ user_dir }}"
-#   environment:
-#     PATH: "{{ path }}"
+- name: Run cosmprund
+  ignore_errors: true
+  ansible.builtin.command:
+    cmd: "{{ user_dir }}/go/bin/cosmprund prune ~/{{ folder }}/data"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
 
 - name: Check for external wasm
   ansible.builtin.stat:
@@ -81,7 +87,7 @@
 - name: Create archive - external wasm
   when: wasm_outside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar --exclude=wasm/wasm/cache -cf - data wasm | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
+    cmd: "tar --exclude=data/priv_validator_state.json --exclude=wasm/wasm/cache -cf - data wasm | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -89,7 +95,7 @@
 - name: Create archive - internal wasm
   when: wasm_inside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar --exclude=data/wasm/wasm/cache -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
+    cmd: "tar --exclude=data/priv_validator_state.json --exclude=data/wasm/wasm/cache -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
@@ -97,7 +103,7 @@
 - name: Create archive - no wasm
   when: not wasm_inside.stat.exists and not wasm_outside.stat.exists
   ansible.builtin.shell:
-    cmd: "tar -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
+    cmd: "tar --exclude=data/priv_validator_state.json -cf - data | lz4 > {{ user_dir }}/{{ snapshot_filename }}"
     chdir: "{{ user_dir }}/{{ folder }}"
   environment:
     PATH: "{{ path }}"
