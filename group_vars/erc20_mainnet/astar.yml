@@ -1,0 +1,9 @@
+# Astar
+network: astar
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 131
+
+# Execution
+execution_container_name: "astar-collator"
+execution_container_version: v5.42.2
+execution_snapshot_location: "{{ folder }}/astar-collator"
