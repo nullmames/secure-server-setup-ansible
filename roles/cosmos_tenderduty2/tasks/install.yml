@@ -14,7 +14,6 @@
   with_items:
     - "{{ user_dir }}/docker-compose"
     - "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}"
-    - "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d"
 
 - name: Clone tenderduty repository
   ansible.builtin.git:
@@ -40,3 +39,14 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0644"
+
+- name: Delete existing chain files if exist
+  ansible.builtin.file:
+    state: "{{ item }}"
+    path: "{{ user_dir }}/docker-compose/{{ tenderduty_dir }}/chains.d/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
