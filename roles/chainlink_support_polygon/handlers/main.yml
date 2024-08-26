@@ -1,5 +1,0 @@
----
-- name: Restart bor
-  community.docker.docker_container:
-    name: "{{ execution_container_name }}"
-    restart: true
