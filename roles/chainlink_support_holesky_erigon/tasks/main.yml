@@ -54,6 +54,8 @@
       - 127.0.0.1:8545:8545
       - "{{ nebula_internal_ip_addr }}:8546:8546"
       - 127.0.0.1:8546:8546
+      # - 12545:8545
+      # - 12546:8546
     volumes:
       - "{{ user_dir }}/docker-compose/erigon-data:/erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/erigon-data/jwtsecret"
@@ -93,6 +95,7 @@
       # rpc
       - "{{ nebula_internal_ip_addr }}:3500:3500"
       - 127.0.0.1:3500:3500
+      # - 12500:3500
     volumes:
       - "{{ user_dir }}/docker-compose/prysm/data:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
@@ -108,5 +111,5 @@
       - --checkpoint-sync-url=https://holesky.beaconstate.info
       - --genesis-beacon-api-url=https://holesky.beaconstate.info
       - --accept-terms-of-use
-      - --suggested-fee-recipient=0x34D68dFFa8cFe02Dd9C480b8bfB7C3A9ED3fc24a # Lido
       - --http-mev-relay=http://mev_boost:18550 # Lido
+      # - --suggested-fee-recipient=0x34D68dFFa8cFe02Dd9C480b8bfB7C3A9ED3fc24a # Lido
