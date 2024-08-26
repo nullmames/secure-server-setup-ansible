@@ -1,0 +1,36 @@
+---
+- name: Identify latst release of external-adapters-js repository
+  ansible.builtin.shell:
+    cmd: set -o pipefail && curl -s https://github.com/smartcontractkit/external-adapters-js/releases | grep -oE 'Release v[.0-9]*<' | sed -E 's/Release (.*)</\1/' | sort -V | tail -n 1
+    chdir: "{{ user_dir }}/source/external-adapters-js"
+  args:
+    executable: /bin/bash
+  register: external_adapters_release
+
+- name: Clone external-adapters-js repository
+  ansible.builtin.git:
+    repo: "https://github.com/smartcontractkit/external-adapters-js"
+    dest: "{{ user_dir }}/source/external-adapters-js"
+    version: "{{ external_adapters_release.stdout | trim }}"
+    update: true
+    force: true
+    recursive: true
+  register: repository_status
+
+- name: Confirm before proceeding
+  ansible.builtin.pause:
+    prompt: 'Latest release of external-adapters-js is {{ external_adapters_release.stdout | trim }}. Press return to continue. Press Ctrl+c and then "a" to abort'
+  when: repository_status.changed
+
+- name: Obtain version details and parse output
+  ansible.builtin.shell:
+    cmd: set -o pipefail && yarn versions | awk -F '│' '/@chainlink\// {gsub(/^[ \t]+|[ \t]+$/, "", $2); gsub(/^[ \t]+|[ \t]+$/, "", $3); gsub(/@chainlink\//, "", $2); print $2 ":\ " $3}'
+    chdir: "{{ user_dir }}/source/external-adapters-js"
+  args:
+    executable: /bin/bash
+  register: external_adapters_version
+
+- name: Create dictionary from output
+  ansible.builtin.set_fact:
+    ea_fact: "{{ external_adapters_version.stdout | from_yaml }}"
+# Can reference values using ea_fact['unibit-adapter']

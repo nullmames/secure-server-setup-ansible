@@ -2,5 +2,8 @@
 - name: Configure Chainlink components
   ansible.builtin.import_tasks: update_chainlink.yml
 
-- name: Configure Bridge components
+- name: Configure External Adapter versions
+  ansible.builtin.import_tasks: update_external_adapters.yml
+
+- name: Start External Adapters
   ansible.builtin.import_tasks: update_bridge.yml
