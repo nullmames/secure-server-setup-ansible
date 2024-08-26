@@ -5,14 +5,18 @@
     state: directory
     mode: "0755"
 
-- name: Copy docker-compose files
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ user_dir }}/docker-compose/"
+- name: Copy .env file
+  ansible.builtin.template:
+    src: "templates/adapters/.env"
+    dest: "{{ user_dir }}/docker-compose/.env"
     mode: "0644"
-  with_fileglob:
-    - "templates/adapters/.env"
-    - "templates/adapters/docker-compose.yml"
+  notify: Grafana bridge update
+
+- name: Copy docker-compose file
+  ansible.builtin.template:
+    src: "templates/adapters/docker-compose.yml.j2"
+    dest: "{{ user_dir }}/docker-compose/docker-compose.yml"
+    mode: "0644"
   notify: Grafana bridge update
 
 - name: Get instance AWS profile info
