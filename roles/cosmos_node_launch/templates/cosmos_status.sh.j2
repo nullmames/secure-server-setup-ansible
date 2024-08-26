@@ -7,7 +7,7 @@ NC='\033[0m'       # No color, resets text formatting
 
 
 # Get all listening ports that end in "57"
-ports=$(netstat -nlt | grep 'LISTEN' | awk '{print $4}' | grep ':.*57$' | awk -F':' '{print $NF}')
+ports=$(netstat -nlt | grep 'LISTEN' | awk '{print $4}' | awk -F':' '{print $NF}' | grep -E '^[0-9]{5}$' | grep '57$')
 
 # Iterate over each port
 echo "----------------------------------------"
