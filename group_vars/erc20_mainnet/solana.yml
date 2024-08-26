@@ -2,4 +2,4 @@
 network: solana
 folder: ".solana"
 repo: https://github.com/solana-labs/solana.git
-node_version: v1.18.20
+node_version: v1.18.22

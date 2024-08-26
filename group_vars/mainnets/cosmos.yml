@@ -2,7 +2,7 @@ network: cosmos
 folder: ".gaia"
 daemon: gaiad
 chain_id: cosmoshub-4
-node_version: v18.1.0
+node_version: v19.1.0
 repo: "https://github.com/cosmos/gaia"
 genesis: "https://github.com/cosmos/mainnet/blob/master/genesis/genesis.cosmoshub-4.json.gz?raw=true"
 genesis_processing: gz
@@ -12,7 +12,7 @@ custom_port_prefix: 149
 
 snap_rpc: https://cosmos-rpc.polkachu.com:443
 
-upgrade_name: v18
+upgrade_name: v19
 
 snapshot_url: https://snap.rhinostake.com/cosmos/cosmos-snapshot.19988064.tar.lz4
 

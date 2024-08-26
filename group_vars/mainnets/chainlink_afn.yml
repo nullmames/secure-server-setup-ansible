@@ -1,8 +1,8 @@
 network: chainlink_afn
 folder: chainlink_afn
 repo: smartcontractkit/risk-management-network-nop-release.git
-node_version: a2b858343b84a9c41c637f8b4193fc8783148bd9 # 07/25/2024
-shared_config_version: 45bddfc5fe80d9edd1dde00eea1374a31aefda72 # 08.09.2024
+node_version: 61b2ecdd30b34212577d2140ba647e290e07c111 # 08.22.2024
+shared_config_version: 61b2ecdd30b34212577d2140ba647e290e07c111 # 08.22.2024
 
 # For generating new keys
 # node_version_keygen_prep: a2b858343b84a9c41c637f8b4193fc8783148bd9

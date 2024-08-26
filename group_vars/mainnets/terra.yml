@@ -2,7 +2,7 @@ network: terra
 folder: ".terra"
 daemon: terrad
 chain_id: "phoenix-1"
-node_version: v2.11.8
+node_version: v2.12.4
 repo: https://github.com/terra-money/core
 genesis: "https://phoenix-genesis.s3.us-west-1.amazonaws.com/genesis.json"
 seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:11756"
@@ -13,4 +13,4 @@ snapshot_url: https://snapshots.polkachu.com/snapshots/terra/terra_11576265.tar.
 
 snap_rpc: "https://terra-rpc.polkachu.com:443"
 
-upgrade_name: v2.11
+upgrade_name: v2.12

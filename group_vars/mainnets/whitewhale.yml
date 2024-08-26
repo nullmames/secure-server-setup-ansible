@@ -2,7 +2,7 @@ network: whitewhale
 folder: ".migalood"
 daemon: migalood
 chain_id: migaloo-1
-node_version: v4.2.2-fix
+node_version: v4.2.3
 repo: https://github.com/White-Whale-Defi-Platform/migaloo-chain
 genesis: https://raw.githubusercontent.com/White-Whale-Defi-Platform/migaloo-chain/release/v1.0.x/networks/mainnet/genesis.json
 seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:20756"
@@ -13,7 +13,7 @@ custom_port_prefix: 207
 snap_rpc: https://migaloo-rpc.polkachu.com:443
 
 # # [Optional] Prep for upgrade in cosmovisor
-upgrade_name: v4.2.2
+upgrade_name: v4.2.3
 
 snapshot_url: https://snapshots.polkachu.com/snapshots/migaloo/migaloo_6336770.tar.lz4
 

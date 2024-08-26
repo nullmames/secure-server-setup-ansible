@@ -2,7 +2,7 @@ network: neutron
 folder: ".neutrond"
 daemon: neutrond
 chain_id: pion-1
-node_version: v4.0.1-testnet
+node_version: v4.2.1-testnet
 repo: "https://github.com/neutron-org/neutron"
 genesis: https://github.com/cosmos/testnets/raw/master/replicated-security/pion-1/pion-1-genesis-without-ccv.json.gz
 genesis_processing: "gz"
@@ -10,6 +10,6 @@ seeds: "0de4d730b5341d3a83721e1cbb5ce7772e26a400@p2p-falcron.pion-1.ntrn.tech:26
 minimum_gas_price: "0.02untrn"
 custom_port_prefix: 191
 
-upgrade_name: v4.0.1
+upgrade_name: v4.2.1-testnet
 
 snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/neutron/neutron_16157174.tar.lz4
