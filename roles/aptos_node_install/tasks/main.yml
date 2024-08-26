@@ -1,7 +1,8 @@
 ---
 - name: Check version of node
-  # ansible.builtin.shell: "/usr/local/bin/aptos info | jq -r .Result.build_commit_hash"
-  ansible.builtin.shell: "curl -sL localhost:8080/v1/ | jq -r .git_hash"
+  ansible.builtin.shell: "set -o pipefail && curl -sL localhost:8080/v1/ | jq -r .git_hash"
+  args:
+    executable: /usr/bin/bash
   register: aptos_version
 
 - name: Build new version & install
@@ -23,8 +24,7 @@
         chdir: "{{ user_dir }}/source/{{ network }}"
       loop:
         - "clean"
-        - "build --jobs 24 --package aptos --profile {{ build_profile }}"
-        - "build --jobs 24 --package aptos-node --profile {{ build_profile }}"
+        - "build --jobs {{ (ansible_processor_vcpus * (2 / 3)) | round | int }} --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
 
@@ -40,7 +40,6 @@
         remote_src: true
         force: true
       loop:
-        - aptos
         - aptos-node
 
     - name: Copy new binaries
@@ -54,5 +53,4 @@
         remote_src: true
         force: true
       loop:
-        - aptos
         - aptos-node
