@@ -4,6 +4,7 @@
   gather_facts: true
   vars_files:
     - "group_vars/mainnets/chainlink.yml"
+    - "group_vars/erc20_mainnet/all.yml"
   roles:
     - util_go_install
     - util_install_node
