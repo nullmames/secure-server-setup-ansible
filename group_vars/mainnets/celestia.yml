@@ -10,3 +10,5 @@ minimum_gas_price: "0utia"
 custom_port_prefix: 116
 
 snapshot_url: https://snapshots.polkachu.com/snapshots/celestia/celestia_1427983.tar.lz4
+
+snap_rpc: https://celestia-rpc.polkachu.com:443
