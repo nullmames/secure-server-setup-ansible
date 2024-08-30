@@ -2,9 +2,11 @@ network: gitopia
 folder: ".gitopia"
 daemon: gitopiad
 chain_id: gitopia
-node_version: v3.3.0
-binary: https://server.gitopia.com/releases/Gitopia/gitopia/v3.3.0/gitopiad_3.3.0_linux_amd64.tar.gz
+# Binary Information
+node_version: v4.0.0
+binary: https://server.gitopia.com/releases/Gitopia/gitopia/v4.0.0/gitopiad_4.0.0_linux_amd64.tar.gz
 binary_processing: targz
+#
 repo: https://github.com/gitopia/gitopia
 genesis: https://github.com/gitopia/mainnet/raw/master/genesis.tar.gz
 genesis_processing: targz
@@ -12,7 +14,7 @@ seeds: "a4a69a62de7cb0feb96c239405aa247a5a258739@seeds.cros-nest.com:57656,ade4d
 minimum_gas_price: "0.001utlore"
 custom_port_prefix: 113
 
-upgrade_name: v3.3.0
+upgrade_name: v4
 
 # StateSync
 snap_rpc: "https://gitopia-rpc.polkachu.com:443"
