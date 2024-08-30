@@ -52,5 +52,5 @@
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     command:
-      - --config=./mainnet.yaml
+      - --config=./mainnet.yaml # Default config file in the container
       - --zkevm.l1-rpc-url={{ ethereum_l1 }}
