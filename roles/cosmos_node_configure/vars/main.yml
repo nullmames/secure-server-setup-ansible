@@ -72,6 +72,7 @@ cosmos_node_configure_config_toml_37:
     keep-invalid-txs-in-cache: "false"
     ttl-duration: '"15s"'
     ttl-num-blocks: 30
+    size: 1000
     pending-size: 5000
     max-pending-txs-bytes: 1073741824
     pending-ttl-duration: '"0s"'
