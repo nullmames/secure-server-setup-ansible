@@ -1,0 +1,93 @@
+---
+# XLayer Support with custom ports (142)
+# url: https://github.com/0xPolygonHermez/cdk-erigon
+# Chainlink notes: https://www.notion.so/chainlink/XLayer-Setup-Tips-cc99b6abb8394d9d8f5d772438d31dc5
+# Ports:
+#  - Erigon:
+#    - 14203 (p2p, external)
+#    - 14245 (rpc, internal)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Get current user and group
+  ansible.builtin.shell:
+    cmd: echo "$(id -u):$(id -g)"
+  register: current_user
+
+- name: Create XLayer folder
+  ansible.builtin.file:
+    path: "{{ folder }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+    state: present
+    ipam_config:
+      - subnet: 172.0.{{ custom_port_prefix }}.0/24
+        gateway: 172.0.{{ custom_port_prefix }}.1
+
+- name: Run erigon container for XLayer
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: "hermeznetwork/cdk-erigon:{{ execution_container_version }}"
+    state: started
+    restart_policy: unless-stopped
+    stop_timeout: 600
+    pull: true
+    user: "{{ current_user.stdout }}"
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+    volumes:
+      - "{{ folder }}:/erigon"
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      # General Settings
+      - --datadir=/erigon
+      - --chain=xlayer-mainnet
+      - --private.api.addr=localhost:9091
+      - --externalcl=true
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+      # zkevm
+      - --zkevm.l2-chain-id=196
+      - --zkevm.l2-sequencer-rpc-url=https://rpc.xlayer.tech
+      - --zkevm.l2-datastreamer-url=stream.xlayer.tech:8800
+      - --zkevm.l1-chain-id=1
+      - --zkevm.l1-rpc-url={{ ethereum_l1 }}
+      - --zkevm.address-sequencer=0xAF9d27ffe4d51eD54AC8eEc78f2785D7E11E5ab1
+      - --zkevm.address-zkevm=0x2B0ee28D4D51bC9aDde5E58E295873F61F4a0507
+      - --zkevm.address-admin=0x491619874b866c3cDB7C8553877da223525ead01
+      - --zkevm.address-rollup=0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2
+      - --zkevm.address-ger-manager=0x580bda1e7A0CFAe92Fa7F6c20A3794F169CE3CFb
+      - --zkevm.l1-rollup-id=3
+      - --zkevm.l1-first-block=19218658
+      - --zkevm.l1-block-range=2000
+      - --zkevm.l1-query-delay=1000
+      - --zkevm.rpc-ratelimit=250
+      - --zkevm.datastream-version=3
+      # rpc
+      - --http=true
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,debug,net,trace,web3,erigon,zkevm
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      # RMN Specifics
+      - --rpc.batch.limit=10000
+      - --rpc.returndata.limit=70000000
+      - --rpc.gascap=0
