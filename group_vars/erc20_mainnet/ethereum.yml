@@ -5,10 +5,10 @@ folder: "{{ user_dir }}/docker-compose/{{ network }}"
 
 # Execution
 execution_container_name: geth
-execution_container_version: v1.14.6
+execution_container_version: v1.14.8
 execution_snapshot_location: "{{ folder }}/geth/bor/chaindata"
 
 # Consensus
 consensus_container_name: lighthouse
-consensus_container_version: v5.2.1
+consensus_container_version: v5.3.0
 consensus_snapshot_location: "{{ folder }}/lighthouse/data"
