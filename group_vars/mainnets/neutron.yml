@@ -11,6 +11,6 @@ custom_port_prefix: 191
 
 snap_rpc: https://neutron-rpc.polkachu.com:443
 
-snapshot_url: https://d38wxxfm5q5ouq.cloudfront.net/snapshots/mainnet/prunned_neutron-1_13261822.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/neutron/neutron_14168289.tar.lz4
 
 upgrade_name: v4.0.1
