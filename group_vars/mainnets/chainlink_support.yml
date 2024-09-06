@@ -15,13 +15,6 @@ op_erigon_version: 2.55.1-0.4.3-amd64
 bor_version: 1.2.7
 heimdall_version: 1.0.4
 
-# BNBChain
-# Versions pulled from https://api.github.com/repos/bnb-chain/bsc/releases/latest
-# Snapshot
-# https://github.com/48Club/bsc-snapshots
-# Using "full" snapshot with appropriate flags on binary
-bnbchain_snapshot_url: https://snapshots.48.club/geth.full.33620169.tar.zst
-
 # Kroma
 kroma_geth_version: v0.2.1
 kroma_node_version: v1.0.0
