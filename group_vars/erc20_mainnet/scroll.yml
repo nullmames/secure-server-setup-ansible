@@ -5,5 +5,5 @@ custom_port_prefix: 134
 
 # Execution
 execution_container_name: "scroll-geth"
-execution_container_version: v5.5.0
+execution_container_version: v5.7.0
 execution_snapshot_location: "{{ folder }}/scroll/chaindata"

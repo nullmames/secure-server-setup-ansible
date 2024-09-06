@@ -8,10 +8,10 @@ consensus_port_prefix: 235
 
 # Execution
 execution_container_name: base-geth
-execution_container_version: v1.101315.3
+execution_container_version: v1.101408.0
 execution_snapshot_location: "{{ folder }}/base-geth-data/geth/chaindata"
 
 # Consensus
 consensus_container_name: base-node
-consensus_container_version: v0.10.0
+consensus_container_version: v0.10.2
 # consensus_snapshot_location: "{{ folder }}/tbd"
