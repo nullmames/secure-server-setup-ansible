@@ -59,8 +59,12 @@
     command:
       ## General
       - --datadir=/op-geth-data
+      - --gcmode=full
       - --syncmode=snap
       - --op-network=op-mainnet
+      - --rollup.halt=major
+      - --db.engine=leveldb # or pebble
+      - --state.scheme=hash # or hash.  Moving to path based
       ## Interfaces
       # Consensus Layer Engine API
       - --authrpc.addr=0.0.0.0
@@ -71,7 +75,7 @@
       - --http
       - --http.addr=0.0.0.0
       - --http.port=8545
-      - --http.corsdomain=*"
+      - --http.corsdomain=*
       - --http.vhosts=*
       - --http.api=web3,debug,eth,txpool,net,engine
       # Websocket
@@ -82,18 +86,16 @@
       - --ws.api=web3,debug,eth,txpool,net,engine
       # P2P
       - --port={{ custom_port_prefix }}03
-      - --discovery.port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
       # Metrics
       - --metrics
       - --metrics.addr=0.0.0.0
       - --metrics.port=6060
-      - --metrics.expensive
       # Transaction & Chain Specific
       - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
       - --rollup.disabletxpoolgossip=true
-      - --rpc.gascap=0
-      - --rpc.txfeecap=0
       - --ipcdisable
+      # RMN
       - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
       - --rpc.txfeecap=0 # Per RMN Documentation
 
@@ -122,10 +124,10 @@
       - --l1={{ ethereum_l1 }}
       - --l1.beacon={{ ethereum_l1_beacon }}
       - --l1.trustrpc
-      - --l2=http://op-geth:8551
+      - --l2=ws://op-geth:8551
       - --l2.jwt-secret=/jwtsecret
+      - --l2.enginekind=geth
       - --network=op-mainnet
-      - --rollup.load-protocol-versions=true
       # Syncing
       - --syncmode=execution-layer
       - --l1.max-concurrency=64
