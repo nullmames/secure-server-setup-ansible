@@ -9,40 +9,29 @@
     return_content: true
   register: public_ip
 
-- name: Open p2p ports for avalanchego
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    proto: "{{ item.proto }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 9651
-      proto: any
-      comment: External - avalanchego
-
 - name: Create folder structure for data and config
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
-    - "{{ avalanche_dir }}/avalanchego-data"
-    - "{{ avalanche_dir }}/avalanchego-config"
-    - "{{ avalanche_dir }}/avalanchego-config/C"
+    - "{{ folder }}/avalanchego-data"
+    - "{{ folder }}/avalanchego-data/offline-prune"
+    - "{{ folder }}/avalanchego-config"
+    - "{{ folder }}/avalanchego-config/C"
 
 - name: Copy C-Chain config for use
   become: true
   ansible.builtin.copy:
     src: files/C-config.json
-    dest: "{{ avalanche_dir }}/avalanchego-config/C/config.json"
+    dest: "{{ folder }}/avalanchego-config/C/config.json"
     owner: "root"
     group: "root"
     mode: "0644"
 
 - name: Create a network
   community.docker.docker_network:
-    name: avax_net
+    name: "{{ network }}_net"
 
 - name: Run avalanchego container
   community.docker.docker_container:
@@ -53,7 +42,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: avax_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 9651:9651/tcp
@@ -61,8 +50,8 @@
       - "{{ nebula_internal_ip_addr }}:9650:9650"
       - 127.0.0.1:9650:9650
     volumes:
-      - "{{ avalanche_dir }}/avalanchego-data:/avalanchego-data"
-      - "{{ avalanche_dir }}/avalanchego-config:/avalanchego-config"
+      - "{{ folder }}/avalanchego-data:/avalanchego-data"
+      - "{{ folder }}/avalanchego-config:/avalanchego-config"
       - /etc/localtime:/etc/localtime:ro
     command:
       - /avalanchego/build/avalanchego
@@ -72,4 +61,5 @@
       - --public-ip={{ public_ip.content | trim }}
       - --staking-port=9651
       - --log-level=info
-      - --rpc-tx-fee-cap=0 # Per RMN Documentation
+      # RMN
+      - --rpc-tx-fee-cap=0

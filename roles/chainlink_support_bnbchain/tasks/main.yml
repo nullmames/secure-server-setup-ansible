@@ -30,9 +30,20 @@
 - name: Download and extract snapshot
   when: bnb_geth_data.matched == 0
   block:
+    - name: Get latest snapshot json
+      ansible.builtin.uri:
+        url: https://raw.githubusercontent.com/48Club/bsc-snapshots/main/data.json
+        return_content: true
+        body_format: json
+      register: bnbchain_snapshot_content
+
     - name: Download snapshot
       ansible.builtin.shell:
-        cmd: "aria2c -x6 -d {{ user_dir }} -o bnb-geth-snapshot.tar.zst {{ bnbchain_snapshot_url }}"
+        cmd: "aria2c -x10 -s10 -d {{ user_dir }} --checksum=sha-256={{ (bnbchain_snapshot_content.content | from_json).geth.local.sha256 }} -o bnb-geth-snapshot.tar.zst {{ (bnbchain_snapshot_content.content | from_json).geth.local.link }}"
+      args:
+        chdir: "{{ user_dir }}"
+        creates: "{{ user_dir }}/bnb-geth-snapshot.tar.zst"
+        executable: /bin/bash
       async: 86400
       poll: 0
       register: file_download
@@ -46,9 +57,15 @@
       retries: 1440 # for 24 hours
 
     - name: Extract snapshot
-      ansible.builtin.shell: "tar -xf {{ user_dir }}/bnb-geth-snapshot.tar.zst -C {{ folder }}/bnb-geth-data --strip-components 1"
-      environment:
-        PATH: "{{ path }}"
+      ansible.builtin.unarchive:
+        src: "{{ user_dir }}/bnb-geth-snapshot.tar.zst"
+        dest: "{{ folder }}/bnb-geth-data"
+        extra_opts:
+          - --zstd
+          - --strip-components 1
+      # ansible.builtin.shell: "tar -xf {{ user_dir }}/bnb-geth-snapshot.tar.zst -C {{ folder }}/bnb-geth-data --strip-components 1"
+      # environment:
+      #   PATH: "{{ path }}"
 
 - name: Download and extract mainnet.zip
   ansible.builtin.get_url:
@@ -93,7 +110,7 @@
       - --datadir=/bsc/node
       - --port=12103
       - --syncmode=full
-      - --state.scheme=path # Move to PebbleDB
+      - --state.scheme=path # (hash or path)
       ## Interfaces
       # HTTP/RPC
       - --http

@@ -14,6 +14,11 @@
     - "{{ folder }}/arbitrum-data"
     - "{{ user_dir }}/docker-compose/tmp"
 
+- name: Get current user and group
+  ansible.builtin.shell:
+    cmd: echo "$(id -u):$(id -g)"
+  register: current_user
+
 - name: Create a network
   community.docker.docker_network:
     name: "{{ network }}_net"
@@ -21,6 +26,14 @@
     ipam_config:
       - subnet: 172.0.{{ custom_port_prefix }}.0/24
         gateway: 172.0.{{ custom_port_prefix }}.1
+
+- name: Check permissions
+  become: true
+  ansible.builtin.file:
+    dest: "{{ folder }}/arbitrum-data"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: true
 
 - name: Pull and run nitro container
   community.docker.docker_container:
@@ -30,6 +43,7 @@
     state: started
     stop_timeout: 600
     pull: true
+    user: "{{ current_user.stdout }}"
     networks:
       - name: "{{ network }}_net"
     ports:
@@ -37,11 +51,11 @@
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47"
       - 127.0.0.1:{{ custom_port_prefix }}47:{{ custom_port_prefix }}47
     volumes:
-      - "{{ user_dir }}/docker-compose/arbitrum/arbitrum-data:/home/user/.arbitrum"
+      - "{{ folder }}/arbitrum-data:/home/user/.arbitrum"
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
     command:
       - --parent-chain.connection.url={{ ethereum_l1 }}
-      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_beacon }}
+      - --parent-chain.blob-client.beacon-url=https://eth2-beacon-mainnet.nodereal.io/v1/7951ba81e0cf4472b498df89c7e5be03
       - --chain.name=arb1
       - --http.port={{ custom_port_prefix }}47
       - --http.addr=0.0.0.0

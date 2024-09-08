@@ -3,6 +3,12 @@
 # custom_port_prefix not in use
 # Ports: geth: 30303 (p2p), 8545 (rpc), 8546 (ws), lighthouse: 9000 (p2p), 5052 (rpc)
 
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
 - name: Create jwtsecret
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
@@ -46,8 +52,13 @@
       - "{{ folder }}/geth:/geth"
       - "{{ user_dir }}/docker-compose/jwtsecret:/geth/jwtsecret"
     command:
+      # general
+      - --ipcdisable
+      - --state.scheme=path
+      - --datadir=/geth
       # p2p
       - --port=30303
+      - --nat=extip:{{ public_ip.content | trim }}
       # rpc
       - --http
       - --http.port=8545
@@ -62,10 +73,7 @@
       - --authrpc.port=8551
       - --authrpc.vhosts=*
       - --authrpc.jwtsecret=/geth/jwtsecret
-      # general
-      - --ipcdisable
-      - --state.scheme=path
-      - --datadir=/geth
+      # RMN
       - --rpc.gascap=0
       - --rpc.txfeecap=0 # Per RMN Documentation
       - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
@@ -92,11 +100,15 @@
       - "{{ user_dir }}/docker-compose/jwtsecret:/root/.lighthouse/jwtsecret"
     command:
       - /usr/local/bin/lighthouse
-      - beacon
+      - bn
       - --network=mainnet
       - --http
       - --http-address=0.0.0.0
       - --execution-endpoint=http://{{ execution_container_name }}:8551
       - --execution-jwt=/root/.lighthouse/jwtsecret
-      - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
-      - --disable-deposit-contract-sync
+      # - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
+      - --genesis-backfill # Sync checkpoints from genesis
+      - --prune-blobs=false # Keep all beacon chain data
+      - --disable-backfill-rate-limiting
+      - --allow-insecure-genesis-sync
+      # - --disable-deposit-contract-sync
