@@ -21,7 +21,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: celo_net
+    name: "{{ network }}_net"
 
 - name: Run geth container for Celo
   community.docker.docker_container:
@@ -32,7 +32,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: celo_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - "{{ p2p_port }}:{{ p2p_port }}/tcp"

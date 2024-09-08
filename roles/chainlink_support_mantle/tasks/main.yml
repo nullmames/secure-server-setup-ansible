@@ -14,7 +14,7 @@
     - mantle-data/mantle-node
 
 - name: Create jwtsecret if it does not exist
-  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
@@ -48,7 +48,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: mantle_net
+    name: "{{ network }}_net"
 
 - name: Run op-geth container
   community.docker.docker_container:
@@ -59,7 +59,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: mantle_net
+      - name: "{{ network }}_net"
     volumes:
       - "{{ user_dir }}/docker-compose/mantle-data/mantle-geth:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
@@ -115,7 +115,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: mantle_net
+      - name: "{{ network }}_net"
     volumes:
       - "{{ user_dir }}/docker-compose/mantle-data/mantle-node:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"

@@ -10,7 +10,7 @@
   register: public_ip
 
 - name: Create jwtsecret
-  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
@@ -28,7 +28,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: ethereum_net
+    name: "{{ network }}_net"
 
 - name: Run geth container
   community.docker.docker_container:
@@ -38,7 +38,7 @@
     state: started
     stop_timeout: 600
     networks:
-      - name: ethereum_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 30303:30303/tcp
@@ -86,7 +86,7 @@
     state: started
     stop_timeout: 600
     networks:
-      - name: ethereum_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 9000:9000/tcp

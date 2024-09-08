@@ -14,7 +14,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: scroll_net
+    name: "{{ network }}_net"
 
 - name: Run l2geth container
   community.docker.docker_container:
@@ -24,7 +24,7 @@
     state: started
     stop_timeout: 600
     networks:
-      - name: scroll_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - "{{ custom_port_prefix }}03:30303/tcp"

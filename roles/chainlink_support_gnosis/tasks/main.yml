@@ -7,24 +7,16 @@
 #  - Lighthouse:
 #    - 60900 (p2p, public)
 
-- name: Open p2p ports for nethermind and lighthouse Gnosis
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 60303
-      comment: External - gnosis nethermind p2p
-    - port: 60900
-      comment: External - gnosis lighthouse p2p
-
 - name: Add docker-compose and docker-data folders
   ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
     executable: /bin/bash
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
 
 - name: Run nethermind container for Gnosis
   community.docker.docker_container:
@@ -42,7 +34,7 @@
       - "{{ nebula_internal_ip_addr }}:60545:8545"
       - 127.0.0.1:60545:8545
     networks:
-      - name: gnosis_net
+      - name: "{{ network }}_net"
     volumes:
       - "{{ user_dir }}/docker-compose/gnosis/nethermind:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
@@ -74,7 +66,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: gnosis_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 60900:9000/tcp # p2p

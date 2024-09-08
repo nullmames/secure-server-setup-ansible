@@ -16,16 +16,6 @@
     cmd: echo "$(id -u):$(id -g)"
   register: current_user
 
-- name: Open p2p ports for geth
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    comment: "{{ item.comment }}"
-  loop:
-    - port: 10503
-      comment: External - linea geth p2p
-
 - name: Create Linea folder
   ansible.builtin.file:
     path: "{{ user_dir }}/docker-compose/linea-data"
@@ -40,7 +30,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: linea_net
+    name: "{{ network }}_net"
 
 - name: Run geth init container for Linea
   community.docker.docker_container:
@@ -50,7 +40,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: linea_net
+      - name: "{{ network }}_net"
     volumes:
       - "{{ user_dir }}/docker-compose/linea-data/data:/root/.ethereum"
       - "{{ user_dir }}/docker-compose/linea-data/genesis.json:/genesis.json:ro"
@@ -69,7 +59,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: linea_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - 10503:10503/tcp
