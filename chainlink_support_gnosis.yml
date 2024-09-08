@@ -3,7 +3,8 @@
   hosts: all
   gather_facts: true
   vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
+    - "group_vars/erc20_mainnet/gnosis.yml"
   roles:
     - util_docker_install
     - chainlink_support_gnosis
+    - util_docker_prune
