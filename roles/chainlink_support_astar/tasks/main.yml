@@ -53,8 +53,7 @@
       --rpc-cors all
       --enable-evm-rpc
       --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0'
-      --state-pruning 256
-      --blocks-pruning archive-canonical
+      --pruning archive
       --
       --state-pruning 100
       --blocks-pruning 100
