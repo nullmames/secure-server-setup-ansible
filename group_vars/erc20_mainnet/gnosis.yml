@@ -1,0 +1,14 @@
+# Gnosis
+network: gnosis
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 122
+
+# Execution
+execution_container_name: "gnosis_nethermind"
+execution_container_version: latest
+execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/chaindata"
+
+# Consensus
+consensus_container_name: gnosis_lighthouse
+consensus_container_version: latest-modern
+consensus_snapshot_location: "{{ folder }}/{{ consensus_container_name }}/data"
