@@ -10,7 +10,7 @@
     return_content: true
   register: public_ip
 
-- name: Ensure op-geth-data exists
+- name: Build folder structure
   ansible.builtin.file:
     path: "{{ user_dir }}/docker-compose/{{ item }}"
     state: directory
@@ -20,7 +20,7 @@
     - "{{ folder }}/op-geth"
 
 - name: Create jwtsecret if it does not exist
-  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
@@ -28,7 +28,7 @@
 
 - name: Create a network
   community.docker.docker_network:
-    name: optimism_net
+    name: "{{ network }}_net"
 
 - name: Run op-geth container
   community.docker.docker_container:
@@ -39,7 +39,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: optimism_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
@@ -108,7 +108,7 @@
     stop_timeout: 600
     pull: true
     networks:
-      - name: optimism_net
+      - name: "{{ network }}_net"
     ports:
       # p2p
       - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
