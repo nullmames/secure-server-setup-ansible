@@ -1,0 +1,111 @@
+---
+# Geth/Lighthouse support structure with host networking
+# custom_port_prefix not in use
+# Ports: geth: 30303 (p2p), 8545 (rpc), 8546 (ws), lighthouse: 9000 (p2p), 5052 (rpc)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Create jwtsecret
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Create folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/reth"
+    - "{{ folder }}/lighthouse"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Run reth container - full node
+  community.docker.docker_container:
+    name: reth
+    image: ghcr.io/paradigmxyz/reth
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - 30303:30303/tcp
+      - 30303:30303/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:8545:8545"
+      - 127.0.0.1:8545:8545
+      - "{{ nebula_internal_ip_addr }}:8546:8546"
+      - 127.0.0.1:8546:8546
+    volumes:
+      - "{{ folder }}/reth:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/data/jwtsecret"
+    command:
+      # general
+      - node
+      - --full
+      - --datadir=/data
+      # p2p
+      - --port=30303
+      - --nat=extip:{{ public_ip.content | trim }}
+      # rpc & ws
+      - --http
+      - --http.port=8545
+      - --http.addr=0.0.0.0
+      - --http.corsdomain=*
+      - --ws
+      - --ws.port=8546
+      - --ws.addr=0.0.0.0
+      - --ws.origins=*
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.jwtsecret=/data/jwtsecret
+      # RMN
+      - --rpc.gascap=50000000000000000
+      - --rpc.max-response-size=70000000 # Per RMN Documentation
+
+- name: Run lighthouse container
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: sigp/lighthouse:{{ consensus_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - 9000:9000/tcp
+      - 9000:9000/udp
+      - 9001:9001/udp
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:5052:5052"
+      - 127.0.0.1:5052:5052
+    volumes:
+      - "{{ folder }}/lighthouse:/root/.lighthouse"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/root/.lighthouse/jwtsecret"
+    command:
+      - /usr/local/bin/lighthouse
+      - bn
+      - --network=mainnet
+      - --http
+      - --http-address=0.0.0.0
+      - --execution-endpoint=http://reth:8551
+      - --execution-jwt=/root/.lighthouse/jwtsecret
+      - --checkpoint-sync-url=https://mainnet.checkpoint.sigp.io
+      # - --genesis-backfill # Sync checkpoints from genesis
+      # - --prune-blobs=false # Keep all beacon chain data
+      # - --disable-backfill-rate-limiting
+      # - --allow-insecure-genesis-sync
+      # - --disable-deposit-contract-sync
