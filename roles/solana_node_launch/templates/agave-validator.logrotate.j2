@@ -1,0 +1,9 @@
+{{ user_dir }}/.agave/agave-validator.log {
+  rotate 7
+  daily
+  missingok
+  compress
+  postrotate
+    systemctl kill -s USR1 agave-validator.service
+  endscript
+}

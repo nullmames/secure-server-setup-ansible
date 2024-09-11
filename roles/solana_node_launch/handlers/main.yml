@@ -1,8 +1,8 @@
 ---
-- name: Restart solana
+- name: Restart agave
   become: true
   ansible.builtin.systemd:
-    name: solana-validator
+    name: agave-validator
     state: restarted
     daemon_reload: true
     enabled: true

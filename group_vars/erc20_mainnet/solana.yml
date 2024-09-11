@@ -1,5 +1,5 @@
 # Network information
 network: solana
 folder: ".solana"
-repo: https://github.com/solana-labs/solana.git
-node_version: v1.18.22
+repo: https://github.com/anza-xyz/agave.git
+node_version: v1.18.23

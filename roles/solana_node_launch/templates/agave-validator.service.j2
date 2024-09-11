@@ -1,5 +1,5 @@
 [Unit]
-Description=solana-validator
+Description=agave-validator
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=500
@@ -9,7 +9,7 @@ StartLimitBurst=5
 User={{ ansible_user }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 
-ExecStart=/usr/local/bin/solana-validator \
+ExecStart=/usr/local/bin/agave-validator \
     --identity validator-keypair.json \
     --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2 \
     --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ \
@@ -24,7 +24,7 @@ ExecStart=/usr/local/bin/solana-validator \
     --rpc-bind-address 0.0.0.0 \
     --private-rpc \
     --dynamic-port-range 8000-8020 \
-    --log solana-validator.log \
+    --log agave-validator.log \
     --entrypoint entrypoint.mainnet-beta.solana.com:8001 \
     --entrypoint entrypoint2.mainnet-beta.solana.com:8001 \
     --entrypoint entrypoint3.mainnet-beta.solana.com:8001 \

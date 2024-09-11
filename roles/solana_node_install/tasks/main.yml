@@ -1,4 +1,4 @@
-# Build and update Solana RPC node
+# Build and update Solana RPC node (renamed to Agave September 2024)
 - name: Install additional build pre-requisites
   become: true
   ansible.builtin.apt:
@@ -76,16 +76,18 @@
     path: "{{ user_dir }}/{{ folder }}/validator-keypair.json"
   register: node_initialized
 
-- name: Registered installed version of solana-validator
-  ansible.builtin.shell: '/usr/local/bin/solana-validator --version | cut -d " " -f2 | sed "s/^/v/"'
-  register: solana_installed_version
+- name: Registered installed version of agave-validator
+  ansible.builtin.shell: 'set -o pipefail && /usr/local/bin/agave-validator --version | cut -d " " -f2 | sed "s/^/v/"'
+  register: agave_installed_version
+  args:
+    executable: /bin/bash
   ignore_errors: true
 
 - name: Build new version & install
-  notify: Restart solana
-  when: solana_installed_version.stdout != node_version
+  notify: Restart agave
+  when: agave_installed_version is undefined or agave_installed_version.stdout != node_version
   block:
-    - name: Update solana repo for node install
+    - name: Update agave repo for node install
       ansible.builtin.git:
         repo: "{{ repo }}"
         dest: "{{ user_dir }}/source/{{ network }}"
@@ -94,7 +96,7 @@
         force: true
         recursive: true
 
-    - name: Build solana binary
+    - name: Build agave binary
       ansible.builtin.command: "nice -n 15 {{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
@@ -106,7 +108,7 @@
 
     - name: Check if existing binaries exist
       ansible.builtin.stat:
-        path: "/usr/local/bin/solana-validator"
+        path: "/usr/local/bin/agave-validator"
       register: existing_binary
 
     - name: Archive exiting binaries
@@ -114,14 +116,14 @@
       when: existing_binary.stat.exists
       ansible.builtin.copy:
         src: "/usr/local/bin/{{ item }}"
-        dest: "/usr/local/bin/{{ item }}-{{ solana_installed_version.stdout }}"
+        dest: "/usr/local/bin/{{ item }}-{{ agave_installed_version.stdout }}"
         owner: root
         group: root
         mode: "0755"
         remote_src: true
         force: true
       loop:
-        - solana-validator
+        - agave-validator
 
     - name: Copy new binaries
       become: true
@@ -134,10 +136,10 @@
         remote_src: true
         force: true
       loop:
-        - solana-validator
+        - agave-validator
 
 - name: Create keys for node
   when: not node_initialized.stat.exists
   ansible.builtin.shell:
-    cmd: "{{ user_dir }}/source/{{ network }}/bin/solana-keygen new --no-bip39-passphrase -o {{ user_dir }}/{{ folder }}/validator-keypair.json"
+    cmd: "{{ user_dir }}/source/{{ network }}/bin/agave-keygen new --no-bip39-passphrase -o {{ user_dir }}/{{ folder }}/validator-keypair.json"
     creates: "{{ user_dir }}/{{ folder }}/validator-keypair.json"
