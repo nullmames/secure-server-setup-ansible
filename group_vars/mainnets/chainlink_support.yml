@@ -5,23 +5,9 @@ ethereum_l1: "http://100.100.3.110:5000"
 ethereum_l1_ws: "ws://100.100.3.110:5001"
 ethereum_l1_beacon: "http://100.100.3.110:5002"
 
-# Optimism versions
-op_node_version: v1.7.2
-#
-op_geth_version: v1.101308.2
-op_erigon_version: 2.55.1-0.4.3-amd64
-
-# Polygon versions
-bor_version: 1.2.7
-heimdall_version: 1.0.4
-
 # Kroma
 kroma_geth_version: v0.2.1
 kroma_node_version: v1.0.0
-
-# Gnosis
-gnosis_nethermind_version: latest
-gnosis_lighthouse_version: latest-modern
 
 # Mantle
 mantle_geth_version: v1.0.0-alpha.1
