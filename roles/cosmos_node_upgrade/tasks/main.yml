@@ -29,6 +29,13 @@
     remote_src: true
   loop: "{{ libraries.files }}"
 
+- name: Reset halt-height to 0
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+    regexp: "^halt-height ="
+    line: "halt-height = 0"
+    state: present
+
 - name: Save version
   ansible.builtin.command: "{{ user_dir }}/{{ folder }}/cosmovisor/upgrades/{{ upgrade_name }}/bin/{{ daemon }} version"
   register: version

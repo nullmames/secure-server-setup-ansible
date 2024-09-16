@@ -1,0 +1,27 @@
+---
+- name: Cosmos set halt-height and restart binary
+  hosts: all
+  gather_facts: true
+  serial: 1 # Run on one host at a time
+  vars_files:
+    - "{{ var_file }}"
+    - "{{ user_file }}"
+
+  pre_tasks:
+    - name: Verify halt_height is set
+      ansible.builtin.fail:
+        msg: halt_height variable is not set. Unable to continue.
+      when: not halt_height
+
+    - name: Verify we're on the right node
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
+
+  roles:
+    - cosmos_node_configure_halt_height
