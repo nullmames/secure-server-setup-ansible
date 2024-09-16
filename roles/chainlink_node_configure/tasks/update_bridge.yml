@@ -56,3 +56,15 @@
     chdir: "{{ user_dir }}/docker-compose"
   environment:
     PATH: "{{ path }}"
+
+- name: List running containers
+  ansible.builtin.command:
+    cmd: "docker ps"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    executable: /bin/bash
+  register: running_containers
+
+- name: Print list of running containers
+  ansible.builtin.debug:
+    msg: "{{ running_containers.stdout_lines }}"
