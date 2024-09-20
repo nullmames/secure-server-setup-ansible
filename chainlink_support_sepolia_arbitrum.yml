@@ -1,0 +1,11 @@
+---
+- name: Chainlink support node - arbitrum sepolia-rollup
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_sepolia/testnet_arbitrum.yml"
+    - "group_vars/erc20_sepolia/testnet_all.yml"
+  roles:
+    - util_docker_install
+    - chainlink_support_arbitrum
+    - util_docker_prune

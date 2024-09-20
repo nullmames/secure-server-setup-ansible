@@ -1,12 +1,12 @@
 # Arbitrum versions and approach
-network: arbitrum
+network: testnet_arbitrum
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 118
 
-# Avalanche version
-execution_container_name: arbitrum
+# Execution version
+execution_container_name: testnet-arbitrum
 execution_container_version: v3.1.2-309340a
 execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
 
 # Arbitrum specific variables
-arbitrum_chain_name: arb1
+arbitrum_chain_name: sepolia-rollup
