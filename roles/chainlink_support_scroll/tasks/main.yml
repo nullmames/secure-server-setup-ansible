@@ -41,6 +41,7 @@
       - --scroll
       - --l1.endpoint={{ ethereum_l1 }}
       - --l1.confirmations=finalized
+      - --rollup.verify
       - --cache.noprefetch
       # General
       - --datadir=/scroll-geth
@@ -57,3 +58,5 @@
       - --ws.port=8546
       - --ws.addr=0.0.0.0
       - --ws.origins=*
+      # RMN
+      - --rpc.txfeecap=0
