@@ -24,6 +24,7 @@
         chdir: "{{ user_dir }}/source/{{ network }}"
       loop:
         - "clean"
+        - "update"
         - "build --jobs {{ (ansible_processor_vcpus * (2 / 3)) | round | int }} --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
