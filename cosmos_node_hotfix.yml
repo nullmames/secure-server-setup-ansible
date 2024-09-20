@@ -7,8 +7,10 @@
   gather_facts: true
   vars_files:
     - "{{ var_file }}"
+  # serial: "30%"
   pre_tasks:
     - name: Confirm with User
+      run_once: true
       ansible.builtin.pause:
         prompt: Please confirm that {{ network }} version {{ node_version }} will replace contents in current directory! Ensure this change is NON-BREAKING! Press return to continue. Press Ctrl+c and then "a" to abort
 
