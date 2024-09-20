@@ -3,3 +3,4 @@
 ethereum_l1: "http://100.100.3.110:5000"
 ethereum_l1_ws: "ws://100.100.3.110:5001"
 ethereum_l1_beacon: "http://100.100.3.110:5002"
+ethereum_l1_beacon_archive: "http://100.100.3.110:5002"
