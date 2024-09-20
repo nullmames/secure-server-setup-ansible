@@ -1,20 +1,20 @@
 # Polygon versions and approach
-network: optimism
+network: testnet_optimism
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 133
 consensus_port_prefix: 233
 
 # Execution
-execution_container_name: op-geth
+execution_container_name: testnet-op-geth
 execution_container_version: v1.101408.0
 execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
-consensus_container_name: op-node
+consensus_container_name: testnet-op-node
 consensus_container_version: v1.9.1
 
 # Optimism specific
-execution_network: op-mainnet
-execution_sequencerhttp: https://mainnet-sequencer.optimism.io
+execution_network: op-sepolia
+execution_sequencerhttp: https://sepolia-sequencer.optimism.io
 
-consensus_network: op-mainnet
+consensus_network: op-sepolia

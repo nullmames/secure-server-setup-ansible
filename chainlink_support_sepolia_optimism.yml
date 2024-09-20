@@ -3,8 +3,9 @@
   hosts: all
   gather_facts: true
   vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
+    - "group_vars/erc20_sepolia/testnet_optimism.yml"
+    - "group_vars/erc20_sepolia/testnet_all.yml"
   roles:
     - util_docker_install
-    - chainlink_support_optimism_erigon
+    - chainlink_support_optimism
     - util_docker_prune

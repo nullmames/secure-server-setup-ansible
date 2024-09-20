@@ -61,7 +61,7 @@
       - --datadir=/op-geth-data
       - --gcmode=full
       - --syncmode=snap
-      - --op-network=op-mainnet
+      - --op-network={{ execution_network }}
       - --rollup.halt=major
       - --db.engine=leveldb # or pebble
       - --state.scheme=hash # or hash.  Moving to path based
@@ -92,7 +92,7 @@
       - --metrics.addr=0.0.0.0
       - --metrics.port=6060
       # Transaction & Chain Specific
-      - --rollup.sequencerhttp=https://mainnet-sequencer.optimism.io
+      - --rollup.sequencerhttp={{ execution_sequencerhttp }}
       - --rollup.disabletxpoolgossip=true
       - --ipcdisable
       # RMN
@@ -124,10 +124,10 @@
       - --l1={{ ethereum_l1 }}
       - --l1.beacon={{ ethereum_l1_beacon }}
       - --l1.trustrpc
-      - --l2=ws://op-geth:8551
+      - --l2=ws://{{ execution_container_name }}:8551
       - --l2.jwt-secret=/jwtsecret
       - --l2.enginekind=geth
-      - --network=op-mainnet
+      - --network={{ consensus_network }}
       # Syncing
       - --syncmode=execution-layer
       - --l1.max-concurrency=64
