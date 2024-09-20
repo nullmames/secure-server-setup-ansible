@@ -47,5 +47,8 @@
 - name: Install node.js packages
   become: true
   community.general.npm:
-    name: pnpm
+    name: "{{ item }}"
     global: true
+  loop:
+    - pnpm
+    - yarn
