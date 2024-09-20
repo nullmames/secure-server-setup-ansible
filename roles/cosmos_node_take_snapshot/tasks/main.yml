@@ -1,3 +1,37 @@
+- name: Identify /home mount point
+  ansible.builtin.set_fact:
+    mount_point: "{{ '/home' if ansible_mounts | selectattr('mount', 'equalto', '/home') | list | length > 0 else '/' }}"
+
+- name: Check current data directory size in bytes
+  ansible.builtin.command: "du -sb {{ user_dir }}/{{ folder }}/data"
+  register: chain_data_size_raw
+
+- name: Set directory size fact
+  ansible.builtin.set_fact:
+    chain_data_size: "{{ chain_data_size_raw.stdout.split()[0] }}"
+
+- name: Set free space size fact in bytes
+  ansible.builtin.set_fact:
+    free_space: "{{ ansible_mounts | selectattr('mount', 'equalto', mount_point) | map(attribute='size_available') | list | first }}"
+
+- name: Chain data statistics
+  ansible.builtin.debug:
+    msg:
+      - "{{ ansible_hostname }}:"
+      - "Size of {{ folder }}/data: {{ chain_data_size | float | human_readable }}"
+      - "Free space on {{ mount_point }}: {{ free_space | float | human_readable }}"
+      - ""
+
+- name: Ensure data directory is not larger than available space
+  ansible.builtin.fail:
+    msg: "Data directory is too large for snapshot creation."
+  when: (chain_data_size | float) >= ((free_space | float) * 0.9)
+
+- name: Ensure data directory is not too large
+  ansible.builtin.prompt:
+    msg: "Snapshot is greater than 100GB. Continue?"
+  when: (chain_data_size | float) >= 107374182400 # 100GB
+
 - name: Check for mc
   ansible.builtin.include_role:
     name: setup
@@ -18,21 +52,25 @@
         single_branch: true
         force: true
         version: "{{ cosmprund_version }}"
+      register: cosmprund_repo
 
-    - name: Build cosmprund
-      ansible.builtin.command: "make build"
-      args:
-        chdir: "{{ user_dir }}/source/cosmprund"
-      environment:
-        PATH: "{{ path }}"
-        GOPATH: "{{ user_dir }}/go"
+    - name: Build & install cosmprund
+      when: cosmprund_repo.changed
+      block:
+        - name: Build cosmprund
+          ansible.builtin.command: "make build"
+          args:
+            chdir: "{{ user_dir }}/source/cosmprund"
+          environment:
+            PATH: "{{ path }}"
+            GOPATH: "{{ user_dir }}/go"
 
-    - name: Copy cosmprund to directory
-      ansible.builtin.copy:
-        src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
-        dest: "{{ user_dir }}/go/bin/cosmprund"
-        remote_src: true
-        mode: "0755"
+        - name: Copy cosmprund to directory
+          ansible.builtin.copy:
+            src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
+            dest: "{{ user_dir }}/go/bin/cosmprund"
+            remote_src: true
+            mode: "0755"
 
 - name: Get current block height
   ansible.builtin.shell: "set -o pipefail && curl -sL http://localhost:{{ custom_port_prefix }}57/status | jq -r {% if tendermint_config_version is undefined %}.result{% elif tendermint_config_version == 37 %}{% endif %}.sync_info.latest_block_height"
@@ -66,10 +104,18 @@
 - name: Run cosmprund
   ignore_errors: true
   ansible.builtin.command:
-    cmd: "{{ user_dir }}/go/bin/cosmprund prune ~/{{ folder }}/data"
+    cmd: "{{ user_dir }}/go/bin/cosmprund prune {{ user_dir }}/{{ folder }}/data --cosmos-sdk=false"
     chdir: "{{ user_dir }}"
   environment:
     PATH: "{{ path }}"
+  register: cosmprund_output
+
+- name: Display cosmprund cosmprund
+  when: cosmprund_output.failed == true
+  ansible.builtin.debug:
+    msg:
+      - "Cosmprund Output:"
+      - "{{ cosmprund_output.stdout_lines }}"
 
 - name: Check for external wasm
   ansible.builtin.stat:
@@ -126,9 +172,10 @@
   environment:
     PATH: "{{ path }}"
   loop:
-    - "mc mb --ignore-existing snapshots/{{ bucket_name }}"
-    - "mc anonymous set download snapshots/{{ bucket_name }}"
-    - 'mc tag set snapshots/{{ bucket_name }} "public_snapshots=true"'
+    - "mc mb --ignore-existing snapshots/{{ bucket_name }}" # Create bucket
+    - "mc anonymous set download snapshots/{{ bucket_name }}" # Set download policy to anonymous
+    - 'mc tag set snapshots/{{ bucket_name }} "public_snapshots=true"' # Set tag so bucket is listed in public json
+    - 'mc ilm rule add snapshots/{{ bucket_name }} --expire-days "14"' # Set ILM rule to expire Cosmos snapshots after 14 days
 
 - name: Copy file to snapshots server
   ansible.builtin.command:
