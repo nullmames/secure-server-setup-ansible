@@ -8,4 +8,6 @@ repo: https://github.com/NillionNetwork/nilchain.git
 seeds: "20e1000e88125698264454a884812746c2eb4807@testnet-seeds.lavenderfive.com:28156"
 custom_port_prefix: 281
 
-snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/nillion/nillion_1593864.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/nillion/nillion_5379548.tar.lz4
+
+snap_rpc: https://nillion-testnet-rpc.polkachu.com:443
