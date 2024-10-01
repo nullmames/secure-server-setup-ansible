@@ -87,7 +87,7 @@ cosmos_node_configure_pruning_default:
   no_section:
     pruning: '"custom"'
     pruning-keep-recent: "{{ pruninginterval.stdout }}" # prime between 100 and 200
-    pruning-interval: 19
+    pruning-interval: "{{ pruningintervalsmall.stdout }}" # prime between 11 and 47
   state-sync:
     snapshot-interval: 0
 
