@@ -2,8 +2,8 @@ network: terra
 folder: ".terra"
 daemon: terrad
 chain_id: "phoenix-1"
-node_version: v2.12.4
-repo: https://github.com/terra-money/core
+node_version: v2.12.5
+repo: https://github.com/phoenix-directive/core.git
 genesis: "https://phoenix-genesis.s3.us-west-1.amazonaws.com/genesis.json"
 seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:11756"
 minimum_gas_price: "0.015uluna"

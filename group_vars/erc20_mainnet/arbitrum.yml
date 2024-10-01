@@ -5,7 +5,7 @@ custom_port_prefix: 118
 
 # Avalanche version
 execution_container_name: arbitrum
-execution_container_version: v3.1.2-309340a
+execution_container_version: v3.2.0-f847be0
 execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
 
 # Arbitrum specific variables

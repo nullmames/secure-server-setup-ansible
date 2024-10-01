@@ -11,7 +11,7 @@ execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
 consensus_container_name: op-node
-consensus_container_version: v1.9.1
+consensus_container_version: v1.9.2
 
 # Optimism specific
 execution_network: op-mainnet

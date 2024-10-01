@@ -5,5 +5,5 @@ custom_port_prefix: 119
 
 # Execution
 execution_container_name: "{{ network }}-erigon"
-execution_container_version: v1.2.15.3
+execution_container_version: v1.2.24
 execution_snapshot_location: "{{ folder }}/chaindata"
