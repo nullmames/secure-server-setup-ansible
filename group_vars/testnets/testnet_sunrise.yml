@@ -3,7 +3,7 @@ folder: ".sunrise"
 daemon: sunrised
 chain_id: sunrise-test-0.2
 
-node_version: v0.2.0
+node_version: v0.2.2
 
 repo: https://github.com/sunriselayer/sunrise.git
 genesis: https://raw.githubusercontent.com/sunriselayer/network/main/sunrise-test-0.2/genesis.json
@@ -19,4 +19,4 @@ snap_rpc: https://sunrise-testnet-rpc.polkachu.com:443
 p2p_state_sync: false
 
 # [Optional] Prep for upgrade in cosmovisor
-upgrade_name: v0_2_0_test
+upgrade_name: v0_2_2_test
