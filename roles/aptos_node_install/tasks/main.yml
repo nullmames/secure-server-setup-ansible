@@ -19,13 +19,14 @@
         recursive: true
 
     - name: Build aptos and aptos-node
-      ansible.builtin.command: "nice -n 15 cargo {{ item }}"
+      ansible.builtin.command: "nice -n 15 {{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       loop:
-        - "clean"
-        - "update"
-        - "build --jobs {{ (ansible_processor_vcpus * (2 / 3)) | round | int }} --package aptos-node --profile {{ build_profile }}"
+        - "rustup override set stable"
+        - "cargo clean"
+        - "cargo update"
+        - "cargo build --jobs {{ (ansible_processor_vcpus * (2 / 3)) | round | int }} --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
 
