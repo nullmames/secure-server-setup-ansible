@@ -1,7 +1,7 @@
 ---
 # Linea Support with custom ports (105)
 # Ports:
-#  - Geth:
+#  - Besu:
 #    - 10503 (p2p, public)
 #    - 10545 (rpc, internal)
 
@@ -29,48 +29,49 @@
   community.docker.docker_network:
     name: "{{ network }}_net"
 
-- name: Check if linea has been initialized
-  become: true
-  ansible.builtin.stat:
-    path: "{{ folder }}/linea-data/genesis.json"
-  register: node_initialized
+# - name: Check if linea has been initialized
+#   become: true
+#   ansible.builtin.stat:
+#     path: "{{ folder }}/linea-data/genesis.json"
+#   register: node_initialized
 
-- name: Initialize node
-  when: not node_initialized.stat.exists
-  block:
-    - name: Download Linea genesis
-      ansible.builtin.get_url:
-        url: "{{ execution_genesis }}"
-        dest: "{{ folder }}/linea-data/genesis.json"
-        mode: "0644"
+# - name: Initialize node
+#   when: not node_initialized.stat.exists
+#   block:
+#     - name: Download Linea genesis
+#       ansible.builtin.get_url:
+#         url: "{{ execution_genesis }}"
+#         dest: "{{ folder }}/linea-data/genesis.json"
+#         mode: "0644"
 
-    - name: Run geth init container for Linea
-      community.docker.docker_container:
-        name: "{{ execution_container_name }}_init"
-        image: ethereum/client-go:{{ execution_container_version }}
-        state: started
-        stop_timeout: 600
-        pull: true
-        networks:
-          - name: "{{ network }}_net"
-        volumes:
-          - "{{ folder }}/linea-data:/root/.ethereum"
-          - "{{ folder }}/linea-data/genesis.json:/genesis.json:ro"
-          - /etc/timezone:/etc/timezone:ro
-          - /etc/localtime:/etc/localtime:ro
-        command:
-          - init
-          - --datadir=/root/.ethereum
-          - /genesis.json
+#     - name: Run geth init container for Linea
+#       community.docker.docker_container:
+#         name: "{{ execution_container_name }}_init"
+#         image: ethereum/client-go:{{ execution_container_version }}
+#         state: started
+#         stop_timeout: 600
+#         pull: true
+#         networks:
+#           - name: "{{ network }}_net"
+#         volumes:
+#           - "{{ folder }}/linea-data:/root/.ethereum"
+#           - "{{ folder }}/linea-data/genesis.json:/genesis.json:ro"
+#           - /etc/timezone:/etc/timezone:ro
+#           - /etc/localtime:/etc/localtime:ro
+#         command:
+#           - init
+#           - --datadir=/root/.ethereum
+#           - /genesis.json
 
-- name: Run geth container for Linea
+- name: Run besu container for Linea
   community.docker.docker_container:
     name: "{{ execution_container_name }}"
-    image: ethereum/client-go:{{ execution_container_version }}
+    image: consensys/linea-besu-package:{{ execution_container_version }}
     state: started
     restart_policy: unless-stopped
     stop_timeout: 600
     pull: true
+    user: "{{ current_user.stdout }}"
     networks:
       - name: "{{ network }}_net"
     ports:
@@ -81,26 +82,34 @@
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
       - "127.0.0.1:{{ custom_port_prefix }}45:8545"
     volumes:
-      - "{{ folder }}/linea-data:/root/.ethereum"
-      - "{{ folder }}/linea-data/genesis.json:/genesis.json:ro"
+      - "{{ folder }}/linea-data:/data"
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    # entrypoint:
+    #   - /opt/besu/bin/besu
     command:
       # General
-      - --datadir=/root/.ethereum
-      - --port={{ custom_port_prefix }}03
-      - --nat=extip:{{ public_ip.content | trim }}
-      - --networkid={{ execution_network }}
-      - --syncmode=snap
+      - --data-path=/data
+      - --p2p-host={{ public_ip.content | trim }}
+      - --p2p-port={{ custom_port_prefix }}03
+      - --plugin-linea-l1-rpc-endpoint={{ ethereum_l1 }}
+      - --profile=advanced-mainnet
       - --bootnodes={{ execution_bootnodes }}
-      - --verbosity=3
+      - --sync-mode=snap
+      - --logging=info
       # RPC
-      - --http
-      - --http.addr=0.0.0.0
-      - --http.port=8545
-      - --http.corsdomain=*
-      - --http.api=admin,web3,eth,txpool,net
-      - --http.vhosts=*
+      - --rpc-http-enabled=true
+      - --rpc-http-host=0.0.0.0
+      - --rpc-http-port=8545
+      - --rpc-http-cors-origins=*
+      - --rpc-http-api=ETH,NET,WEB3,TXPOOL,PLUGINS
+      - --rpc-ws-enabled=true
+      - --rpc-ws-api=ETH,NET,WEB3,TXPOOL,PLUGINS
+      - --rpc-ws-port=8546
+      - --rpc-ws-host=0.0.0.0
+      # Gas issues during init
+      - --tx-pool-min-gas-price=1000
+      - --min-gas-price=1000
       # RMN
-      - --rpc.batch-response-max-size=70000000
-      - --rpc.txfeecap=0
+      # - --rpc.batch-response-max-size=70000000
+      - --rpc-tx-feecap=0
