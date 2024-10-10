@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: 685ea93ee7c749f851d545cd3d9d24ca1cd57f7f
+node_version: v5.9.0-hotfix
 repo: https://github.com/sei-protocol/sei-chain.git
 
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
@@ -13,7 +13,7 @@ peers: "42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb@136.243.71.227:11956,d7ad900ff4
 minimum_gas_price: "0.02usei" # Set on 2/18/24
 #minimum_gas_price: "0usei" #test
 # Upgrade
-upgrade_name: v5.8.0
+upgrade_name: v5.9.0
 # Tendermint config version
 tendermint_config_version: 37
 
@@ -23,7 +23,7 @@ snap_rpc: "https://sei-m.rpc.manticore.team:443"
 # snap_rpc: "https://sei-rpc.polkachu.com:443"
 # snap_rpc: "https://sei-state-sync-rpc.brocha.in:443"
 #
-snapshot_url: https://snapshots.polkachu.com/snapshots/sei/sei_103234387.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/sei/sei_106189108.tar.lz4
 
 snap_rpc_height_buffer: 10000
 p2p_state_sync: true

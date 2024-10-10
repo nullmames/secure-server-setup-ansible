@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "arctic-1"
-node_version: v5.9.0
+node_version: v5.9.0-hotfix
 repo: https://github.com/sei-protocol/sei-chain
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/arctic-1/genesis.json
 custom_port_prefix: 119

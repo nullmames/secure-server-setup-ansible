@@ -1,11 +1,12 @@
 # Arbitrum versions and approach
+# https://github.com/OffchainLabs/nitro
 network: arbitrum
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 118
 
 # Avalanche version
 execution_container_name: arbitrum
-execution_container_version: v3.2.0-f847be0
+execution_container_version: v3.2.1-d81324d
 execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
 
 # Arbitrum specific variables

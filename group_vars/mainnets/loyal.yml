@@ -11,4 +11,6 @@ custom_port_prefix: 172
 # [Optional] Prep for upgrade in cosmovisor
 #upgrade_name:
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/loyal/loyal_5331404.tar.lz4
+snapshot_url: https://snapshots.polkachu.com/snapshots/loyal/loyal_10114049.tar.lz4
+
+snap_rpc: https://loyal-rpc.polkachu.com:443

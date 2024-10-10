@@ -2,7 +2,7 @@ network: nillion
 folder: ".nillionapp"
 daemon: nilchaind
 chain_id: nillion-chain-testnet-1
-node_version: v0.2.1
+node_version: v0.2.2
 genesis: https://raw.githubusercontent.com/NillionNetwork/networks/main/nillion-chain-testnet-1/genesis.json
 repo: https://github.com/NillionNetwork/nilchain.git
 seeds: "20e1000e88125698264454a884812746c2eb4807@testnet-seeds.lavenderfive.com:28156"
