@@ -1,0 +1,93 @@
+# Get latest version of tmtop
+- name: Get latest release of tmtop
+  run_once: true
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/QuokkaStake/tmtop/releases/latest
+    return_content: true
+  register: tmtop_version
+
+- name: Set fact for latest release of tmtop
+  ansible.builtin.set_fact:
+    latest_version: "{{ (tmtop_version.json.tag_name | regex_replace('^v', '')) }}"
+
+- name: Get installed version of tmtop
+  ansible.builtin.command: "/usr/local/bin/tmtop --version"
+  register: tmtop_installed
+  ignore_errors: true
+
+- name: Set fact for installed version of tmtop
+  ansible.builtin.set_fact:
+    installed_version: "{{ tmtop_installed.stdout | regex_replace('^tmtop version ', '') }}"
+
+- name: Install tmtop
+  when: installed_version is not defined or installed_version != latest_version
+  block:
+    - name: Download tmtop
+      ansible.builtin.get_url:
+        url: "https://github.com/QuokkaStake/tmtop/releases/download/v{{ latest_version }}/tmtop_{{ latest_version }}_linux_amd64.tar.gz"
+        dest: /tmp/tmtop.tar.gz
+        mode: "0755"
+
+    - name: Extract tmtop
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/tmtop.tar.gz
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts:
+          - "--add-file"
+          - "tmtop"
+        creates: /usr/local/bin/tmtop
+
+    - name: Delete tmtop tarball
+      ansible.builtin.file:
+        path: /tmp/tmtop.tar.gz
+        state: absent
+
+# Cosmprund (force install since no versioning)
+- name: Add Cosmprund repository
+  ansible.builtin.git:
+    repo: https://github.com/binaryholdings/cosmprund.git
+    dest: /home/{{ ansible_user }}/source/cosmprund
+    single_branch: true
+    force: true
+    version: "{{ cosmprund_version }}"
+  register: cosmprund_repo
+
+- name: Install cosmprund
+  when: cosmprund_repo.changed
+  block:
+    - name: Build cosmprund
+      ansible.builtin.command: "{{ item }}"
+      args:
+        chdir: "{{ user_dir }}/source/cosmprund"
+      with_items:
+        - "make build"
+      environment:
+        PATH: "{{ path }}"
+        GOPATH: "{{ user_dir }}/go"
+
+    - name: Copy cosmprund to directory
+      ansible.builtin.copy:
+        src: "{{ user_dir }}/source/cosmprund/build/cosmprund"
+        dest: "{{ user_dir }}/go/bin/cosmprund"
+        remote_src: true
+        mode: "0755"
+
+- name: Copy cosmos_status script
+  become: true
+  ansible.builtin.template:
+    src: "cosmos_status.sh.j2"
+    dest: "/usr/local/bin/cosmos_status.sh"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- name: Cleanup unused tools
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ user_dir }}/source/consensus"
+    - "{{ user_dir }}/source/pvtop"
+    - "{{ user_dir }}/go/bin/pvtop"

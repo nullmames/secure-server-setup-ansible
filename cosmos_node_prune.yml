@@ -5,4 +5,5 @@
   vars_files:
     - "{{ var_file }}"
   roles:
+    - cosmos_node_tools
     - cosmos_node_prune
