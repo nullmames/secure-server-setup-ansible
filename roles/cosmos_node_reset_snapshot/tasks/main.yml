@@ -52,11 +52,13 @@
   ansible.builtin.debug:
     msg: "Downloading snapshot {{ snapshot_url }}"
 
+- name: Set snapshot_name fact
+  ansible.builtin.set_fact:
+    snapshot_name: "{{ snapshot_url | basename }}"
+
 - name: Download snapshot
-  ansible.builtin.shell:
-    cmd: "aria2c -x10 -c -d {{ user_dir }} -o {{ network }}-snapshot.tar.lz4 {{ snapshot_url }}"
-  environment:
-    PATH: "{{ path }}"
+  ansible.builtin.command:
+    cmd: "/usr/bin/aria2c -x10 -s10 -c -d {{ user_dir }} -o {{ snapshot_name }} {{ snapshot_url }}"
 
 - name: Stop cosmovisor
   become: true
@@ -88,9 +90,10 @@
     - directory
 
 - name: Extract snapshot archive
-  ansible.builtin.shell: "lz4 -c -d {{ user_dir }}/{{ network }}-snapshot.tar.lz4 | tar -x -C {{ user_dir }}/{{ folder }}"
-  environment:
-    PATH: "{{ path }}"
+  ansible.builtin.unarchive:
+    src: "{{ user_dir }}/{{ snapshot_name }}"
+    dest: "{{ user_dir }}/{{ folder }}"
+    remote_src: true
 
 - name: Force delete the priv_validator_state file if exists in archive
   ansible.builtin.file:
@@ -126,5 +129,5 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ user_dir }}/{{ network }}-snapshot.tar.lz4"
+    - "{{ user_dir }}/{{ snapshot_name }}"
     - "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
