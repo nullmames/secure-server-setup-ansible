@@ -1,13 +1,4 @@
 ---
-# - name: Install required zabbix plugin
-#   become: true
-#   ansible.builtin.template:
-#     src: "zab.userparameters.cosmos.conf.j2"
-#     dest: "/etc/zabbix/zabbix_agent2.d/zab.userparameters.cosmos.conf"
-#     owner: "root"
-#     group: "root"
-#     mode: "0644"
-
 - name: Create host groups
   throttle: 1
   delegate_to: "{{ zabbix_server_host }}"
