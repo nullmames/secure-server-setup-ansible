@@ -73,10 +73,3 @@
         value: "{{ daemon }}"
       - macro: "{$RPC_PORT}"
         value: "{{ custom_port_prefix }}57"
-
-- name: Force restart zabbix agent
-  become: true
-  ansible.builtin.systemd:
-    name: zabbix-agent2
-    enabled: true
-    state: restarted
