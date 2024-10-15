@@ -1,12 +1,12 @@
 ---
-- name: Install required zabbix plugin
-  become: true
-  ansible.builtin.template:
-    src: "zab.userparameters.cosmos.conf.j2"
-    dest: "/etc/zabbix/zabbix_agent2.d/zab.userparameters.cosmos.conf"
-    owner: "root"
-    group: "root"
-    mode: "0644"
+# - name: Install required zabbix plugin
+#   become: true
+#   ansible.builtin.template:
+#     src: "zab.userparameters.cosmos.conf.j2"
+#     dest: "/etc/zabbix/zabbix_agent2.d/zab.userparameters.cosmos.conf"
+#     owner: "root"
+#     group: "root"
+#     mode: "0644"
 
 - name: Create host groups
   throttle: 1
@@ -25,6 +25,11 @@
     host_groups:
       - Cosmos
       - Cosmos node
+      - mainnet
+      - testnet
+      - Cosmos rpc
+      - Cosmos archive
+      - Cosmos validator
       - "{{ network }}"
 
 - name: Create node monitoring host
@@ -46,8 +51,10 @@
       - Cosmos
       - Cosmos node
       - "{{ network }}"
+      - "{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
+      - "{% if rpc is defined %}Cosmos rpc{% elif archive is defined %}Cosmos archive{% else %}Cosmos validator{% endif %}"
     link_templates:
-      - Cosmos Nodes - Base
+      - "{% if network == 'sei' %}Cosmos Nodes - Sei{% else %}Cosmos Nodes - Base{% endif %}"
     status: enabled
     state: present
     inventory_mode: manual
@@ -62,10 +69,10 @@
       site_country: "{{ node_info.json.country }}"
     tags: "{{ inventory_group_dict }}"
     interfaces:
-      - type: 1
-        main: 1
+      - type: agent
+        main: 1 # Sets default interface
         useip: 1
-        ip: "{{ ansible_host }}"
+        ip: "{% if nebula_internal_ip_addr is defined and nebula_internal_ip_addr %}{{ nebula_internal_ip_addr }}{% else %}{{ ansible_host }}{% endif %}"
         dns: ""
         port: "10050"
     macros:
@@ -73,7 +80,7 @@
         value: "{{ daemon }}"
       - macro: "{$NODE_DAEMON}"
         value: "{{ daemon }}"
-      - macro: "{$RPC_LOCAL_PORT}"
+      - macro: "{$RPC_PORT}"
         value: "{{ custom_port_prefix }}57"
 
 - name: Force restart zabbix agent
