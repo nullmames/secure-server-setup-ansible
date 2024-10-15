@@ -28,8 +28,8 @@
   when: (chain_data_size | float) >= ((free_space | float) * 0.9)
 
 - name: Ensure data directory is not too large
-  ansible.builtin.prompt:
-    msg: "Snapshot is greater than 100GB. Continue?"
+  ansible.builtin.pause:
+    prompt: "Snapshot is greater than 100GB. Continue?"
   when: (chain_data_size | float) >= 107374182400 # 100GB
 
 - name: Check for mc
