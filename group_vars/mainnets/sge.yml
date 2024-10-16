@@ -11,4 +11,12 @@ custom_port_prefix: 177
 
 upgrade_name: v1.7.4
 
-snap_rpc: https://sge-rpc.polkachu.com:443
+snap_rpc: https://rpc.sge.indonode.net:443
+
+snapshot_url: https://snapshots.indonode.net/sge/sge-latest.tar.lz4
+
+# Horcrux
+horcrux_group: horcrux_alpha
+sentries:
+  - "100.100.1.201"
+  - "100.100.1.218"

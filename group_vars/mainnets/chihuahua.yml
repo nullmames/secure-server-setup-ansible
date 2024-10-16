@@ -13,5 +13,8 @@ snap_rpc: "https://chihuahua-rpc.polkachu.com:443"
 # Version Info
 node_version: v8.0.0
 upgrade_name: v8.0.0
-# Go Version
-#go_release: "go1.20.12"
+
+horcrux_group: horcrux_alpha
+sentries:
+  - 100.100.1.201
+  - 100.100.1.219
