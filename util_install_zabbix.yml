@@ -3,6 +3,11 @@
   gather_facts: true
   become: true
 
+  pre_tasks:
+    - name: Verify sudo
+      ansible.builtin.shell: "sudo w"
+      delegate_to: localhost
+
   roles:
     - role: util_zabbix_prepare
 
