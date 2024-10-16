@@ -3,6 +3,12 @@
 # custom_port_prefix: 134
 # Ports: p2p: 13403, rpc: 13445, ws: 13446
 
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
 - name: Create folders
   ansible.builtin.file:
     path: "{{ item }}"
@@ -27,8 +33,8 @@
       - name: "{{ network }}_net"
     ports:
       # p2p
-      - "{{ custom_port_prefix }}03:30303/tcp"
-      - "{{ custom_port_prefix }}03:30303/udp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
       # rpc
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
       - 127.0.0.1:{{ custom_port_prefix }}45:8545
@@ -46,7 +52,8 @@
       # General
       - --datadir=/scroll-geth
       - --gcmode=archive
-      - --port=30303
+      - --nat=extip:{{ public_ip.content | trim }}
+      - --port={{ custom_port_prefix }}03
       # RPC/WS
       - --http
       - --http.port=8545
