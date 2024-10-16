@@ -2,8 +2,10 @@
 - name: Prep horcrux node(s) and install keys
   hosts: localhost
   gather_facts: false
+  any_errors_fatal: true
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
+
   tasks:
     - name: Check variables
       ansible.builtin.assert:
