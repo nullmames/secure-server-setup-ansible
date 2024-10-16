@@ -1,32 +1,21 @@
 ---
+- name: Define statesync rpc
+  ansible.builtin.set_fact:
+    statesync_rpc: "{% if snap_rpc is defined %}{{ snap_rpc }}{% else %}https://rpc.cosmos.directory:443/{{ network }}{% endif %}"
+
 - name: Create state_sync directory
   ansible.builtin.file:
     path: "{{ user_dir }}/state_sync"
     state: directory
     mode: "0755"
-  when: snap_rpc is defined
 
 - name: Copy state_sync file
   ansible.builtin.template:
-    src: "../cosmos_node_launch/templates/state_sync.sh.j2"
+    src: "state_sync.sh.j2"
     dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0700"
-  when:
-    - snap_rpc is defined
-    - (p2p_state_sync is undefined) or (p2p_state_sync is false)
-
-- name: Copy state_sync file for p2p sync
-  ansible.builtin.template:
-    src: "../cosmos_node_launch/templates/state_sync-p2p.sh.j2"
-    dest: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0700"
-  when:
-    - snap_rpc is defined
-    - p2p_state_sync is true
 
 - name: Run state_sync script on node
   ansible.builtin.shell: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
@@ -43,6 +32,10 @@
   ansible.builtin.systemd:
     name: "{{ daemon }}"
     state: stopped
+
+- name: Sleep for 5 seconds
+  ansible.builtin.wait_for:
+    timeout: 5
 
 - name: Save the state file
   ansible.builtin.copy:
@@ -63,6 +56,11 @@
     - absent
     - directory
 
+- name: Remove wasm folder if exists outside of data
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/wasm"
+    state: absent
+
 - name: Replace the state file
   ansible.builtin.copy:
     src: "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
@@ -72,11 +70,6 @@
     mode: "0600"
     remote_src: true
     force: true
-
-- name: Remove wasm folder if exists outside of data
-  ansible.builtin.file:
-    path: "{{ user_dir }}/{{ folder }}/wasm"
-    state: absent
 
 - name: Start cosmovisor
   become: true

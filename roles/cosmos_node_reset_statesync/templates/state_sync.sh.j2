@@ -4,7 +4,7 @@ set -e
 
 SNAP_HEIGHT_BUFFER="{{ snap_rpc_height_buffer | default('4000') }}"
 SNAP_HEIGHT_DENOM=1000
-STATE_SYNC_RPC="{{ snap_rpc }}"
+STATE_SYNC_RPC="{{ statesync_rpc }}"
 
 LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .result.block.header.height); \
 RAW_SYNC_BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAP_HEIGHT_BUFFER)); \
