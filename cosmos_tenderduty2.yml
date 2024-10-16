@@ -2,6 +2,7 @@
 - name: Install tenderduty
   hosts: all
   gather_facts: false
+  any_errors_fatal: true
 
   roles:
     - cosmos_tenderduty2
