@@ -38,4 +38,5 @@
     - cosmos_node_install
     - cosmos_node_cosmovisor
     - cosmos_node_tools
+    - cosmos_node_local_peers
     - cosmos_node_upgrade
