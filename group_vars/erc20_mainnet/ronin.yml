@@ -1,0 +1,9 @@
+# Ronin
+network: ronin
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 145
+
+# Execution
+execution_container_name: "ronin"
+execution_container_version: latest
+#execution_snapshot_location: "{{ folder }}/scroll/chaindata"
