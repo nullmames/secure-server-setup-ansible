@@ -6,10 +6,10 @@ SNAP_HEIGHT_BUFFER="{{ snap_rpc_height_buffer | default('4000') }}"
 SNAP_HEIGHT_DENOM=1000
 STATE_SYNC_RPC="{{ statesync_rpc }}"
 
-LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r .result.block.header.height); \
+LATEST_HEIGHT=$(curl -s $STATE_SYNC_RPC/block | jq -r {% if network != "sei" %}.result{% endif %}.block.header.height); \
 RAW_SYNC_BLOCK_HEIGHT=$((LATEST_HEIGHT - SNAP_HEIGHT_BUFFER)); \
 SYNC_BLOCK_HEIGHT=$(( ( ( $RAW_SYNC_BLOCK_HEIGHT + ( $SNAP_HEIGHT_DENOM / 2) ) / $SNAP_HEIGHT_DENOM ) * $SNAP_HEIGHT_DENOM ))
-SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+SYNC_BLOCK_HASH=$(curl -s "$STATE_SYNC_RPC/block?height=$SYNC_BLOCK_HEIGHT" | jq -r {% if network != "sei" %}.result{% endif %}.block_id.hash)
 
 echo -e "Modifying $HOME/{{ folder }}/config/config.toml based on the following values:"
 echo -e "RPC Address:          $STATE_SYNC_RPC"
@@ -22,7 +22,15 @@ if [[ "$SYNC_BLOCK_HASH" = "" || "$SYNC_BLOCK_HASH" = "null" ]]; then
     exit 1
 fi
 
+# Config file replacements
 sed -i.bak -e "s|^enable *=.*|enable = true|" $HOME/{{ folder }}/config/config.toml
+
+{% if network != "sei" %}
 sed -i.bak -e "s|^rpc_servers *=.*|rpc_servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust_height *=.*|trust_height = $SYNC_BLOCK_HEIGHT|" $HOME/{{ folder }}/config/config.toml
 sed -i.bak -e "s|^trust_hash *=.*|trust_hash = \"$SYNC_BLOCK_HASH\"|" $HOME/{{ folder }}/config/config.toml
+{% else %}
+sed -i.bak -e "s|^rpc-servers *=.*|rpc-servers = \"$STATE_SYNC_RPC,$STATE_SYNC_RPC\"|" $HOME/{{ folder }}/config/config.toml
+sed -i.bak -e "s|^trust-height *=.*|trust-height = $SYNC_BLOCK_HEIGHT|" $HOME/{{ folder }}/config/config.toml
+sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/{{ folder }}/config/config.toml
+{% endif %}
