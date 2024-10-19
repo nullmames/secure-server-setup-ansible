@@ -31,7 +31,7 @@
   block:
     - name: Download snapshot
       ansible.builtin.shell:
-        cmd: "aria2c -x6 -d {{ user_dir }} -o kroma-snapshot.tar.gz https://snapshot.kroma.network/latest/snapshot.tar.gz"
+        cmd: "aria2c {{ aria2c_options }} -d {{ user_dir }} -o kroma-snapshot.tar.gz https://snapshot.kroma.network/latest/snapshot.tar.gz"
       environment:
         PATH: "{{ path }}"
 

@@ -4,11 +4,17 @@ go_release: "go1.22.3"
 # node
 node_release: "18"
 
+# haproxy major go_release
+haproxy_release: 3.0
+
 # cosmovisor
 cosmovisor_version: "v1.0.0"
 
 # Cosmprund
 cosmprund_version: "v1.0.0"
+
+# aria2c options
+aria2c_options: "-x16 -s16 -k100M -c"
 
 # promtail
 promtail: false

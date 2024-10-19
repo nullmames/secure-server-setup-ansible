@@ -4,6 +4,11 @@
     name: setup
     tasks_from: install_mc
 
+- name: Ensure zstd is installed
+  ansible.builtin.package:
+    name: zstd
+    state: present
+
 # Prep buckets
 - name: Set bucket name
   ansible.builtin.set_fact:
@@ -26,7 +31,7 @@
   block:
     - name: Set fact
       ansible.builtin.set_fact:
-        execution_snapshot_filename: "{{ execution_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.lz4"
+        execution_snapshot_filename: "{{ execution_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.zst"
 
     - name: Stop execution container
       community.docker.docker_container:
@@ -37,7 +42,7 @@
     - name: Create and send execution archive
       become: true
       ansible.builtin.shell:
-        cmd: "set -o pipefail && tar --use-compress-program=lz4 -cf - {{ execution_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}"
+        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ execution_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}'
         chdir: "{{ execution_snapshot_location | dirname }}"
       args:
         executable: /usr/bin/bash
@@ -50,7 +55,7 @@
   block:
     - name: Set fact
       ansible.builtin.set_fact:
-        consensus_snapshot_filename: "{{ consensus_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.lz4"
+        consensus_snapshot_filename: "{{ consensus_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.zst"
 
     - name: Stop consensus container
       community.docker.docker_container:
@@ -61,7 +66,7 @@
     - name: Create and send consensus archive
       become: true
       ansible.builtin.shell:
-        cmd: "tar --use-compress-program=lz4 -cf - {{ consensus_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}"
+        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ consensus_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}'
         chdir: "{{ consensus_snapshot_location | dirname }}"
       environment:
         PATH: "{{ path }}"

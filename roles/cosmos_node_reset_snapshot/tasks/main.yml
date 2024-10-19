@@ -58,7 +58,7 @@
 
 - name: Download snapshot
   ansible.builtin.command:
-    cmd: "/usr/bin/aria2c -x10 -s10 -c -d {{ user_dir }} -o {{ snapshot_name }} {{ snapshot_url }}"
+    cmd: "/usr/bin/aria2c {{ aria2c_options }} -d {{ user_dir }} -o {{ snapshot_name }} {{ snapshot_url }}"
 
 - name: Stop cosmovisor
   become: true

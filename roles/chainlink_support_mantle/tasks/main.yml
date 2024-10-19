@@ -32,7 +32,7 @@
   block:
     - name: Download snapshot
       ansible.builtin.shell:
-        cmd: "aria2c -x10 -d {{ user_dir }} -o mantle-snapshot.tar.zst {{ mantle_snapshot_url }}"
+        cmd: "aria2c {{ aria2c_options }} -d {{ user_dir }} -o mantle-snapshot.tar.zst {{ mantle_snapshot_url }}"
 
     - name: Extract snapshot
       ansible.builtin.unarchive:
