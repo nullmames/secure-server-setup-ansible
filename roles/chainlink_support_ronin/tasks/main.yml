@@ -1,0 +1,95 @@
+---
+# Ronin Blockchain support structure
+# custom_port_prefix: 145
+# Ports: p2p: 14503, rpc: 14545, ws: 14546
+# Docs: https://docs.roninchain.com/validators/setup/mainnet/run-non-validator
+# Pebble Snapshots: https://github.com/axieinfinity/ronin-snapshot
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Create folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/ronin-geth"
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Check if node is initialized
+  ansible.builtin.stat:
+    path: "{{ folder }}/ronin-geth/data"
+  register: node_initialized
+
+- name: Init node with snapshot
+  when: not node_initialized.stat.exists
+  block:
+    - name: Prompt for snapshot url
+      ansible.builtin.pause:
+        prompt: "Enter the snapshot URL: "
+      register: snapshot_url
+
+    - name: Download snapshot
+      ansible.builtin.command:
+        cmd: "/usr/bin/aria2c {{ aria2c_options }} -d {{ user_dir }}/docker-compose -o {{ snapshot_url.user_input | basename }} {{ snapshot_url.user_input }}"
+
+    - name: Create folders
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ folder }}/ronin-geth/data"
+        - "{{ folder }}/ronin-geth/data/ronin"
+
+    - name: Extract snapshot
+      ansible.builtin.unarchive:
+        src: "{{ user_dir }}/docker-compose/{{ snapshot_url.user_input | basename }}"
+        dest: "{{ folder }}/ronin-geth/data/ronin"
+        remote_src: true
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+- name: Run ronin container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: ghcr.io/axieinfinity/ronin:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - 127.0.0.1:{{ custom_port_prefix }}45:8545
+    volumes:
+      - "{{ folder }}/ronin-geth:/ronin"
+    env:
+      SYNC_MODE: "full"
+      PASSWORD: "{{ lookup('community.general.random_string',length=32,base64=true) }}"
+      NETWORK_ID: "2020"
+      RONIN_PARAMS: "--http.api eth,net,web3,consortium --txpool.pricelimit 20000000000 --txpool.nolocals --cache 4096 --discovery.dns enrtree://AIGOFYDZH6BGVVALVJLRPHSOYJ434MPFVVQFXJDXHW5ZYORPTGKUI@nodes.roninchain.com"
+      VERBOSITY: "3"
+      MINE: "false"
+      GASPRICE: "20000000000"
+    command:
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+
+- name: Delete snapshot
+  when: not node_initialized.stat.exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/{{ snapshot_url.user_input | basename }}"
+    state: absent
