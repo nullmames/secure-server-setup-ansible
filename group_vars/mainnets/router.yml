@@ -2,7 +2,7 @@ network: router
 folder: ".routerd"
 daemon: routerd
 chain_id: router_9600-1
-node_version: 2.2.2
+node_version: 2.2.3
 # Binary Management
 binary: https://github.com/router-protocol/router-chain-binary-release/raw/main/debian/routerd.tar.gz
 binary_processing: targz
@@ -15,7 +15,7 @@ peers: "c97d2a916ff399382be76f15312286748a949dbd@3.143.207.169:26656,3f2556a0e39
 minimum_gas_price: "0route"
 custom_port_prefix: 237
 
-upgrade_name: 2.2.1-to-2.2.2
+upgrade_name: 2.2.2-to-2.2.3
 
 # StateSync
 snap_rpc: https://router-rpc.genznodes.dev:443
