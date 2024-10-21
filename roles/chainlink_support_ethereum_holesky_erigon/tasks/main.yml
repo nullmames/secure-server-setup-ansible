@@ -37,7 +37,7 @@
 - name: Run erigon container
   community.docker.docker_container:
     name: erigon
-    image: thorax/erigon:v2.58.2
+    image: thorax/erigon:2.60.8
     restart_policy: unless-stopped
     state: started
     pull: true
@@ -54,8 +54,6 @@
       - 127.0.0.1:8545:8545
       - "{{ nebula_internal_ip_addr }}:8546:8546"
       - 127.0.0.1:8546:8546
-      # - 12545:8545
-      # - 12546:8546
     volumes:
       - "{{ user_dir }}/docker-compose/erigon-data:/erigon-data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/erigon-data/jwtsecret"
@@ -63,6 +61,7 @@
       - --chain=holesky
       - --datadir=/erigon-data
       - --port=30303
+      - --nat=extip:{{ public_ip.content | trim }}
       # RPC
       - --http.addr=0.0.0.0
       - --http.port=8545
