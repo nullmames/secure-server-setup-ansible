@@ -1,7 +1,6 @@
 ---
 # Polygon support structure with host networking.  This does not handle snapshots.
-# curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client bor --extract-dir bor_extract --validate-checksum false
-# curl -L https://snapshot-download.polygon.technology/snapdown.sh | bash -s -- --network mainnet --client heimdall --extract-dir bor_extract --validate-checksum false
+# Snapshots (pebble/path) available at https://publicnode.com/snapshots#polygon
 # Ports:
 #  - Bor: 11703/tcp - public, RPC 11745/tcp, 11746/tcp - internal
 #  - Heimdall: p2p: 11756/tcp - public
