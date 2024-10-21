@@ -12,7 +12,7 @@
 
 - name: Build folder structure
   ansible.builtin.file:
-    path: "{{ user_dir }}/docker-compose/{{ item }}"
+    path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
@@ -63,8 +63,8 @@
       - --syncmode=snap
       - --op-network={{ execution_network }}
       - --rollup.halt=major
-      - --db.engine=leveldb # or pebble
-      - --state.scheme=hash # or hash.  Moving to path based
+      - --db.engine=pebble
+      - --state.scheme=path
       ## Interfaces
       # Consensus Layer Engine API
       - --authrpc.addr=0.0.0.0
