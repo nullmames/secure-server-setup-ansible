@@ -13,6 +13,6 @@
   ansible.builtin.debug:
     msg:
       - "Pruned Stats:"
-      - "Image space reclaimed {{ prune_output.images_space_reclaimed | human_readable }}."
-      - "Container space reclaimed {{ prune_output.containers_space_reclaimed | human_readable }}."
-      - "Volume space reclaimed {{ prune_output.volumes_space_reclaimed | human_readable }}."
+      - "{% if prune_output.images_space_reclaimed > 0 %}Image space reclaimed {{ prune_output.images_space_reclaimed | human_readable }}.{% endif %}"
+      - "{% if prune_output.containers_space_reclaimed > 0 %}Container space reclaimed {{ prune_output.containers_space_reclaimed | human_readable }}.{% endif %}"
+      - "{% if prune_output.volumes_space_reclaimed > 0 %}Volume space reclaimed {{ prune_output.volumes_space_reclaimed | human_readable }}.{% endif %}"
