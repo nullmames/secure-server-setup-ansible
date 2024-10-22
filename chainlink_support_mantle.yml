@@ -3,8 +3,9 @@
   hosts: all
   gather_facts: true
   vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
+    - "group_vars/erc20_mainnet/all.yml"
+    - "group_vars/erc20_mainnet/mantle.yml"
   roles:
-    #- util_docker_install
+    - util_docker_install
     - chainlink_support_mantle
     - util_docker_prune

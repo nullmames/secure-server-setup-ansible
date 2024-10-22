@@ -1,0 +1,16 @@
+# Mantle v2
+# Port prefix: 106
+# Docs: https://github.com/mantlenetworkio/networks/blob/main/run-node-mainnetv2.md
+
+network: mantle
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 106
+
+# Execution
+execution_container_name: mantle_geth
+execution_container_version: v1.0.0-alpha.4
+#execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
+
+# Consensus
+consensus_container_name: mantle_node
+consensus_container_version: v1.0.0-alpha.3

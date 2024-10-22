@@ -8,8 +8,3 @@ ethereum_l1_beacon: "http://100.100.3.110:5002"
 # Kroma
 kroma_geth_version: v0.2.1
 kroma_node_version: v1.0.0
-
-# Mantle
-mantle_geth_version: v1.0.0-alpha.1
-mantle_node_version: v1.0.0-alpha.1
-mantle_snapshot_url: https://s3.ap-southeast-1.amazonaws.com/snapshot.mantle.xyz/mantle-fullnode.20240315.tar.zst # full node snapshot

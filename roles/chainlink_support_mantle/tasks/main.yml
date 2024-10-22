@@ -5,13 +5,13 @@
 
 - name: Ensure mantle-data exists
   ansible.builtin.file:
-    path: "{{ user_dir }}/docker-compose/{{ item }}"
+    path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
-    - mantle-data
-    - mantle-data/mantle-geth
-    - mantle-data/mantle-node
+    - "{{ folder }}"
+    - "{{ folder }}/mantle-geth"
+    - "{{ folder }}/mantle-node"
 
 - name: Create jwtsecret if it does not exist
   ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
@@ -22,7 +22,7 @@
 
 - name: Check if mantle-data is populated
   ansible.builtin.find:
-    paths: "{{ user_dir }}/docker-compose/mantle-data/mantle-geth"
+    paths: "{{ folder }}/mantle-geth"
     file_type: any
     hidden: false
   register: mantle_data
@@ -30,30 +30,43 @@
 - name: Download and extract snapshot
   when: mantle_data.matched == 0
   block:
+    - name: Get snapshot height
+      ansible.builtin.uri:
+        url: "https://s3.ap-southeast-1.amazonaws.com/snapshot.mantle.xyz/current.info"
+        method: GET
+        return_content: true
+      register: snapshot_height
+
     - name: Download snapshot
       ansible.builtin.shell:
-        cmd: "aria2c {{ aria2c_options }} -d {{ user_dir }} -o mantle-snapshot.tar.zst {{ mantle_snapshot_url }}"
+        cmd: "aria2c {{ aria2c_options }} -d {{ user_dir }} -o mantle-snapshot.tar.zst https://s3.ap-southeast-1.amazonaws.com/snapshot.mantle.xyz/{{ snapshot_height.content | trim }}-mainnet-full-chaindata.tar.zst"
+
+    - name: Ensure geth data exists
+      ansible.builtin.file:
+        path: "{{ folder }}/mantle-geth/geth"
+        state: directory
+        mode: "0755"
 
     - name: Extract snapshot
       ansible.builtin.unarchive:
         src: "{{ user_dir }}/mantle-snapshot.tar.zst"
-        dest: "{{ user_dir }}/docker-compose/mantle-data/mantle-geth"
+        dest: "{{ folder }}/mantle-geth/geth"
         remote_src: true
 
-- name: Download rollup.json file
-  ansible.builtin.copy:
-    src: "files/rollup.json"
-    dest: "{{ user_dir }}/docker-compose/mantle-data/mantle-node/rollup.json"
-    mode: "0644"
+    - name: Download rollup.json file
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/mantlenetworkio/networks/refs/heads/main/mainnet/rollup.json"
+        dest: "{{ folder }}/mantle-node/rollup.json"
+        mode: "0644"
 
 - name: Create a network
   community.docker.docker_network:
     name: "{{ network }}_net"
 
-- name: Run op-geth container
+- name: Run mantle-geth container
   community.docker.docker_container:
-    name: mantle-geth
-    image: mantlenetworkio/op-geth:{{ mantle_geth_version }}
+    name: "{{ execution_container_name }}"
+    image: mantlenetworkio/op-geth:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -61,30 +74,34 @@
     networks:
       - name: "{{ network }}_net"
     volumes:
-      - "{{ user_dir }}/docker-compose/mantle-data/mantle-geth:/data"
+      - "{{ folder }}/mantle-geth:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "{{ nebula_internal_ip_addr }}:32545:32545"
-      - 127.0.0.1:32545:32545
-      - "{{ nebula_internal_ip_addr }}:32546:32546"
-      - 127.0.0.1:32546:32546
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - 127.0.0.1:{{ custom_port_prefix }}45:8545
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      - 127.0.0.1:{{ custom_port_prefix }}46:8546
     entrypoint: geth
     command:
       # General
       - --datadir=/data
       - --verbosity=3
-      - --networkid=5003
+      - --networkid=5000
+      - --rollup.sequencerhttp=https://rpc.mantle.xyz
       # RPC
       - --http
       - --http.corsdomain=*
       - --http.vhosts=*
       - --http.addr=0.0.0.0
-      - --http.port=32545
+      - --http.port=8545
       - --http.api=web3,eth,debug,txpool,net
       - --ws
       - --ws.addr=0.0.0.0
-      - --ws.port=32546
+      - --ws.port=8546
       - --ws.origins=*
       - --ws.api=web3,eth,debug,txpool,net
       - --authrpc.addr=0.0.0.0
@@ -95,7 +112,7 @@
       - --pprof.addr=0.0.0.0
       - --pprof.port=6060
       # p2p
-      - --port=30300
+      - --port={{ custom_port_prefix }}03
       - --syncmode=full
       - --maxpeers=0
       - --rpc.allow-unprotected-txs
@@ -108,8 +125,8 @@
 
 - name: Run mantle-node container
   community.docker.docker_container:
-    name: mantle-node
-    image: mantlenetworkio/op-node:{{ mantle_node_version }}
+    name: "{{ consensus_container_name }}"
+    image: mantlenetworkio/op-node:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -117,12 +134,12 @@
     networks:
       - name: "{{ network }}_net"
     volumes:
-      - "{{ user_dir }}/docker-compose/mantle-data/mantle-node:/data"
+      - "{{ folder }}/mantle-node:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     env:
       OP_NODE_L1_ETH_RPC: "{{ ethereum_l1 }}"
-      OP_NODE_L2_ENGINE_RPC: "http://mantle-geth:8551"
+      OP_NODE_L2_ENGINE_RPC: "http://{{ execution_container_name }}:8551"
       OP_NODE_L2_ENGINE_AUTH: "/jwtsecret"
       OP_NODE_ROLLUP_CONFIG: "/data/rollup.json"
       OP_NODE_P2P_PRIV_PATH: "/data/p2p_node_key_txt"
@@ -142,7 +159,7 @@
       OP_NODE_PPROF_ADDR: "0.0.0.0"
       OP_NODE_P2P_DISCOVERY_PATH: "/data/opnode_discovery_db"
       OP_NODE_P2P_PEERSTORE_PATH: "/data/opnode_peerstore_db"
-      OP_NODE_INDEXER_SOCKET: "da-indexer-api.mantle.xyz:443"
+      OP_NODE_INDEXER_SOCKET: "da-indexer-api.mantle.xyz:80"
       OP_NODE_INDEXER_ENABLE: "true"
       OP_NODE_L2_BACKUP_UNSAFE_SYNC_RPC: "https://rpc.mantle.xyz"
       OP_NODE_P2P_STATIC: "/dns4/peer0.mantle.xyz/tcp/9003/p2p/16Uiu2HAmKVKzUAns2gLhZAz1PYcbnhY3WpxNxUZYeTN1x29tNBAW,/dns4/peer1.mantle.xyz/tcp/9003/p2p/16Uiu2HAm1AiZtVp8f5C8LvpSTAXC6GtwqAVKnB3VLawWYSEBmcFN,/dns4/peer2.mantle.xyz/tcp/9003/p2p/16Uiu2HAm2UHVKiPXpovs8VbbUQVPr7feBAqBJdFsH1z5XDiLEvHT"
