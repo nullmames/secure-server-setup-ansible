@@ -27,13 +27,13 @@
       - subnet: 172.0.{{ custom_port_prefix }}.0/24
         gateway: 172.0.{{ custom_port_prefix }}.1
 
-- name: Check permissions
-  become: true
-  ansible.builtin.file:
-    dest: "{{ folder }}/arbitrum-data"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    recurse: true
+# - name: Check permissions
+#   become: true
+#   ansible.builtin.file:
+#     dest: "{{ folder }}/arbitrum-data"
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
+#     recurse: true
 
 - name: Pull and run nitro container
   community.docker.docker_container:
@@ -54,9 +54,10 @@
       - "{{ folder }}/arbitrum-data:/home/user/.arbitrum"
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
     command:
-      - --parent-chain.connection.url={{ ethereum_l1 }}
-      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_beacon_archive }}
+      - --parent-chain.connection.url={{ ethereum_l1_archive }}
+      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_archive_beacon }}
       - --chain.name={{ arbitrum_chain_name }}
+      # rpc
       - --http.port={{ custom_port_prefix }}47
       - --http.addr=0.0.0.0
       - --http.vhosts=*
@@ -66,6 +67,7 @@
       - --ws.addr=0.0.0.0
       - --ws.origins=*
       - --execution.rpc.gas-cap=0
+      # To get latest snap
       - --init.latest=pruned
       - --node.staker.enable=false # Remove watchtower mode
       - --execution.rpc.tx-fee-cap=0 # Per RMN Documentation
