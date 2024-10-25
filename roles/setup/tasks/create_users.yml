@@ -1,4 +1,14 @@
 ---
+- name: Install required packages for user setup
+  ansible.builtin.apt:
+    name:
+      - sudo
+      - zsh
+      - git
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
 - name: Create ansible user, password
   ansible.builtin.user:
     name: "{{ ansible_user }}"

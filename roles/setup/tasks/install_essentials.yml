@@ -55,6 +55,16 @@
       - "linux-generic-hwe-{{ ansible_distribution_version }}"
     state: present
 
+- name: Remove ipmi related tools
+  ansible.builtin.apt:
+    name:
+      - ipmitools
+      - openipmi
+      - freeipmi
+    state: absent
+    purge: true
+    autoremove: true
+
 # Set timezone to UTC
 - name: Set timezone to UTC
   community.general.timezone:

@@ -1,7 +1,4 @@
 ---
-- name: Update machine
-  ansible.builtin.import_tasks: update_machine.yml
-
 - name: Create users
   ansible.builtin.include_tasks: create_users.yml
 
