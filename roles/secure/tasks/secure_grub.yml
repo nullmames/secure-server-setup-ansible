@@ -1,0 +1,27 @@
+---
+- name: Add user to grub header
+  ansible.builtin.blockinfile:
+    path: "/etc/grub.d/40_custom"
+    prepend_newline: true
+    block: |
+      set superusers="{{ grub_username }}"
+      password_pbkdf2 {{ grub_username }} {{ grub_password }}
+
+- name: Modify grub linux title and os to allow unattended boot
+  ansible.builtin.replace:
+    path: "/etc/grub.d/10_linux"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - {
+        regexp: "menuentry '\\$\\(echo \\\"\\$title\\\" \\| grub_quote\\)' \\$\\{CLASS\\}\ \\\\\\$menuentry_id_option",
+        replace: "menuentry '$(echo \"$title\" | grub_quote)' ${CLASS} --unrestricted \\$menuentry_id_option",
+      }
+    - {
+        regexp: "menuentry '\\$\\(echo \\\"\\$os\\\" \\| grub_quote\\)' \\$\\{CLASS\\}\ \\\\\\$menuentry_id_option",
+        replace: "menuentry '$(echo \"$os\" | grub_quote)' ${CLASS} --unrestricted \\$menuentry_id_option",
+      }
+
+- name: Update grub
+  ansible.builtin.command: update-grub
+  changed_when: true
