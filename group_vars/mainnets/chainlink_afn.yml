@@ -5,7 +5,7 @@ repo: smartcontractkit/risk-management-network-nop-release.git
 # shared_config_version: 61b2ecdd30b34212577d2140ba647e290e07c111 # 08.22.2024
 
 node_version: 89d14d0239cf60d7a71ee818a80d75c08d0d3b1c # 9.11.2024 - 1.5
-shared_config_version: e9c57d846269100a59a4052ef2a4309b8cd33583 # 10.21.2024 - removed v1.2 lanes, added PolygonZKEVM
+shared_config_version: 7dc80d5e07383015d5a3ef84b015b4ca9a1501f8 # 10.22.2024 - Added XLayer
 
 # For generating new keys
 node_version_keygen_prep: 89d14d0239cf60d7a71ee818a80d75c08d0d3b1c
