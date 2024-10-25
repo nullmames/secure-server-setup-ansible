@@ -25,3 +25,8 @@
     inventory_group_dict: "{{ inventory_group_dict | default([]) + [{ 'tag': 'inv', 'value': item }] }}"
   with_items:
     - "{{ group_names }}"
+
+- name: Remove outdated repository file if exists
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/repo_zabbix_com_zabbix_6_4_debian.list"
+    state: absent
