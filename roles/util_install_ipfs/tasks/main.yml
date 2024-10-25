@@ -46,7 +46,7 @@
 
 - name: Init ipfs node
   when: not node_initialized.stat.exists
-  ansible.builtin.command: "ipfs init --empty-repo --profile server"
+  ansible.builtin.command: "ipfs init --empty-repo --profile pebbleds"
   args:
     creates: "{{ user_dir }}/.ipfs/config"
   environment:
@@ -70,20 +70,12 @@
     - ipfs config Swarm.Transports.Network.QUIC --json false
     - ipfs config Swarm.Transports.Network.WebTransport --json false
     # Bootstraps
-    - ipfs bootstrap add /ip4/64.185.227.114/tcp/4001/p2p/12D3KooWJnMBkUGhd8Xdjo1TKsskS7bbTzDWGsTCHNUyZiGgSsfT # eastna
+    - ipfs bootstrap add /ip4/213.190.31.83/tcp/4001/p2p/12D3KooWG1w9YR36mmn9ThQcnimrqt9pPBsDkuK3VfBuau4h2siy # ipp-fra-2700
+    - ipfs bootstrap add /ip4/79.137.99.221/tcp/4001/p2p/12D3KooWQmmZd8GeNME8WdzY1N9PwmkYPm5HBqBz2tJsJYhny7oJ # ovh-rbx-3239701
     - ipfs config --json Peering.Peers '[{"ID":"Qma8ddFEQWEU8ijWvdxXm3nxU7oHsRtCykAaVz8WUYhiKn","Addrs":["/dnsaddr/production-ipfs-peer.pinata.cloud"]}]' # Pinata
 
-- name: IPFS StorageMax if recent node
+- name: IPFS StorageMax to 6TB
   ansible.builtin.command: "{{ item }}"
-  when: ipfs_role == "recent"
-  environment:
-    PATH: "{{ path }}"
-  with_items:
-    - "ipfs config Datastore.StorageMax 200GB"
-
-- name: IPFS StorageMax if archive node
-  ansible.builtin.command: "{{ item }}"
-  when: ipfs_role == "archive"
   environment:
     PATH: "{{ path }}"
   with_items:
