@@ -1,5 +1,6 @@
 ---
 - name: Initial init of bare machines with root-only login
+  # Run with -k to provide root password
   hosts: all
   gather_facts: false
   vars_files:
