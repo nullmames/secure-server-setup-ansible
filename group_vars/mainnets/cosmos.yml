@@ -14,6 +14,6 @@ snap_rpc: https://cosmos-rpc.polkachu.com:443
 
 upgrade_name: v20
 
-snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_21902086.tar.lz4
+# snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_21902086.tar.lz4
 
 go_release: go1.21.11

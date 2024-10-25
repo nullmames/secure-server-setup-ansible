@@ -9,6 +9,6 @@ seeds: "20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:16656,9a
 minimum_gas_price: "0utia"
 custom_port_prefix: 116
 
-snapshot_url: https://snapshots.rhinostake.com/celestia/celestia-snapshot.2371616.tar.lz4
+# snapshot_url: https://snapshots.rhinostake.com/celestia/celestia-snapshot.2371616.tar.lz4
 
 snap_rpc: https://celestia-rpc.polkachu.com:443

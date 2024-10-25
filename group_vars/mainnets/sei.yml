@@ -23,7 +23,7 @@ snap_rpc: "http://statesync-sei.rhinostake.com:11957"
 # snap_rpc: "https://sei-rpc.polkachu.com:443"
 # snap_rpc: "https://sei-state-sync-rpc.brocha.in:443"
 #
-snapshot_url: https://snapshots.rhinostake.com/sei/sei-snapshot.107665534.tar.lz4
+# snapshot_url: https://snapshots.rhinostake.com/sei/sei-snapshot.107665534.tar.lz4
 
 snap_rpc_height_buffer: 10000
 
