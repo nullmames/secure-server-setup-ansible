@@ -5,6 +5,15 @@
   become: true
   vars_files:
     - "{{ user_file }}"
+
+  pre_tasks:
+    - name: Verify sudo
+      ansible.builtin.shell: "sudo w"
+      delegate_to: localhost
+
   roles:
     - setup
     - secure
+
+- name: Import zabbix playbook
+  ansible.builtin.import_playbook: util_install_zabbix.yml
