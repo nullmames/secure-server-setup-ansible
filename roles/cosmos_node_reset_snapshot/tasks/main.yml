@@ -1,23 +1,5 @@
 ---
-# - name: Set URLs for retrieving items
-#   ansible.builtin.set_fact:
-#     snapshotpage_url: "{{ snapshot_url }}/{{ network }}"
-
-# - name: Parse Snapshot URL
-#   delegate_to: localhost
-#   when: snapshot_url is not defined
-#   block:
-#     - name: Parse snapshot url from snapshot
-#       ansible.builtin.shell: 'curl -s {{ snapshotpage_url }} | grep ''<a href="https://snapshots'' | grep -Eo ''https.*tar.lz4'' | head -1'
-#       environment:
-#         PATH: "{{ path }}"
-#       register: snapshot_url_raw
-
-#     - name: Set fact
-#       ansible.builtin.set_fact:
-#         snapshot_url: "{{ snapshot_url_raw.stdout }}"
-
-- name: Find public snapshot if not explicitly set
+- name: Find RHINO snapshot
   when: snapshot_url is not defined
   block:
     - name: See if RHINO snapshot exists
@@ -29,21 +11,43 @@
       ignore_errors: true
       register: rhino_snapshot_exists
 
-    - name: See if public snapshot exists
+    - name: Set RHINO snapshot_url
+      when: rhino_snapshot_exists.status == 200
+      ansible.builtin.set_fact:
+        snapshot_url: "https://snapshots.rhinostake.com/{{ network }}/latest.tar.lz4"
+
+- name: Find public snapshot
+  when: snapshot_url is not defined
+  block:
+    - name: Grab Imperator snapshot list
       ansible.builtin.uri:
-        url: "{{ snapshotpage_url }}/{{ network }}/latest.tar.lz4"
+        url: "https://api.imperator.co/services?network={% if 'Testnet' in group_names %}testnets{% else %}mainnets{% endif %}"
         method: GET
         status_code: 200
-        return_content: false
+        body_format: json
+        return_content: true
+      ignore_errors: true
+      register: public_snapshot_data
+
+    - name: Set snapshot url for last chain snapshot
+      when: public_snapshot_data.status == 200
+      ansible.builtin.set_fact:
+        public_snapshot_url: "{{
+          public_snapshot_data.content |
+          from_json |
+          json_query(query)
+          }}"
+      vars:
+        query: '{{ network | capitalize }}.snapshots[0]."eu-west-1"[0].dl_url'
       ignore_errors: true
       register: public_snapshot_exists
 
     - name: Set snapshot_url
-      when: (public_snapshot_exists.status == 200) or (rhino_snapshot_exists.status == 200)
+      when: (public_snapshot_data.status == 200) and (public_snapshot_exists.failed == false)
       ansible.builtin.set_fact:
-        snapshot_url: "{% if rhino_snapshot_exists.status == 200 %}https://snapshots.rhinostake.com/{{ network }}/latest.tar.lz4{% elif public_snapshot_exists.status == 200 %}{{ snapshotpage_url }}/{{ network }}/latest.tar.lz4{% endif %}"
+        snapshot_url: "{{ public_snapshot_url }}"
 
-- name: Fail if snapshot_url not defined
+- name: Fail if snapshot_url not defined by any source
   ansible.builtin.fail:
     msg: snapshot_url is not set or available
   when: (snapshot_url is undefined) or (snapshot_url == None)
