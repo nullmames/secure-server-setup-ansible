@@ -5,5 +5,16 @@
   vars_files:
     - "{{ var_file }}"
 
+  pre_tasks:
+    - name: Verify we're on the right node
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
+
   roles:
     - cosmos_node_reset_statesync
