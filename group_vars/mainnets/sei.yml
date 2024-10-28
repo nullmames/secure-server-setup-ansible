@@ -34,5 +34,7 @@ threshold_type: "high"
 oracle_address: sei1v7qvhk77dn0kkde6chyj6plfkj7004c0pae9r7
 oracle_validator: seivaloper146m089lq8mkqw6w0mmlhxz6247g2taha89at74
 
-# Force high-priority of single process
-process_priority: true
+# Snapshot Schedule
+snapshot_weekday: 0
+snapshot_hour: 1
+snapshot_minute: 30
