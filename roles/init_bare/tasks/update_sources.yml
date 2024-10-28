@@ -7,9 +7,6 @@
     group: "root"
     mode: "0644"
 
-- name: Apt update and upgrade
+- name: Apt update cache
   ansible.builtin.apt:
     update_cache: true
-    upgrade: full
-    autoremove: true
-    autoclean: true

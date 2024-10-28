@@ -1,5 +1,13 @@
 - name: Manage users
   ansible.builtin.include_tasks: manage_users.yml
 
-- name: Update machine
-  ansible.builtin.import_tasks: update_machine.yml
+- name: Uniform sources.list
+  ansible.builtin.import_tasks: update_sources.yml
+
+- name: Apt update and upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+    autoremove: true
+    autoclean: true
+    cache_valid_time: 3600

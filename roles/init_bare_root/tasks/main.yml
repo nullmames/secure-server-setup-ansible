@@ -44,10 +44,6 @@
     group: "root"
     mode: "0440"
 
-- name: Change ansible_user for back to original
-  ansible.builtin.set_fact:
-    ansible_user: "{{ target_user }}"
-
 - name: Capture files in sudoers for deletion
   ansible.builtin.find:
     paths: "/etc/sudoers.d"

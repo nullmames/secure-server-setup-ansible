@@ -1,4 +1,9 @@
 ---
+- name: Uniform sources
+  ansible.builtin.include_role:
+    name: init_bare
+    tasks_from: update_sources
+
 - name: Create users
   ansible.builtin.include_tasks: create_users.yml
 
