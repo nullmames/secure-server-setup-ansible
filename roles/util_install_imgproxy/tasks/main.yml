@@ -26,7 +26,7 @@
       IMGPROXY_SALT: "{{ imgproxy_image_salt }}"
       IMGPROXY_BIND: ":8081"
       IMGPROXY_CONCURRENCY: "{{ imgproxy_workers }}"
-      IMGPROXY_URL_REPLACEMENTS: "ipfs://=http://{{ imgproxy_ipfs_host | trim }}:{{ imgproxy_ipfs_port | trim }}/ipfs/"
+      IMGPROXY_URL_REPLACEMENTS: "ipfs://=http://{{ imgproxy_ipfs_host | trim }}/ipfs/"
       IMGPROXY_ALLOW_SECURITY_OPTIONS: "true"
       IMGPROXY_DOWNLOAD_TIMEOUT: "15"
       # Monitoring
