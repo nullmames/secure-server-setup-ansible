@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+## {{ network }} Node Snapshot
+#
+set -e
+
+## Variables
+BUCKET_NAME="{{ bucket_name }}"
+SNAPSHOT_FILENAME="{{ snapshot_filename }}"
+DAEMON="{{ daemon }}"
+# HEALTHCHECKS_ID=
+
+LOG="{{ user_dir }}/scripts/snapshot_logs/{{ network }}_snapshot_log.txt"
+#
+#
+# Output to a logfile
+exec > >(tee -ia ${LOG})
+exec 2>&1
+
+# Fail on error
+on_error() {
+    echo -e "\n###### $(date): Snapshot ERRORED ######"
+    # curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HEALTHCHECKS_ID}/fail
+}
+trap 'on_error' ERR
+
+# Begin snapshot
+echo -e "\n\n\n###### $(date): Snapshot STARTED ######"
+
+echo -e "\n    ## $(date): Stopping ${DAEMON} and sleeping for 15 seconds..."
+sudo systemctl stop ${DAEMON}.service
+sleep 15
+
+## Take snapshot
+echo -e "\n    ## $(date): Starting snapshot creation to ${BUCKET_NAME}/${SNAPSHOT_FILENAME}..."
+# Setting base directory to {{ user_dir }}/{{ folder }}
+
+cd {{ user_dir }}/{{ folder }}
+
+# Compress & send
+{{ compress_command }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/${BUCKET_NAME}/${SNAPSHOT_FILENAME}
+
+sleep 10
+
+echo -e "\n    ## $(date): Snapshot Complete. Running Statesync..."
+
+# Saving priv_validator_state.json
+cp data/priv_validator_state.json {{ user_dir }}/{{ network }}-priv_validator_state.json
+
+# Remove and create data directory
+rm -rf data
+mkdir data
+
+# Copy priv_validator_state.json back
+cp {{ user_dir }}/{{ network }}-priv_validator_state.json data/priv_validator_state.json
+
+# Run statesync script
+source {{ user_dir }}/state_sync/state_sync_{{ network }}.sh
+
+echo -e "\n    ## $(date): Running ${DAEMON}..."
+
+sudo systemctl start ${DAEMON}.service
+
+rm {{ user_dir }}/{{ network }}-priv_validator_state.json
+
+echo -e "\n\n\n###### $(date): Snapshot COMPLETE ######"
+
+exit 0

@@ -1,0 +1,6 @@
+---
+- name: Prepare node for snapshot schedule
+  import_tasks: prepare_node.yml
+
+- name: Create cron job for snapshot
+  import_tasks: create_cron.yml

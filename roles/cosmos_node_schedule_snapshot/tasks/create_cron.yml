@@ -1,0 +1,24 @@
+---
+- name: Ensure snapshot times are defined
+  ansible.builtin.assert:
+    that:
+      - snapshot_weekday is defined
+      - snapshot_hour is defined
+      - snapshot_minute is defined
+
+- name: Copy snapshot script to node
+  ansible.builtin.template:
+    src: "snapshotTemplate.j2"
+    dest: "{{ user_dir }}/scripts/{{ network }}-snapshot.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Create cron job on node for snapshot
+  ansible.builtin.cron:
+    name: "{{ network }}-snapshot"
+    minute: "{{ snapshot_minute }}"
+    hour: "{{ snapshot_hour }}"
+    weekday: "{{ snapshot_weekday }}"
+    job: "{{ user_dir }}/scripts/{{ network }}-snapshot.sh"
+    state: present

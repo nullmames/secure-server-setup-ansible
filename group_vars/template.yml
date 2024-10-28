@@ -17,7 +17,8 @@ tendermint_config_version:
 snap_rpc:
 p2p_state_sync: false
 
-# [Optional] Snapshot
+# [Optional] Snapshot Schedule
+snapshot_weekday: 0
 snapshot_hour: 1
 snapshot_minute: 30
 

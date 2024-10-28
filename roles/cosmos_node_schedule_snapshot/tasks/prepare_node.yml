@@ -1,0 +1,76 @@
+---
+- name: Ensure scripts directory exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - "{{ user_dir }}/scripts"
+    - "{{ user_dir }}/scripts/snapshot_logs"
+
+- name: Check for mc
+  ansible.builtin.include_role:
+    name: setup
+    tasks_from: install_mc
+
+- name: Check for cosmprund
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/go/bin/cosmprund"
+  register: cosmprund
+
+- name: Install cosmprund
+  when: not cosmprund.stat.exists
+  ansible.builtin.include_role:
+    name: cosmos_node_tools
+
+- name: Set snapshot filename
+  ansible.builtin.set_fact:
+    snapshot_filename: "{{ network }}-snapshot.latest.tar.zst"
+
+- name: Check for external wasm
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/{{ folder }}/wasm"
+  register: wasm_outside
+
+- name: Check for internal wasm
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/{{ folder }}/data/wasm"
+  register: wasm_inside
+
+- name: Create archive - external wasm
+  when: wasm_outside.stat.exists
+  ansible.builtin.set_fact:
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=wasm/wasm/cache -cf - data wasm'
+
+- name: Create archive - internal wasm
+  when: wasm_inside.stat.exists
+  ansible.builtin.set_fact:
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=data/wasm/wasm/cache -cf - data'
+
+- name: Create archive - no wasm
+  when: not wasm_inside.stat.exists and not wasm_outside.stat.exists
+  ansible.builtin.set_fact:
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json -cf - data'
+
+- name: Set bucket name
+  ansible.builtin.set_fact:
+    bucket_name: "{% if 'Testnet' in group_names %}testnet-{% endif %}{{ network }}"
+
+- name: Prep snapshots bucket
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "{{ user_dir }}"
+  environment:
+    PATH: "{{ path }}"
+  loop:
+    - "mc mb --ignore-existing snapshots/{{ bucket_name }}" # Create bucket
+    - "mc anonymous set download snapshots/{{ bucket_name }}" # Set download policy to anonymous
+    - 'mc tag set snapshots/{{ bucket_name }} "public_snapshots=true"' # Set tag so bucket is listed in public json
+    - 'mc ilm rule add snapshots/{{ bucket_name }} --expire-days "14"' # Set ILM rule to expire Cosmos snapshots after 14 days
+
+- name: Prepare state-sync script
+  ansible.builtin.include_role:
+    name: cosmos_node_reset_statesync
+    tasks_from: build_script
