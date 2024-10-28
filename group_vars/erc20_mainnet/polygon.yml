@@ -5,10 +5,10 @@ custom_port_prefix: 117
 
 # Execution
 execution_container_name: bor
-execution_container_version: 1.4.1
+execution_container_version: 1.5.0
 execution_snapshot_location: "{{ folder }}/bor/bor/chaindata"
 
 # Consensus
 consensus_container_name: heimdall
-consensus_container_version: 1.0.7
+consensus_container_version: 1.0.10
 consensus_snapshot_location: "{{ folder }}/heimdall/data"
