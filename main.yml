@@ -11,9 +11,17 @@
       ansible.builtin.shell: "sudo w"
       delegate_to: localhost
 
+    - name: Verify nebula ip is defined
+      ansible.builtin.assert:
+        that: nebula_internal_ip_addr is defined
+        msg: "Cannot continue without nebula_internal_ip_addr"
+
   roles:
     - setup
     - secure
+
+- name: Import nebula playbook
+  ansible.builtin.import_playbook: util_nebula_install.yml
 
 - name: Import zabbix playbook
   ansible.builtin.import_playbook: util_install_zabbix.yml
