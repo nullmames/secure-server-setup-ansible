@@ -1,0 +1,10 @@
+---
+- name: Schedule Snapshot Process via local cron job
+  gather_facts: true
+  any_errors_fatal: true
+  hosts: all
+  vars_files:
+    - "{{ var_file }}"
+
+  roles:
+    - cosmos_node_schedule_snapshot
