@@ -1,0 +1,67 @@
+---
+- name: Run state_sync script on node
+  ansible.builtin.shell: "{{ user_dir }}/state_sync/state_sync_{{ network }}.sh"
+  environment:
+    PATH: "{{ path }}"
+  register: state_sync_output
+
+- name: State_sync values returned
+  ansible.builtin.debug:
+    var: state_sync_output.stdout_lines
+
+- name: Stop cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: stopped
+
+- name: Sleep for 5 seconds
+  ansible.builtin.wait_for:
+    timeout: 5
+
+- name: Save the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    dest: "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
+
+- name: Remove and create data folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/data"
+    state: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - absent
+    - directory
+
+- name: Remove wasm folder if exists outside of data
+  ansible.builtin.file:
+    path: "{{ user_dir }}/{{ folder }}/wasm"
+    state: absent
+
+- name: Replace the state file
+  ansible.builtin.copy:
+    src: "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
+    dest: "{{ user_dir }}/{{ folder }}/data/priv_validator_state.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    remote_src: true
+    force: true
+
+- name: Start cosmovisor
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ daemon }}"
+    state: restarted
+
+- name: Cleanup temporary files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ user_dir }}/{{ chain_id }}_priv_validator_state.json"
