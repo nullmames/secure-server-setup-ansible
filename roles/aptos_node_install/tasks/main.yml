@@ -1,5 +1,6 @@
 ---
 - name: Check version of node
+  ignore_errors: true
   ansible.builtin.shell: "set -o pipefail && curl -sL localhost:8080/v1/ | jq -r .git_hash"
   args:
     executable: /usr/bin/bash
