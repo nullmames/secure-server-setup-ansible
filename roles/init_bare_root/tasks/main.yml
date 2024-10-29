@@ -1,68 +1,15 @@
----
-- name: Change ansible_user for initial login
-  ansible.builtin.set_fact:
-    ansible_user: "root"
+- name: Manage users
+  ansible.builtin.include_tasks: manage_users.yml
 
-- name: Check for Python
-  ansible.builtin.raw: test -e /usr/bin/python
-  changed_when: false
-  failed_when: false
-  register: check_python
+- name: Uniform sources
+  ansible.builtin.include_role:
+    name: init_bare
+    tasks_from: update_sources
 
-- name: Install Python
-  ansible.builtin.raw: apt -y update && apt install -y python3-minimal
-  when: check_python.rc != 0
-
-- name: Install python, sudo
+- name: Apt update and upgrade
   ansible.builtin.apt:
-    name:
-      - python3
-      - sudo
-    state: present
-    update_cache: false
-
-- name: Create {{ target_user }}
-  ansible.builtin.user:
-    name: "{{ target_user }}"
-    password: "{{ password }}"
-    state: present
-    shell: /bin/bash
-
-- name: Set authorized keys
-  ansible.posix.authorized_key:
-    user: "{{ target_user }}"
-    key: "{{ item }}"
-  loop:
-    - "{{ ssh_pubkey1 }}"
-    - "{{ ssh_pubkey2 }}"
-
-- name: Allow sudo for target_user
-  ansible.builtin.copy:
-    content: "{{ target_user }} ALL=(ALL:ALL) NOPASSWD: ALL"
-    dest: "/etc/sudoers.d/{{ target_user }}"
-    owner: "root"
-    group: "root"
-    mode: "0440"
-
-- name: Capture files in sudoers for deletion
-  ansible.builtin.find:
-    paths: "/etc/sudoers.d"
-    file_type: file
-    excludes:
-      - "{{ target_user }}"
-      - "README"
-  register: found_files
-
-- name: Delete extra users in sudoers
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items:
-    - "{{ found_files['files'] }}"
-
-- name: Change root password
-  ansible.builtin.user:
-    name: "root"
-    password: "{{ root_password }}"
-    state: present
-    shell: /bin/bash
+    update_cache: true
+    upgrade: full
+    autoremove: true
+    autoclean: true
+    cache_valid_time: 3600

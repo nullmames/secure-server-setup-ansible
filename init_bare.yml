@@ -5,6 +5,15 @@
   vars_files:
     - "{{ user_file }}"
   become: true
+
+  pre_tasks:
+    - name: Change ansible_user for initial login
+      ansible.builtin.set_fact:
+        ansible_user: "{{ initial_user }}"
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
   roles:
     - init_bare
 

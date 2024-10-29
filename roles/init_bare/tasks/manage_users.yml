@@ -1,8 +1,4 @@
 ---
-- name: Change ansible_user for initial login
-  ansible.builtin.set_fact:
-    ansible_user: "{{ initial_user }}"
-
 - name: Create target user
   ansible.builtin.user:
     name: "{{ target_user }}"
