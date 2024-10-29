@@ -6,31 +6,39 @@
     - "{{ user_file }}"
   become: true
 
+  vars_prompt:
+    name: "initial_user"
+    prompt: "Enter the initial user for this machine"
+    private: false
+
   pre_tasks:
     - name: Change ansible_user for initial login
       ansible.builtin.set_fact:
         ansible_user: "{{ initial_user }}"
 
-    - name: Gather facts
+    - name: Gather facts as initial user
       ansible.builtin.setup:
 
   roles:
     - init_bare
 
   post_tasks:
-    - name: Get list of PIDs for user
-      ansible.builtin.shell: "ps -u {{ initial_user }} -o pid --no-header | awk '{print $1}'"
-      register: pids_result
+    - name: Delete initial_user if not root
+      when: initial_user != "root"
+      block:
+        - name: Get list of PIDs for user
+          ansible.builtin.shell: "ps -u {{ initial_user }} -o pid --no-header | awk '{print $1}'"
+          register: pids_result
 
-    - name: Wait for all user processes to exit
-      ansible.builtin.wait_for:
-        path: "/proc/{{ item }}/status"
-        state: absent
-      with_items: "{{ pids_result.stdout_lines }}"
-      when: pids_result
+        - name: Wait for all user processes to exit
+          ansible.builtin.wait_for:
+            path: "/proc/{{ item }}/status"
+            state: absent
+          with_items: "{{ pids_result.stdout_lines }}"
+          when: pids_result
 
-    - name: Delete ansible_user
-      ansible.builtin.user:
-        name: "{{ initial_user }}"
-        state: absent
-        remove: true
+        - name: Delete initial_user
+          ansible.builtin.user:
+            name: "{{ initial_user }}"
+            state: absent
+            remove: true

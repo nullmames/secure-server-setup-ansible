@@ -1,4 +1,23 @@
 ---
+# When boxes ship without basic python
+- name: Check for Python
+  ansible.builtin.raw: test -e /usr/bin/python
+  changed_when: false
+  failed_when: false
+  register: check_python
+
+- name: Install Python
+  ansible.builtin.raw: apt -y update && apt install -y python3-minimal
+  when: check_python.rc != 0
+
+- name: Install python, sudo
+  ansible.builtin.apt:
+    name:
+      - python3
+      - sudo
+    state: present
+    update_cache: false
+
 - name: Create target user
   ansible.builtin.user:
     name: "{{ target_user }}"
@@ -6,22 +25,13 @@
     state: present
     shell: /bin/bash
 
-- name: Set authorized key 1
+- name: Set authorized keys
   ansible.posix.authorized_key:
     user: "{{ target_user }}"
-    key: "{{ ssh_pubkey1 }}"
-
-- name: Set authorized key 2
-  ansible.posix.authorized_key:
-    user: "{{ target_user }}"
-    key: "{{ ssh_pubkey2 }}"
-
-- name: Install sudo
-  ansible.builtin.apt:
-    name:
-      - sudo
-    state: present
-    update_cache: false
+    key: "{{ item }}"
+  loop:
+    - "{{ ssh_pubkey1 }}"
+    - "{{ ssh_pubkey2 }}"
 
 - name: Allow sudo for target_user
   ansible.builtin.copy:
@@ -31,7 +41,7 @@
     group: "root"
     mode: "0440"
 
-- name: Change ansible_user for back to original
+- name: Change ansible_user from initial_user to target_user
   ansible.builtin.set_fact:
     ansible_user: "{{ target_user }}"
 
