@@ -1,0 +1,40 @@
+---
+# install the Omni cli client natively as well as init the node if required
+# TODO: Add a check to see if omni needs an update, for now just see if repo changed
+
+- name: Clone node repo
+  ansible.builtin.git:
+    repo: "{{ repo }}"
+    dest: "{{ user_dir }}/source/{{ network }}"
+    version: "{{ node_version }}"
+    update: true
+    force: true
+    recursive: true
+  register: git_repo_status
+
+- name: Build and install node to go/bin folder
+  when: git_repo_status.changed
+  ansible.builtin.command: "{{ item }}"
+  args:
+    chdir: "{{ user_dir }}/source/{{ network }}"
+  with_items:
+    - "nice -n 15 make install-cli"
+  environment:
+    PATH: "{{ path }}"
+    GOPATH: "{{ user_dir }}/go"
+
+- name: Identify if node is initialized
+  ansible.builtin.stat:
+    path: "{{ folder }}/halo/config/genesis.json"
+  register: node_initialized
+
+- name: Initialize halo and geth nodes with omni binary
+  when: not node_initialized.stat.exists
+  block:
+    - name: Initialize halo node
+      ansible.builtin.command: "{{ user_dir }}/go/bin/omni operator init-nodes --home {{ folder }} --moniker RHINO --network {{ omni_network }}"
+
+    - name: Remove init created compose file
+      ansible.builtin.file:
+        path: "{{ folder }}/compose.yml"
+        state: absent

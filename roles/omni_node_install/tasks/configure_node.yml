@@ -1,0 +1,68 @@
+---
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+# Configure config.toml components:
+- name: Update config.toml and halo.toml
+  block:
+    - name: Update p2p
+      community.general.ini_file:
+        path: "{{ folder }}/halo/config/config.toml"
+        section: p2p
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
+      loop:
+        - { key: "laddr", value: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"' }
+        - {
+            key: "external_address",
+            value: '"{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"',
+          }
+        - { key: "seeds", value: '"{{ seeds }}"' }
+        - { key: "persistent_peers", value: '"{{ persistent_peers }}"' }
+
+    - name: Ensure consensus_timeout
+      community.general.ini_file:
+        path: "{{ folder }}/halo/config/config.toml"
+        section: consensus
+        option: "timeout_commit"
+        value: '"1s"'
+        create: false
+
+    # Configure halo.toml components:
+    - name: Update halo.toml with network, engine-endpoint, and engine-jwt-file
+      ansible.builtin.lineinfile:
+        path: "{{ folder }}/halo/config/halo.toml"
+        regex: "{{ item.regex }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regex: "^network", line: 'network = "{{ omni_network }}"' }
+        - {
+            regex: "^engine-endpoint",
+            line: 'engine-endpoint = "http://{{ execution_container_name }}:8551"',
+          }
+        - {
+            regex: "^engine-jwt-file",
+            line: 'engine-jwt-file = "/geth/jwtsecret"',
+          }
+        - { regex: "^evm-build-delay", line: 'evm-build-delay = "600ms"' }
+
+    - name: Update halo.toml with xchain_endpoints
+      ansible.builtin.blockinfile:
+        path: "{{ folder }}/halo/config/halo.toml"
+        insertafter: "^\\[xchain.evm-rpc-endpoints\\]"
+        block: "{{ xchain_endpoints }}"
+  notify: Restart halo
+
+# Configure geth components:
+- name: Ensure Eth.Miner.Recommit
+  community.general.ini_file:
+    path: "{{ folder }}/geth/config.toml"
+    section: Eth.Miner
+    option: "Recommit"
+    value: "500000000"
+    create: false
+  notify: Restart geth

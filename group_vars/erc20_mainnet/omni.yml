@@ -1,0 +1,27 @@
+# Omni Network Consensus (halo) and Execution (geth) clients
+network: omni
+repo: https://github.com/omni-network/omni.git
+seeds: "c84e6a5e3c29f1b59b225613be056e82ab5663c7@seed02.mainnet.omni.network:26656,d0a9109801c7f78759a20765c30b00d06a6c2a8f@seed01.mainnet.omni.network:26656"
+persistent_peers: "c84e6a5e3c29f1b59b225613be056e82ab5663c7@seed02.mainnet.omni.network:26656,d0a9109801c7f78759a20765c30b00d06a6c2a8f@seed01.mainnet.omni.network:26656"
+#
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 145
+
+# Omni "bundle" version
+node_version: v0.10.0
+omni_network: mainnet
+
+# Halo endpoints (Docs at https://github.com/omni-network/omni/blob/main/lib/evmchain/evmchain.go)
+xchain_endpoints: |-
+  ethereum = "http://100.100.3.110:5000"
+  optimism = "http://100.100.3.110:9000"
+  arbitrum_one = "http://100.100.3.110:6000"
+  base = "http://100.100.3.110:7000"
+
+# Execution version
+execution_container_name: geth
+execution_container_version: v1.14.11
+
+# Consensus (halo) and omni cli version
+consensus_container_name: halo
+consensus_container_version: "{{ node_version }}"

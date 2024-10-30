@@ -1,0 +1,60 @@
+---
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Run halo container
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: omniops/halovisor:{{ consensus_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}56:{{ custom_port_prefix }}56"
+    volumes:
+      - "{{ folder }}/halo:/halo"
+      - "{{ folder }}/geth/geth/jwtsecret:/geth/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+
+- name: Run geth container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: ethereum/client-go:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p - public
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc/w
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}46:8546"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      # prometheuss
+      - "127.0.0.1:{{ custom_port_prefix }}60:6060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
+    volumes:
+      - "{{ folder }}/geth:/geth"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - --config=/geth/config.toml
+      - --verbosity=3
+      # p2p
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+      # metrics
+      - --metrics
+      - --pprof
+      - --pprof.addr=0.0.0.0
+      - --pprof.port=6060

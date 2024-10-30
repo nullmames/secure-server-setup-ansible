@@ -1,0 +1,9 @@
+---
+- name: Initialize node
+  include_tasks: init_node.yml
+
+- name: Configure node
+  include_tasks: configure_node.yml
+
+- name: Run node
+  include_tasks: run_node.yml

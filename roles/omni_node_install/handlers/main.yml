@@ -1,0 +1,12 @@
+---
+- name: Restart halo
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    state: started
+    restart: true
+
+- name: Restart geth
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    state: started
+    restart: true
