@@ -1,8 +1,8 @@
 ---
 # install the Omni cli client natively as well as init the node if required
-# TODO: Add a check to see if omni needs an update, for now just see if repo changed
+# TODO: Add a check to see if omni needs an update by parsing version output, for now just see if repo changed
 
-- name: Clone node repo
+- name: Clone omni repo
   ansible.builtin.git:
     repo: "{{ repo }}"
     dest: "{{ user_dir }}/source/{{ network }}"
@@ -12,7 +12,7 @@
     recursive: true
   register: git_repo_status
 
-- name: Build and install node to go/bin folder
+- name: Build and install omni to go/bin folder
   when: git_repo_status.changed
   ansible.builtin.command: "{{ item }}"
   args:
