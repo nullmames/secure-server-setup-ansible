@@ -4,7 +4,7 @@
   block:
     - name: See if RHINO snapshot exists
       ansible.builtin.uri:
-        url: "https://snapshots.rhinostake.com/{{ network }}/latest.tar.lz4"
+        url: "https://snapshots.rhinostake.com/{{ network }}/{{ network }}-snapshot.latest.tar.zst"
         method: GET
         status_code: 200
         return_content: false
@@ -14,7 +14,7 @@
     - name: Set RHINO snapshot_url
       when: rhino_snapshot_exists.status == 200
       ansible.builtin.set_fact:
-        snapshot_url: "https://snapshots.rhinostake.com/{{ network }}/latest.tar.lz4"
+        snapshot_url: "https://snapshots.rhinostake.com/{{ network }}/{{ network }}-snapshot.latest.tar.zst"
 
 - name: Find public snapshot
   when: snapshot_url is not defined
