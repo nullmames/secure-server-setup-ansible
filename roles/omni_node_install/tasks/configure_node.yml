@@ -34,21 +34,19 @@
 
     # Configure halo.toml components:
     - name: Update halo.toml with network, engine-endpoint, and engine-jwt-file
-      ansible.builtin.lineinfile:
+      ansible.builtin.ini_file:
         path: "{{ folder }}/halo/config/halo.toml"
-        regex: "{{ item.regex }}"
-        line: "{{ item.line }}"
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        create: false
       loop:
-        - { regex: "^network", line: 'network = "{{ omni_network }}"' }
+        - { key: "network", value: '"{{ omni_network }}"' }
         - {
-            regex: "^engine-endpoint",
-            line: 'engine-endpoint = "http://{{ execution_container_name }}:8551"',
+            key: "engine-endpoint",
+            value: '"http://{{ execution_container_name }}:8551"',
           }
-        - {
-            regex: "^engine-jwt-file",
-            line: 'engine-jwt-file = "/geth/jwtsecret"',
-          }
-        - { regex: "^evm-build-delay", line: 'evm-build-delay = "600ms"' }
+        - { key: "engine-jwt-file", value: '"/geth/jwtsecret"' }
+        - { key: "evm-build-delay", value: '"600ms"' }
 
     - name: Update halo.toml with xchain_endpoints
       ansible.builtin.blockinfile:
