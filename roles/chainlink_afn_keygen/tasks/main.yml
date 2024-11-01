@@ -57,11 +57,13 @@
         recursive: true
 
     - name: Build chainlink_afn
-      ansible.builtin.command: "{{ item }}"
+      ansible.builtin.command: "nice -n 15 {{ item }}"
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       with_items:
-        - "nice -n 15 cargo install --bin afn --locked --path afn/"
+        - "cargo clean"
+        - "cargo update"
+        - "cargo install --bin afn --locked --path afn/"
       environment:
         PATH: "{{ path }}"
 
