@@ -8,8 +8,8 @@ node_version: 89d14d0239cf60d7a71ee818a80d75c08d0d3b1c # 9.11.2024 - 1.5
 shared_config_version: 7dc80d5e07383015d5a3ef84b015b4ca9a1501f8 # 10.22.2024 - Added XLayer
 
 # For generating new keys
-node_version_keygen_prep: 89d14d0239cf60d7a71ee818a80d75c08d0d3b1c
-keygen_flags: "--add Mantle"
+node_version_keygen_prep: 9614ea53b5aee0e06c160deec735a397724e55eb
+keygen_flags: "--add Ronin"
 
 # Grafana dashboard
 dashboardUID: NGatdDfnk
