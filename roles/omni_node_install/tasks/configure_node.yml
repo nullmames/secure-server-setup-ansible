@@ -7,8 +7,9 @@
 
 # Configure config.toml components:
 - name: Update config.toml and halo.toml
+  notify: Restart halo
   block:
-    - name: Update p2p
+    - name: Update p2p settings
       community.general.ini_file:
         path: "{{ folder }}/halo/config/config.toml"
         section: p2p
@@ -17,14 +18,11 @@
         create: false
       loop:
         - { key: "laddr", value: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"' }
-        - {
-            key: "external_address",
-            value: '"{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"',
-          }
+        - { key: "external_address", value: '"{{ public_ip.content | trim }}:{{ custom_port_prefix }}56"' }
         - { key: "seeds", value: '"{{ seeds }}"' }
         - { key: "persistent_peers", value: '"{{ persistent_peers }}"' }
 
-    - name: Ensure consensus_timeout
+    - name: Update consensus settings
       community.general.ini_file:
         path: "{{ folder }}/halo/config/config.toml"
         section: consensus
@@ -34,17 +32,14 @@
 
     # Configure halo.toml components:
     - name: Update halo.toml with network, engine-endpoint, and engine-jwt-file
-      ansible.builtin.ini_file:
+      community.general.ini_file:
         path: "{{ folder }}/halo/config/halo.toml"
         option: "{{ item.key }}"
         value: "{{ item.value }}"
         create: false
       loop:
         - { key: "network", value: '"{{ omni_network }}"' }
-        - {
-            key: "engine-endpoint",
-            value: '"http://{{ execution_container_name }}:8551"',
-          }
+        - { key: "engine-endpoint", value: '"http://{{ execution_container_name }}:8551"' }
         - { key: "engine-jwt-file", value: '"/geth/jwtsecret"' }
         - { key: "evm-build-delay", value: '"600ms"' }
 
@@ -53,7 +48,6 @@
         path: "{{ folder }}/halo/config/halo.toml"
         insertafter: "^\\[xchain.evm-rpc-endpoints\\]"
         block: "{{ xchain_endpoints }}"
-  notify: Restart halo
 
 # Configure geth components:
 - name: Ensure Eth.Miner.Recommit
