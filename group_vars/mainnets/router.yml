@@ -20,6 +20,3 @@ upgrade_name: 2.2.2-to-2.2.3
 # StateSync
 snap_rpc: https://router-rpc.genznodes.dev:443
 p2p_state_sync: false
-
-# Custom snapshot url
-snapshot_url: https://ss.router.nodestake.org/2024-06-27_router_7673099.tar.lz4
