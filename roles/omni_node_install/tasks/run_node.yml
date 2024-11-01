@@ -16,6 +16,14 @@
     ports:
       # p2p
       - "{{ custom_port_prefix }}56:{{ custom_port_prefix }}56"
+      # rpc and api
+      - "127.0.0.1:{{ custom_port_prefix }}57:26657"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}57:26657"
+      - "127.0.0.1:{{ custom_port_prefix }}17:1317"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}17:1317"
+      # prometheus
+      - "127.0.0.1:{{ custom_port_prefix }}61:26660"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}61:26660"
     volumes:
       - "{{ folder }}/halo:/halo"
       - "{{ folder }}/geth/geth/jwtsecret:/geth/jwtsecret"
@@ -35,12 +43,12 @@
       # p2p - public
       - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
       - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
-      # rpc/w
+      # rpc/ws
       - "127.0.0.1:{{ custom_port_prefix }}45:8545"
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
       - "127.0.0.1:{{ custom_port_prefix }}46:8546"
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
-      # prometheuss
+      # prometheus
       - "127.0.0.1:{{ custom_port_prefix }}60:6060"
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
     volumes:

@@ -32,7 +32,7 @@
   when: not node_initialized.stat.exists
   block:
     - name: Initialize halo node
-      ansible.builtin.command: "{{ user_dir }}/go/bin/omni operator init-nodes --home {{ folder }} --moniker RHINO --network {{ omni_network }}"
+      ansible.builtin.command: "{{ user_dir }}/go/bin/omni operator init-nodes --home {{ folder }} --moniker {{ network }} --network {{ omni_network }}"
 
     - name: Remove init created compose file
       ansible.builtin.file:
