@@ -1,0 +1,11 @@
+---
+- name: Berachain Install and Init
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_testnet/testnet_berachain.yml"
+
+  roles:
+    - util_docker_install
+    - berachain_node_install
+    - util_docker_prune
