@@ -12,7 +12,7 @@ custom_port_prefix: 168
 
 snap_rpc: https://odin-rpc.lavenderfive.com:443
 
-snapshot_url: https://snapshots.bluestake.net/odin/odin-mainnet-freya-custom-kv-15639509.tar.lz4
+snapshot_url: https://storage.googleapis.com/odin-mainnet-state-dumps/odin_17044945.tar.lz4
 
 upgrade_name: v0.10.0
 
