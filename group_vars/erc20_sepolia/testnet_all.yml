@@ -1,6 +1,6 @@
 # Reusable components
 # Ethereum L1 Address
-ethereum_l1: "https://rpc2.sepolia.org"
+ethereum_l1: "https://ethereum-sepolia-rpc.publicnode.com"
 ethereum_l1_ws: "wss://ethereum-sepolia-rpc.publicnode.com"
 ethereum_l1_beacon: "https://ethereum-sepolia-beacon-api.publicnode.com"
 ethereum_l1_beacon_archive: "https://ethereum-sepolia-beacon-api.publicnode.com"
