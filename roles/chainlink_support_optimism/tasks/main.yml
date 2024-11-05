@@ -63,6 +63,8 @@
       - --syncmode=snap
       - --op-network={{ execution_network }}
       - --rollup.halt=major
+      # - --db.engine=leveldb
+      # - --state.scheme=hash
       - --db.engine=pebble
       - --state.scheme=path
       ## Interfaces

@@ -71,6 +71,7 @@
       - --op-network={{ execution_network }}
       - --db.engine=pebble
       - --state.scheme=path
+      # - --state.scheme=hash
       ## Interfaces
       # Consensus Layer Engine API
       - --authrpc.addr=0.0.0.0
