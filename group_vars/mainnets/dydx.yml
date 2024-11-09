@@ -4,10 +4,10 @@ daemon: dydxprotocold
 chain_id: "dydx-mainnet-1"
 repo: ""
 #
-node_version: "protocol/v6.0.4"
-binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv6.0.4/dydxprotocold-v6.0.4-linux-amd64.tar.gz"
+node_version: "protocol/v7.0.1"
+binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv7.0.1/dydxprotocold-v7.0.1-linux-amd64.tar.gz"
 binary_processing: targz
-binary_name: "build/dydxprotocold-v6.0.4-linux-amd64"
+binary_name: "build/dydxprotocold-v7.0.1-linux-amd64"
 #
 genesis: "https://raw.githubusercontent.com/dydxopsdao/networks/main/dydx-mainnet-1/genesis.json"
 seeds: "65b740ee326c9260c30af1f044e9cda63c73f7c1@seeds.kingnodes.net:23856,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:23856"
@@ -15,7 +15,7 @@ peers: "c899bc89c1b53e90bc7c94ca464188765c1a000e@45.76.198.139:26656"
 min_gas_prices: "0.025ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5,12500000000adydx"
 custom_port_prefix: 238
 
-upgrade_name: v6.0.0
+upgrade_name: v7.0
 
 # Add eth endpoint
 launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000"

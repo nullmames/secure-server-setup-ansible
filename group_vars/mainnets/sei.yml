@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: v5.9.0-hotfix
+node_version: v5.9.0-hotfix-3
 repo: https://github.com/sei-protocol/sei-chain.git
 
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
@@ -18,8 +18,8 @@ upgrade_name: v5.9.0
 tendermint_config_version: 37
 
 # StateSync
-# snap_rpc: "https://sei-m.rpc.manticore.team:443"
-snap_rpc: "http://statesync-sei.rhinostake.com:11957"
+snap_rpc: "https://sei-m.rpc.manticore.team:443"
+# snap_rpc: "http://statesync-sei.rhinostake.com:11957"
 # snap_rpc: "https://sei-rpc.polkachu.com:443"
 # snap_rpc: "https://sei-state-sync-rpc.brocha.in:443"
 #
