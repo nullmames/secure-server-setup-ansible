@@ -4,6 +4,7 @@
   gather_facts: true
   vars_files:
     - "group_vars/erc20_mainnet/{{ target }}.yml"
+    - "group_vars/erc20_testnet/{{ target }}.yml"
 
   pre_tasks:
     - name: Ensure chain exists on source
