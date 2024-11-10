@@ -68,6 +68,8 @@
       ansible.builtin.shell:
         cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ consensus_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}'
         chdir: "{{ consensus_snapshot_location | dirname }}"
+      args:
+        executable: /usr/bin/bash
       environment:
         PATH: "{{ path }}"
 
