@@ -54,8 +54,8 @@
       - "{{ folder }}/arbitrum-data:/home/user/.arbitrum"
       - "{{ user_dir }}/docker-compose/tmp:/tmp"
     command:
-      - --parent-chain.connection.url={{ ethereum_l1_archive }}
-      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_archive_beacon }}
+      - --parent-chain.connection.url={{ ethereum_l1 }}
+      - --parent-chain.blob-client.beacon-url={{ ethereum_l1_beacon }}
       - --chain.name={{ arbitrum_chain_name }}
       # rpc
       - --http.port={{ custom_port_prefix }}47
