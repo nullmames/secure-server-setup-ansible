@@ -4,6 +4,7 @@
   gather_facts: false
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
+    - "group_vars/testnets/{{ target }}.yml"
   tasks:
     - name: Check variables
       ansible.builtin.assert:
@@ -26,5 +27,6 @@
   gather_facts: false
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
+    - "group_vars/testnets/{{ target }}.yml"
   roles:
     - cosmos_horcrux_remove
