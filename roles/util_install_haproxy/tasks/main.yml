@@ -10,7 +10,7 @@
         mode: "0644"
         force: true
 
-    - name: Remove outdated haproxy repository if exists
+    - name: Remove outdated haproxy repositories if exists
       ansible.builtin.file:
         path: /etc/apt/sources.list.d/haproxy_debian_net.list
         state: absent
@@ -24,22 +24,28 @@
 
 - name: Install haproxy on Ubuntu
   when: ansible_distribution == "Ubuntu"
+  become: true
   block:
     - name: Install haproxy repository key
-      become: true
       ansible.builtin.get_url:
         url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xcffb779aadc995e4f350a060505d97a41c61b9cd"
         dest: /usr/share/keyrings/haproxy.debian.net.asc
         mode: "0644"
         force: true
 
-    - name: Remove outdated haproxy repository if exists
+    - name: Find outdated haproxy repositories
+      ansible.builtin.find:
+        paths: /etc/apt/sources.list.d
+        patterns: "ppa_launchpadcontent_net_vbernat_haproxy_*_ubuntu.list"
+      register: outdated_haproxy_repositories
+
+    - name: Remove outdated haproxy repositories
       ansible.builtin.file:
-        path: /etc/apt/sources.list.d/haproxy_debian_net.list
+        path: "{{ item['path'] }}"
         state: absent
+      with_items: "{{ outdated_haproxy_repositories['files'] }}"
 
     - name: Install haproxy repository
-      become: true
       ansible.builtin.apt_repository:
         repo: "deb [signed-by=/usr/share/keyrings/haproxy.debian.net.asc] https://ppa.launchpadcontent.net/vbernat/haproxy-{{ haproxy_release }}/ubuntu {{ ansible_distribution_release }} main"
         filename: haproxy_{{ haproxy_release }}
