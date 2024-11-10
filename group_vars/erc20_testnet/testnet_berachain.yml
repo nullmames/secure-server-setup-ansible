@@ -17,11 +17,15 @@ consensus_config_toml: https://raw.githubusercontent.com/berachain/beacon-kit/re
 # Consensus container
 consensus_container_name: bera-beacond
 consensus_container_version: "{{ consensus_version }}"
+# Snapshots
+consensus_snapshot_location: "{{ folder }}/bera-beacond/data"
 
 # Execution Engine Details
 execution_genesis: https://raw.githubusercontent.com/berachain/beacon-kit/main/testing/networks/80084/eth-genesis.json
 execution_chain_id: 80084
 execution_bootnodes: enode://0401e494dbd0c84c5c0f72adac5985d2f2525e08b68d448958aae218f5ac8198a80d1498e0ebec2ce38b1b18d6750f6e61a56b4614c5a6c6cf0981c39aed47dc@34.159.32.127:30303,enode://9b6c1eb143c9e3af0c7283262a9a38fe8bf844114b1f304673c2ac1c23e6bccfdaa8f4e9cb8c460bded495933fd92eeff30e6ab2e0538b56e249beea2c512906@35.234.88.149:30303
 # Execution container
-execution_container_name: bera-reth # erigon
-execution_container_version: latest # v2.60.9
+execution_container_name: bera-reth
+execution_container_version: latest
+# Snapshots
+execution_snapshot_location: "{{ folder }}/bera-reth/db"
