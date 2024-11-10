@@ -7,13 +7,12 @@ folder: "{{ user_dir }}/docker-compose/{{ network }}"
 # https://github.com/ethereum/go-ethereum/releases
 execution_container_name: geth
 execution_container_version: v1.14.11
-execution_snapshot_location: "{{ folder }}/geth/bor/chaindata"
-execution_network: mainnet
-
+execution_snapshot_location: "{{ folder }}/geth/chaindata"
+execution_network: sepolia
 # Consensus
 # https://github.com/sigp/lighthouse/releases
 consensus_container_name: lighthouse
 consensus_container_version: v5.3.0
 consensus_snapshot_location: "{{ folder }}/lighthouse/data"
-consensus_network: mainnet
-consensus_checkpoint_sync_url: https://mainnet.checkpoint.sigp.io
+consensus_network: sepolia
+consensus_checkpoint_sync_url: https://sepolia.beaconstate.info
