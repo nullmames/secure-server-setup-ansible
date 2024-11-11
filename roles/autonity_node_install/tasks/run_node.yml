@@ -1,0 +1,49 @@
+---
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Run autonity execution container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: ghcr.io/autonity/autonity:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - 127.0.0.1:{{ custom_port_prefix }}45:8545
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      - 127.0.0.1:{{ custom_port_prefix }}46:8546
+    volumes:
+      - "{{ folder }}/{{ execution_container_name }}:/data"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - --{{ execution_chain_id }}
+      - --datadir=/data
+      - --syncmode=full
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+      # RPC & ws
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.vhosts=*
+      - --http.api=aut,eth,net,txpool,web3,admin
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.api=aut,eth,net,txpool,web3,admin

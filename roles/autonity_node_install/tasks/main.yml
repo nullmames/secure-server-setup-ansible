@@ -1,0 +1,10 @@
+---
+- name: Initialize node
+  ansible.builtin.include_tasks: init_node.yml
+
+- name: Run node
+  ansible.builtin.include_tasks: run_node.yml
+
+- name: Run Oracle
+  when: (rpc is not defined) or (not rpc)
+  ansible.builtin.include_tasks: run_oracle.yml

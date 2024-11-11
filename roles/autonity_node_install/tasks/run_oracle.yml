@@ -1,0 +1,49 @@
+---
+- name: Create keystore folder
+  ansible.builtin.file:
+    path: "{{ user_dir }}/.autonity/keystore"
+    state: directory
+    mode: "0755"
+
+- name: Copy oracle key
+  ansible.builtin.template:
+    src: "oracle.key.j2"
+    dest: "{{ user_dir }}/.autonity/keystore/{{ oracle_key_name }}.key"
+    mode: "0644"
+
+- name: Build base folder structure
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/{{ oracle_container_name }}"
+
+- name: Copy plugins-conf
+  ansible.builtin.template:
+    src: "plugins-conf.yml.j2"
+    dest: "{{ folder }}/{{ oracle_container_name }}/plugins-conf.yml"
+    mode: "0644"
+
+- name: Run autonity oracle container
+  community.docker.docker_container:
+    name: "{{ oracle_container_name }}"
+    image: ghcr.io/autonity/autonity-oracle-{{ execution_chain_id }}:{{ oracle_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    volumes:
+      - "{{ user_dir }}/.autonity/keystore/{{ oracle_key_name }}.key:/autoracle/oracle.key"
+      - "{{ folder }}/{{ oracle_container_name }}/plugins-conf.yml:/autoracle/plugins-conf.yml"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - --tip=1
+      - --key.file=/autoracle/oracle.key
+      - --key.password={{ oracle_key_password }}
+      - --ws=ws://{{ execution_container_name }}:8546
+      - --plugin.dir=/usr/local/bin/plugins/
+      - --plugin.conf=/autoracle/plugins-conf.yml

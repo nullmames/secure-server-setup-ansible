@@ -1,0 +1,24 @@
+# Berachain Network Consensus (halo) and Execution (geth) clients
+network: autonity
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 144
+
+# Execution Engine Details
+execution_chain_id: piccadilly
+# Execution container
+execution_container_name: autonity
+execution_container_version: v0.14.1
+# Snapshots
+execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/autonity/chaindata"
+
+# Oracle Details
+oracle_container_name: autonity-oracle
+oracle_container_version: latest
+oracle_key_name: oracle
+oracle_key_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  64653966623932383231393865623831386462373936343233623731636436303165303731303765
+  6432643566663061626264386163393966643763373530660a363437636130323234613439636266
+  62646663663465303532616666336364613935323838623531623030323439623962376161373936
+  6138633836333164330a636462653531646232393664393233626663636239653564646233653033
+  33646631623063623339653830643865313363393665313338383065393031313337
