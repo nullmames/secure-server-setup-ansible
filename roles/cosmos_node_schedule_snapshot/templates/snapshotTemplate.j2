@@ -8,6 +8,7 @@ set -e
 BUCKET_NAME="{{ bucket_name }}"
 SNAPSHOT_FILENAME="{{ snapshot_filename }}"
 DAEMON="{{ daemon }}"
+DAY=$(date '+%u')
 # HEALTHCHECKS_ID=
 
 LOG="{{ user_dir }}/scripts/snapshot_logs/{{ network }}_snapshot_log.txt"
@@ -42,23 +43,29 @@ cd {{ user_dir }}/{{ folder }}
 
 sleep 10
 
-echo -e "\n    ## $(date): Snapshot Complete. Running Statesync..."
+# If Sunday, statesync
+if [[ $DAY -eq 0 ]]; then
 
-# Saving priv_validator_state.json
-cp data/priv_validator_state.json {{ user_dir }}/{{ network }}-priv_validator_state.json
+    echo -e "\n    ## $(date): Snapshot Complete. Running Statesync..."
 
-# Remove and create data directory
-rm -rf data
-mkdir data
+    # Saving priv_validator_state.json
+    cp data/priv_validator_state.json {{ user_dir }}/{{ network }}-priv_validator_state.json
 
-# Copy priv_validator_state.json back
-cp {{ user_dir }}/{{ network }}-priv_validator_state.json data/priv_validator_state.json
+    # Remove and create data directory
+    rm -rf data
+    mkdir data
 
-# Run statesync script
-source {{ user_dir }}/state_sync/state_sync_{{ network }}.sh
+    # Copy priv_validator_state.json back
+    cp {{ user_dir }}/{{ network }}-priv_validator_state.json data/priv_validator_state.json
+
+    # Run statesync script
+    source {{ user_dir }}/state_sync/state_sync_{{ network }}.sh
+
+    echo -e "\n    ## $(date): Ran Statesync Script..."
+
+fi
 
 echo -e "\n    ## $(date): Running ${DAEMON}..."
-
 sudo systemctl start ${DAEMON}.service
 
 rm {{ user_dir }}/{{ network }}-priv_validator_state.json
