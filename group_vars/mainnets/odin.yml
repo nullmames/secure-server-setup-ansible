@@ -12,10 +12,7 @@ custom_port_prefix: 168
 
 snap_rpc: https://odin-rpc.lavenderfive.com:443
 
-snapshot_url: https://storage.googleapis.com/odin-mainnet-state-dumps/odin_17044945.tar.lz4
+# snapshot_url: https://storage.googleapis.com/odin-mainnet-state-dumps/odin_17044945.tar.lz4
+snapshot_url:
 
 upgrade_name: v0.10.0
-
-# [Optional] Snapshot
-snapshot_hour: 1
-snapshot_minute: 30
