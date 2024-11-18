@@ -1,10 +1,17 @@
 ---
 - name: Capturing node-id of node
-  ansible.builtin.command: "{{ daemon }} tendermint show-node-id"
+  ansible.builtin.command: "/home/rhino/go/bin/{{ daemon }} tendermint show-node-id"
   register: nodeid
   environment:
     PATH: "{{ path }}"
     GOPATH: "{{ user_dir }}/go"
+
+- name: Assert that we have valid nodeids
+  ansible.builtin.assert:
+    that:
+      - nodeid.stdout is defined
+      - nodeid.stdout != ""
+    fail_msg: "Nodeid is not defined or empty for host {{ inventory_hostname }}"
 
 - name: Create dictionary object of each node
   ansible.builtin.set_fact:
