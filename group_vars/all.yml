@@ -1,10 +1,10 @@
 # go
-go_release: "go1.22.3"
+go_release: "go1.22.9"
 
 # node
 node_release: "18"
 
-# haproxy major go_release
+# haproxy major release
 haproxy_release: 3.0
 
 # cosmovisor
@@ -29,7 +29,7 @@ ipfs_cluster_ctl_release: "1.1.1"
 
 # horcrux versioning
 horcrux_repo: "https://github.com/strangelove-ventures/horcrux"
-horcrux_version: "v3.3.0"
+horcrux_version: "v3.3.1"
 
 # horcrux vars
 rpc_timeout: "1000ms"
