@@ -4,7 +4,6 @@
   gather_facts: true
   vars_files:
     - "{{ var_file }}"
-    - "{{ user_file }}"
 
 - name: Init
   ansible.builtin.import_playbook: cosmos_node_init.yml
