@@ -8,7 +8,7 @@
 - name: Install nodesource repository key
   become: true
   ansible.builtin.shell:
-    cmd: "set -o pipefail &&curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg"
+    cmd: "set -o pipefail && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg"
     creates: /etc/apt/keyrings/nodesource.gpg
   args:
     executable: /bin/bash
@@ -19,30 +19,31 @@
     paths: /etc/apt/sources.list.d
     file_type: file
     patterns: "deb_nodesource_com_node_*"
-    excludes:
-      - "deb_nodesource_com_node_{{ node_release }}_x.list"
   register: nodesource_repo_files
 
-- name: Disable sites
+- name: Remove outdated sites
   become: true
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ nodesource_repo_files['files'] }}"
 
-- name: Install nodesource repository
+- name: Add nodesource repository
   become: true
-  ansible.builtin.apt_repository:
-    repo: deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ node_release }}.x nodistro main
-    state: present
-    update_cache: true
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/nodesource.list
+    content: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ node_release }}.x nodistro main"
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Install nodejs
   become: true
   ansible.builtin.apt:
     name:
       - nodejs
-    state: present
+    state: latest
+    update_cache: true
 
 - name: Install node.js packages
   become: true
