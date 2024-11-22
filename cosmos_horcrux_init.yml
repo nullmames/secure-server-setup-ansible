@@ -36,7 +36,6 @@
 
 - name: Install Horcrux
   hosts: horcrux_signers_for_play
-  become: true
   gather_facts: false
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
