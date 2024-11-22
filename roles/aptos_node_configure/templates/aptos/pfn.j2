@@ -12,6 +12,10 @@ full_node_networks:
     discovery_method: "onchain"
     listen_address: "/ip4/0.0.0.0/tcp/{{ p2p_port }}"
 
+storage:
+  rocksdb_configs:
+    enable_storage_sharding: true
+
 api:
   enabled: true
   address: "0.0.0.0:8080"
