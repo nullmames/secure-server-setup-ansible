@@ -9,7 +9,6 @@ genesis: https://github.com/sei-protocol/testnet/raw/main/atlantic-2/genesis.jso
 custom_port_prefix: 119
 peers: "37201fcc556edc6d0a6a9cf4c6324902fb5bc81e@3.67.222.142:26656,80d20d1648b6a182c60c7627f3985c93aecc2665@3.65.226.190:26656"
 minimum_gas_price: "0usei"
-# minimum_gas_price: "0.02usei,0.001ibc/6D45A5CD1AADE4B527E459025AC1A5AEF41AE99091EF3069F3FEAACAFCECCD21"
 
 # Tendermint config version
 tendermint_config_version: 37
@@ -20,7 +19,6 @@ upgrade_name: v6.0.0
 # snap_rpc: "https://sei-testnet-rpc.polkachu.com:443"
 snap_rpc: "http://3.65.226.190:26657"
 
-p2p_state_sync: true
 snap_rpc_height_buffer: 80000
 custom_snapshot_interval: 50000
 
