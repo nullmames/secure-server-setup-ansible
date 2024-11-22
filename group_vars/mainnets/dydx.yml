@@ -18,7 +18,7 @@ custom_port_prefix: 238
 upgrade_name: v7.0
 
 # Add eth endpoint
-launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000"
+launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000 --optimistic-execution-enabled=true"
 
 snap_rpc: https://dydx-rpc.polkachu.com:443
 
