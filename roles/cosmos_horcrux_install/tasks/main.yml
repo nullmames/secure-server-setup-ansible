@@ -1,10 +1,24 @@
 ---
+## Fix bad permissions
+- name: Fix permissions
+  become: true
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: true
+  loop:
+    - "{{ user_dir }}/go"
+    - "{{ user_dir }}/source/horcrux"
+
 - name: Clone horcrux repo
   ansible.builtin.git:
     repo: "{{ horcrux_repo }}"
     dest: "{{ user_dir }}/source/horcrux"
     version: "{{ horcrux_version }}"
     update: true
+    force: true
+    recursive: true
   register: horcrux
 
 - name: Build horcrux
