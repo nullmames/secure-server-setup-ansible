@@ -8,12 +8,12 @@ alerts:
   stalled_minutes: {{ '30' if 'Testnet' in group_names else '15' }}
 
   consecutive_enabled: yes
-  consecutive_missed: {{ '50' if 'Testnet' in group_names else '25' }}
+  consecutive_missed: {{ '50' if 'Testnet' in group_names else '10' }}
   consecutive_priority: critical
 
   percentage_enabled: yes
-  percentage_missed: {{ '20' if 'Testnet' in group_names else '10' }}
-  percentage_priority: warning
+  percentage_missed: {{ '20' if 'Testnet' in group_names else '1' }}
+  percentage_priority: critical
 
   alert_if_inactive: yes
   alert_if_no_servers: yes
@@ -27,6 +27,6 @@ alerts:
 
 nodes:
 {% for host in groups[group_names[1]] %}
-  - url: http://{{ hostvars[host].ansible_host }}:{{ custom_port_prefix }}57
-    alert_if_down: yes
+  - url: http://{% if hostvars[host].nebula_internal_ip_addr is defined and hostvars[host].nebula_internal_ip_addr %}{{ hostvars[host].nebula_internal_ip_addr }}{% else %}{{ hostvars[host].ansible_host }}{% endif %}:{{ custom_port_prefix }}57
+    alert_if_down: no
 {% endfor %}
