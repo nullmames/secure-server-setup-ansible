@@ -1,12 +1,12 @@
 [Unit]
-Description={{ chain_id }} Signer node {{ my_share }}
+Description={{ chain_id }} horcrux signer node {{ my_share }} of {{ shares }}
 After=network.target
 
 [Service]
 Type=simple
 User={{ ansible_user }}
 WorkingDirectory={{ horcrux_dir }}
-ExecStart=/usr/local/bin/horcrux start --home {{ horcrux_dir }} {% if shares | int == 1 %}--accept-risk{% endif %} 
+ExecStart=/usr/local/bin/horcrux start --home {{ horcrux_dir }} {% if shares | int == 1 %}--accept-risk{% endif %}{{''}}
 ExecStartPre=/bin/sleep 7
 ExecStartPre=rm -f {{ horcrux_dir }}/horcrux.pid
 ExecStartPost=rm -f {{ horcrux_dir }}/horcrux.pid
