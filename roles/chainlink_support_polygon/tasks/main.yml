@@ -48,11 +48,11 @@
         command:
           - "init"
           - "--home=/heimdall-home"
-          - "--chain=mainnet"
+          - "--chain={{ consensus_network }}"
 
     - name: Replace genesis file
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/maticnetwork/heimdall/master/builder/files/genesis-mainnet-v1.json"
+        url: "{{ consensus_genesis }}"
         dest: "{{ folder }}/{{ consensus_container_name }}/config/genesis.json"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
@@ -75,8 +75,8 @@
     command:
       - "start"
       - "--home=/heimdall-home"
-      - "--chain=mainnet"
-      - "--p2p.seeds=f4f605d60b8ffaaf15240564e58a81103510631c@159.203.9.164:26656,4fb1bc820088764a564d4f66bba1963d47d82329@44.232.55.71:26656,2eadba4be3ce47ac8db0a3538cb923b57b41c927@35.199.4.13:26656,3b23b20017a6f348d329c102ddc0088f0a10a444@35.221.13.28:26656,25f5f65a09c56e9f1d2d90618aa70cd358aa68da@35.230.116.151:26656"
+      - "--chain={{ consensus_network }}"
+      - "--p2p.seeds={{ consensus_bootnodes }}"
       - "--p2p.laddr=tcp://0.0.0.0:{{ custom_port_prefix }}56"
       - "--moniker={{ inventory_hostname }}"
       - "--bor_rpc_url=http://{{ execution_container_name }}:8545"
@@ -98,7 +98,7 @@
       - "rest-server"
       - "--home=/heimdall-home"
       - "--node=tcp://{{ consensus_container_name }}:26657"
-      - "--chain=mainnet"
+      - "--chain={{ consensus_network }}"
 
 - name: Pull and run bor container
   community.docker.docker_container:
@@ -111,6 +111,7 @@
     ports:
       # p2p
       - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
       # rpc
       - "127.0.0.1:{{ custom_port_prefix }}45:8545/tcp"
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545/tcp"
@@ -126,14 +127,14 @@
       - "--datadir=/bor-home"
       - "--nat=extip:{{ public_ip.content | trim }}"
       - "--port={{ custom_port_prefix }}03" # 11703
-      - "--bor.heimdall=http://heimdallrest:1317"
+      - "--bor.heimdall=http://{{ consensus_container_name }}rest:1317"
       - "--syncmode=full"
-      - "--chain=mainnet"
+      - "--chain={{ execution_network }}"
       # Database
       - "--db.engine=pebble"
       - "--state.scheme=path"
       # Peering
-      - "--bootnodes=enode://a7f59b918fe19b5448b6dfbb35d5096eaffcdf20050f41f442c4a72377f7634da10fe23b1a405f72f6146b3c78738160c98c2c47d60a81e489fa47a50fe8700c@77.172.185.210:30303,enode://b8f1cc9c5d4403703fbf377116469667d2b1823c0daf16b7250aa576bacf399e42c3930ccfcb02c5df6879565a2b8931335565f0e8d3f8e72385ecf4a4bf160a@3.36.224.80:30303,enode://8729e0c825f3d9cad382555f3e46dcff21af323e89025a0e6312df541f4a9e73abfa562d64906f5e59c51fe6f0501b3e61b07979606c56329c020ed739910759@54.194.245.5:30303,enode://dcafedac347b24aea85a4b396511dc7ba4da37cd2ce13de9511aba50879fe04e6e259ce6314ae3376c1e3cc2f1909273781a74e9c386bcec29f5b42d1db0fe14@47.76.152.221:30303"
+      - "--bootnodes={{ execution_bootnodes }}"
       - "--maxpeers=200"
       - "--nodiscover=false"
       # RPC & WS
