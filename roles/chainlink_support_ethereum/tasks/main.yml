@@ -109,8 +109,8 @@
       - --execution-endpoint=http://{{ execution_container_name }}:8551
       - --execution-jwt=/root/.lighthouse/jwtsecret
       - --checkpoint-sync-url={{ consensus_checkpoint_sync_url }}
+      - --disable-backfill-rate-limiting
+      - --disable-deposit-contract-sync
       # - --genesis-backfill # Sync checkpoints from genesis
       # - --prune-blobs=false # Keep all beacon chain data
       # - --allow-insecure-genesis-sync
-      - --disable-backfill-rate-limiting
-      - --disable-deposit-contract-sync
