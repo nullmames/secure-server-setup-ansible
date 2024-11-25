@@ -104,6 +104,7 @@
         PATH: "{{ path }}"
       loop:
         - "cargo clean"
+        - "cargo update"
         - "cargo build --release"
 
     - name: Check if existing binaries exist
