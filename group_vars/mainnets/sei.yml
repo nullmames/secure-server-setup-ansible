@@ -38,3 +38,9 @@ oracle_validator: seivaloper146m089lq8mkqw6w0mmlhxz6247g2taha89at74
 snapshot_weekday: "*"
 snapshot_hour: 1
 snapshot_minute: 30
+
+# Horcrux
+horcrux_group: horcrux_gamma
+sentries:
+  - 100.100.3.17
+  - 100.100.3.18
