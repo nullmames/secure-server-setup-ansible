@@ -55,7 +55,7 @@ cosmos_node_configure_config_toml_37:
     moniker: '"{{ network }}"'
     proxy-app: '"tcp://127.0.0.1:{{ custom_port_prefix }}58"'
   priv_validator:
-    laddr: "tcp://{{ nebula_internal_ip_addr | default('0.0.0.0') }}:{{ custom_port_prefix }}59"
+    laddr: '"tcp://{{ nebula_internal_ip_addr | default("0.0.0.0") }}:{{ custom_port_prefix }}59"'
   rpc:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}57"'
     cors-allowed-origins: "'[]'"
