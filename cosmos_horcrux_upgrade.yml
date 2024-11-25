@@ -1,0 +1,45 @@
+---
+- name: Upgrade Horcrux binary and restart all horcrux services running on target machine
+  gather_facts: false
+  hosts: "{{ target }}"
+  any_errors_fatal: true
+
+  #
+  # On one of the target machines, can view the list of leaders nodes by:
+  # for dir in *; do horcrux leader --home "/home/rhino/.horcrux/$dir"; done
+  #
+  # To set the leader of the each horcrux raft, use:
+  # for dir in *; do horcrux elect <node#> --home "/home/rhino/.horcrux/$dir"; done
+  #
+
+  pre_tasks:
+    - name: Get list of all horcrux services on target
+      become: true
+      ansible.builtin.find:
+        paths: "/etc/systemd/system"
+        patterns: "horcrux_*.service"
+        file_type: file
+      register: horcrux_services
+
+    - name: Assert that horcrux services are present on target
+      ansible.builtin.assert:
+        that:
+          - horcrux_services['files'] is defined
+          - horcrux_services['files'] | length > 0
+        fail_msg: "No horcrux services found on target machine!"
+
+  roles:
+    - util_go_install
+    - cosmos_horcrux_install
+
+  post_tasks:
+    - name: Restart all horcrux services on target
+      become: true
+      ansible.builtin.service:
+        name: "{{ item.path | basename }}"
+        state: restarted
+        enabled: true
+      with_items:
+        - "{{ horcrux_services['files'] }}"
+      loop_control:
+        pause: 15
