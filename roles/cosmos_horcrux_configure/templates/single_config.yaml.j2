@@ -3,3 +3,4 @@ chainNodes:
 {% for sentry in sentries %}
   - privValAddr: tcp://{{ sentry }}:{{ custom_port_prefix }}59
 {% endfor %}
+debugAddr: "0.0.0.0:{{ custom_port_prefix }}01"
