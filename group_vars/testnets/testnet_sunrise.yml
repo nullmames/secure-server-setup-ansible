@@ -3,7 +3,7 @@ folder: ".sunrise"
 daemon: sunrised
 chain_id: sunrise-test-0.2
 
-node_version: v0.2.5
+node_version: v0.2.5-rc1
 
 repo: https://github.com/sunriselayer/sunrise.git
 genesis: https://raw.githubusercontent.com/sunriselayer/network/main/sunrise-test-0.2/genesis.json
