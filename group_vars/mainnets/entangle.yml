@@ -12,6 +12,11 @@ min_gas_prices: "0.0001aNGL"
 
 launch_commands: "--chain-id entangle_33033-1 --json-rpc.api eth,txpool,personal,net,debug,web3 --json-rpc.address 0.0.0.0:27145 --json-rpc.gas-cap 200000000 --api.enable"
 
+#snap_rpc: https://rpc.entangle.bh.rocks:443
+snap_rpc: https://entangle.rpc.moonbridge.team:443
+
+snapshot_url: https://snapshots.moonbridge.team/mainnet/entangle/snapshot_latest.tar.lz4
+
 # Horcrux
 horcrux_group: horcrux_alpha
 sentries:
