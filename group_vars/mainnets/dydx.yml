@@ -23,7 +23,7 @@ launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000 --o
 snap_rpc: https://dydx-rpc.polkachu.com:443
 
 # Horcrux
-horcrux_group: horcrux_beta
+horcrux_group: horcrux_delta
 sentries:
   - 100.100.1.187
   - 100.100.1.188
