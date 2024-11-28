@@ -2,6 +2,7 @@
 - name: Automatically add persistent peer info on all network nodes
   hosts: all
   gather_facts: true
+  any_errors_fatal: true
   vars_files:
     - "{{ var_file }}"
 
