@@ -1,8 +1,20 @@
 ---
-- name: Automatically add persistent peer info on all network nodes
+- name: Restart selected cosmovisor binary (with delay for multiple hosts)
   hosts: all
   gather_facts: false
+  serial: 1 # Run one host at a time
   vars_files:
     - "{{ var_file }}"
-  roles:
-    - cosmos_node_restart_binary
+
+  tasks:
+    - name: Restart cosmovisor
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ daemon }}"
+        state: restarted
+
+    - name: Sleep for 30 seconds (unless last host)
+      when: inventory_hostname != ansible_play_hosts_all[-1]
+      ansible.builtin.wait_for:
+        port: "{{ custom_port_prefix }}57"
+        delay: 30

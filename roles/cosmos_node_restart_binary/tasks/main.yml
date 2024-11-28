@@ -1,7 +1,0 @@
----
-# Simply restart the node binary called out via the vars_file referenced.
-- name: Restart cosmovisor
-  become: true
-  ansible.builtin.systemd:
-    name: "{{ daemon }}"
-    state: restarted
