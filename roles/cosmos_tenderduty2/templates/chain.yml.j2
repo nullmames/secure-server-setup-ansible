@@ -5,14 +5,14 @@ public_fallback: true
 
 alerts:
   stalled_enabled: yes
-  stalled_minutes: {{ '30' if 'Testnet' in group_names else '15' }}
+  stalled_minutes: {{ '30' if 'Testnet' in group_names else '10' }}
 
   consecutive_enabled: yes
-  consecutive_missed: {{ '50' if 'Testnet' in group_names else '10' }}
+  consecutive_missed: {{ '50' if 'Testnet' in group_names else '20' }}
   consecutive_priority: critical
 
   percentage_enabled: yes
-  percentage_missed: {{ '20' if 'Testnet' in group_names else '1' }}
+  percentage_missed: {{ '20' if 'Testnet' in group_names else '2' }}
   percentage_priority: critical
 
   alert_if_inactive: yes
