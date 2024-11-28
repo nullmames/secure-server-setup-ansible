@@ -54,3 +54,4 @@
     command:
       - --config=./mainnet.yaml # Default config file in the container
       - --zkevm.l1-rpc-url={{ ethereum_l1 }}
+      - --nat=extip:{{ public_ip.content | trim}}
