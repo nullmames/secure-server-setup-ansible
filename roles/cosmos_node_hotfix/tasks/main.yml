@@ -6,7 +6,6 @@
     dest: "{{ user_dir }}/{{ folder }}/cosmovisor/current/bin/"
     remote_src: true
     mode: "0755"
-  notify: "restart node"
 
 - name: Check if libraries present
   ansible.builtin.find:
@@ -22,7 +21,6 @@
     mode: "0644"
     remote_src: true
   loop: "{{ libraries.files }}"
-  notify: "restart node"
 
 - name: Reset halt-height to 0
   ansible.builtin.lineinfile:
