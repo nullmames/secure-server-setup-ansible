@@ -27,7 +27,7 @@ cosmos_node_configure_app_toml:
     address: '"tcp://0.0.0.0:{{ custom_port_prefix }}17"'
     max-open-connections: 10000
     rpc-max-body-bytes: 1000000
-    enabled-unsafe-cors: "true"
+    enabled-unsafe-cors: "false"
   grpc:
     enable: "true"
     address: '"0.0.0.0:{{ custom_port_prefix }}90"'
@@ -94,7 +94,7 @@ cosmos_node_configure_pruning_default:
 cosmos_node_configure_pruning_custom_rpc:
   no_section:
     pruning: '"custom"'
-    pruning-keep-recent: "40000"
+    pruning-keep-recent: "100000"
     pruning-interval: "{{ pruninginterval.stdout }}" # prime between 100 and 200
   state-sync:
     snapshot-interval: "{{ custom_snapshot_interval | default('0', true) }}"
@@ -110,7 +110,7 @@ cosmos_node_configure_pruning_nothing:
 cosmos_node_configure_state_store_enabled:
   state-store:
     ss-enable: "true"
-    ss-keep-recent: 2000000
+    ss-keep-recent: 4000000
 
 cosmos_node_configure_state_store_disabled:
   state-store:
