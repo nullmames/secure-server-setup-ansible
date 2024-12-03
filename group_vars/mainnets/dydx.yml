@@ -2,12 +2,15 @@ network: "dydx"
 folder: ".dydxprotocol"
 daemon: dydxprotocold
 chain_id: "dydx-mainnet-1"
-repo: ""
+repo: "https://github.com/dydxprotocol/v4-chain" # Ignored
 #
-node_version: "protocol/v7.0.1"
-binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv7.0.1/dydxprotocold-v7.0.1-linux-amd64.tar.gz"
+# Version Number
+protocol_version: "7.0.5"
+#
+node_version: "protocol/v{{ protocol_version }}"
+binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv{{ protocol_version }}/dydxprotocold-v{{ protocol_version }}-linux-amd64.tar.gz"
 binary_processing: targz
-binary_name: "build/dydxprotocold-v7.0.1-linux-amd64"
+binary_name: "build/dydxprotocold-v{{ protocol_version }}-linux-amd64"
 #
 genesis: "https://raw.githubusercontent.com/dydxopsdao/networks/main/dydx-mainnet-1/genesis.json"
 seeds: "65b740ee326c9260c30af1f044e9cda63c73f7c1@seeds.kingnodes.net:23856,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:23856"
