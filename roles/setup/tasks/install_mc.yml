@@ -5,9 +5,13 @@
     checksum_algorithm: sha256
   register: mc_ver
 
+- name: Set fact based on architecture
+  ansible.builtin.set_fact:
+    mc_download_url: "https://dl.min.io/client/mc/release/linux-{% if ansible_architecture == 'aarch64' %}arm64{% else %}amd64{% endif %}"
+
 - name: Get sha256 of download
   ansible.builtin.uri:
-    url: "https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum"
+    url: "{{ mc_download_url }}/mc.sha256sum"
     return_content: true
   register: url_output
 
@@ -19,7 +23,7 @@
   when: (not mc_ver.stat.exists) or (mc_sha256 != mc_ver.stat.checksum)
   become: true
   ansible.builtin.get_url:
-    url: https://dl.min.io/client/mc/release/linux-amd64/mc
+    url: "{{ mc_download_url }}/mc"
     dest: /usr/local/bin/mc
     mode: "0755"
     checksum: sha256:{{ mc_sha256 }}
