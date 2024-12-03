@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "arctic-1"
-node_version: v6.0.0
+node_version: v6.0.1
 repo: https://github.com/sei-protocol/sei-chain
 genesis: https://raw.githubusercontent.com/sei-protocol/testnet/main/arctic-1/genesis.json
 custom_port_prefix: 119
@@ -17,6 +17,6 @@ snap_rpc: https://rpc.arctic-1.seinetwork.io:443
 
 snapshot_url: https://snapshots.rhinostake.com/testnet-sei/sei-snapshot.38198047.tar.lz4
 
-upgrade_name: v6.0.0
+upgrade_name: v6.0.1
 
 p2p_state_sync: true
