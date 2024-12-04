@@ -3,13 +3,17 @@
   register: goversion
   ignore_errors: true
 
+- name: Set url for architecture
+  ansible.builtin.set_fact:
+    go_arch: "{% if ansible_architecture == 'aarch64' %}arm64{% else %}amd64{% endif %}"
+
 - name: Download and install go
   when: goversion.stdout != go_release
   block:
     - name: Download go
       ansible.builtin.get_url:
-        url: https://golang.org/dl/{{ go_release }}.linux-amd64.tar.gz
-        dest: /tmp/{{ go_release }}.linux-amd64.tar.gz
+        url: https://golang.org/dl/{{ go_release }}.linux-{{ go_arch }}.tar.gz
+        dest: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
         mode: "0700"
 
     - name: Remove go binary
@@ -21,13 +25,13 @@
     - name: Unarchive go release
       become: true
       ansible.builtin.unarchive:
-        src: /tmp/{{ go_release }}.linux-amd64.tar.gz
+        src: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
         dest: /usr/local
         remote_src: true
 
     - name: Delete temporary file
       ansible.builtin.file:
-        path: /tmp/{{ go_release }}.linux-amd64.tar.gz
+        path: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
         state: absent
 
 - name: Copy .zprofile
