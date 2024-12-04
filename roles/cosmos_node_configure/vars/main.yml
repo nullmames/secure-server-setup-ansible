@@ -69,9 +69,9 @@ cosmos_node_configure_config_toml_37:
     max-connections: 31
     flush-throttle-timeout: '"10ms"'
   mempool:
-    keep-invalid-txs-in-cache: "false"
-    ttl-duration: '"15s"'
-    ttl-num-blocks: 30
+    keep-invalid-txs-in-cache: "true"
+    ttl-duration: '"5s"'
+    ttl-num-blocks: 5
     size: 1000
     pending-size: 5000
     max-pending-txs-bytes: 1073741824
