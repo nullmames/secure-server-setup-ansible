@@ -7,11 +7,14 @@
 - name: Create users
   ansible.builtin.include_tasks: create_users.yml
 
+- name: Install essentials
+  ansible.builtin.import_tasks: install_essentials.yml
+
 - name: Configure machine
   ansible.builtin.import_tasks: configure_machine.yml
 
-- name: Install essentials
-  ansible.builtin.import_tasks: install_essentials.yml
+- name: Configure locale
+  ansible.builtin.import_tasks: configure_locale.yml
 
 - name: Install mc
   ansible.builtin.import_tasks: install_mc.yml

@@ -32,47 +32,77 @@
     group: "root"
     mode: "0440"
 
-- name: Create .screenrc
-  ansible.builtin.template:
-    src: screenrc.j2
-    dest: "/home/{{ ansible_user }}/.screenrc"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0644"
+- name: Capture files in sudoers for deletion
+  ansible.builtin.find:
+    paths: "/etc/sudoers.d"
+    file_type: file
+    excludes:
+      - "{{ ansible_user }}"
+      - "zabbix"
+      - "README"
+  register: found_files
 
-- name: Clone ohmyz.sh
-  become: false
-  ansible.builtin.git:
-    repo: "https://github.com/ohmyzsh/ohmyzsh.git"
-    dest: "{{ user_dir }}/.oh-my-zsh"
-    version: "master"
-    single_branch: true
-    update: true
-    force: true
+- name: Delete extra users in sudoers
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ found_files['files'] }}"
 
-- name: Copy .zshrc config
+- name: Set ansible_user specific tools
   become: false
-  ansible.builtin.template:
-    src: "zshrc.j2"
-    dest: "{{ user_dir }}/.zshrc"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0644"
+  block:
+    - name: Create .screenrc
+      ansible.builtin.template:
+        src: screenrc.j2
+        dest: "/home/{{ ansible_user }}/.screenrc"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
 
-- name: Add honukai theme
-  become: false
-  ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/oskarkrawczyk/honukai-iterm/master/honukai.zsh-theme"
-    dest: "{{ user_dir }}/.oh-my-zsh/custom/themes/"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0644"
+    - name: Clone ohmyz.sh
+      ansible.builtin.git:
+        repo: "https://github.com/ohmyzsh/ohmyzsh.git"
+        dest: "{{ user_dir }}/.oh-my-zsh"
+        version: "master"
+        single_branch: true
+        update: true
+        force: true
 
-- name: Add zsh-autosuggestion
-  become: false
-  ansible.builtin.git:
-    repo: "https://github.com/zsh-users/zsh-autosuggestions"
-    dest: "{{ user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-    version: "master"
-    single_branch: true
-    update: true
+    - name: Copy .zshrc config
+      ansible.builtin.template:
+        src: "zshrc.j2"
+        dest: "{{ user_dir }}/.zshrc"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+
+    - name: Add honukai theme
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/oskarkrawczyk/honukai-iterm/master/honukai.zsh-theme"
+        dest: "{{ user_dir }}/.oh-my-zsh/custom/themes/"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
+
+    - name: Add zsh-autosuggestion
+      ansible.builtin.git:
+        repo: "https://github.com/zsh-users/zsh-autosuggestions"
+        dest: "{{ user_dir }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        version: "master"
+        single_branch: true
+        update: true
+
+    - name: Add TOML vim plugin
+      ansible.builtin.git:
+        repo: "https://github.com/cespare/vim-toml.git"
+        dest: "{{ user_dir }}/.vim/pack/plugins/start/vim-toml"
+        single_branch: true
+        version: "main"
+        update: true
+
+    - name: Create source folder in home directory
+      ansible.builtin.file:
+        path: "{{ user_dir }}/source"
+        state: directory
+        mode: "0755"
