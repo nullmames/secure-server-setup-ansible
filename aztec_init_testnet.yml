@@ -40,7 +40,7 @@
           SEQ_PUBLISHER_PRIVATE_KEY: "{{ item.private_key }}"
           L1_PRIVATE_KEY: "{{ item.private_key }}"
           DEBUG: "aztec:*,-aztec:avm_simulator*,-aztec:circuits:artifact_hash,-aztec:libp2p_service,-json-rpc*,-aztec:world-state:database,-aztec:l2_block_stream*"
-          LOG_LEVEL: "debug"
+          LOG_LEVEL: "info"
           AZTEC_PORT: "90{{ item.validator_number }}"
           P2P_ENABLED: "true"
           L1_CHAIN_ID: "1337"
@@ -72,7 +72,7 @@
         healthcheck:
           test: ["CMD", "curl", "-fsS", "http://127.0.0.1:90{{ item.validator_number }}/status"]
           interval: 60s
-          timeout: 5s
+          timeout: 10s
           retries: 3
-          start_period: 60s
+          start_period: 120s
       loop: "{{ container_configs }}"
