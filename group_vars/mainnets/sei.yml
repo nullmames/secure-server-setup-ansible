@@ -3,7 +3,7 @@ network: sei
 folder: ".sei"
 daemon: seid
 chain_id: "pacific-1"
-node_version: v6.0.0
+node_version: v6.0.1
 repo: https://github.com/sei-protocol/sei-chain.git
 
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
@@ -13,7 +13,7 @@ peers: "42f5eaf8e43b17c2e5c72c3ba8c0aea9e3e114fb@136.243.71.227:11956,d7ad900ff4
 minimum_gas_price: "0.02usei"
 
 # Upgrade
-upgrade_name: v6.0.0
+upgrade_name: v6.0.1
 # Tendermint config version
 tendermint_config_version: 37
 
