@@ -15,7 +15,7 @@
     - name: Start aztec containers
       community.docker.docker_container:
         name: "aztec-{{ item.validator_number }}"
-        image: aztecprotocol/aztec:{{ node_version }}
+        image: "aztecprotocol/aztec:{{ node_version }}"
         state: started
         restart_policy: unless-stopped
         stop_timeout: 600
@@ -69,4 +69,10 @@
           - --node
           - --archiver
           - --sequencer
+        healthcheck:
+          test: ["CMD", "curl", "-fsS", "http://127.0.0.1:90{{ item.validator_number }}/status"]
+          interval: 60s
+          timeout: 5s
+          retries: 3
+          start_period: 60s
       loop: "{{ container_configs }}"
