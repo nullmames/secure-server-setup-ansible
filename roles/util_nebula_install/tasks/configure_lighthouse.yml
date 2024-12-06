@@ -1,15 +1,22 @@
 ---
-- name: Ensure CA cert/key exists
-  ansible.builtin.command:
-    chdir: /etc/nebula
-    cmd: ./nebula-cert ca -name "{{ nebula_network_name }}" -duration "{{ nebula_ca_cert_duration }}"
-    creates: /etc/nebula/ca.crt
+- name: Ensure the RHINO CA cert, key and host_ssh key exist
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nebula/{{ item }}"
+    owner: root
+    group: root
+    mode: "0400"
+  with_items:
+    - ca.crt
+    - ca.key
+    - nebula_host_ed25519_key
+  notify: Restart nebula
 
 - name: Ensure lighthouse cert/key exists
   ansible.builtin.command:
     chdir: /etc/nebula
-    cmd: ./nebula-cert sign -name "{{ nebula_lighthouse_hostname }}" -ip "{{ nebula_lighthouse_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
-    creates: "/etc/nebula/{{ nebula_lighthouse_hostname }}.crt"
+    cmd: ./nebula-cert sign -name "{{ ansible_hostname }}" -ip "{{ nebula_lighthouse_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
+    creates: "/etc/nebula/{{ ansible_hostname }}.crt"
 
 - name: Add client key directory
   ansible.builtin.file:
@@ -19,7 +26,7 @@
     owner: root
     group: root
 
-- name: Ensure lighthouse is configured
+- name: Ensure lighthouse config.yml is defined
   ansible.builtin.template:
     src: lighthouse_config.yml.j2
     dest: /etc/nebula/config.yml

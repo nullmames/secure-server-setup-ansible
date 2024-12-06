@@ -23,10 +23,14 @@
   ansible.builtin.set_fact:
     installed_nebula_version: "{{ installed_nebula_version_out.stdout.split(' ')[1] }}"
 
+- name: Set url for architecture
+  ansible.builtin.set_fact:
+    nebula_arch: "{% if ansible_architecture == 'aarch64' %}arm64{% else %}amd64{% endif %}"
+
 - name: Download & Extract Nebula
-  when: (installed_nebula_version|default(nebula_version) != nebula_version) or (not installed_nebula_stats.stat.exists)
+  when: ( installed_nebula_version | default( nebula_version ) != nebula_version ) or ( not installed_nebula_stats.stat.exists )
   ansible.builtin.unarchive:
-    src: "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-amd64.tar.gz"
+    src: "https://github.com/slackhq/nebula/releases/download/v{{ nebula_version }}/nebula-linux-{{ nebula_arch }}.tar.gz"
     dest: "/etc/nebula"
     remote_src: true
   notify: Restart nebula
