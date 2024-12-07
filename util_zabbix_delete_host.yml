@@ -1,0 +1,19 @@
+- name: Delete Zabbix Host
+  hosts: all
+  gather_facts: false
+  become: true
+
+  pre_tasks:
+    - name: Verify sudo
+      ansible.builtin.shell: "sudo w"
+      delegate_to: localhost
+      run_once: true
+
+  roles:
+    - role: zabbix.zabbix.host
+      host_zabbix_api_server: "{{ zabbix_server_public_name }}"
+      host_zabbix_api_port: 443
+      host_zabbix_api_user: "{{ zabbix_login_user }}"
+      host_zabbix_api_password: "{{ zabbix_login_pass }}"
+      host_zabbix_api_use_ssl: true
+      host_state: absent

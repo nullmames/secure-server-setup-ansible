@@ -2,39 +2,61 @@
   hosts: all
   gather_facts: true
   become: true
+  vars:
+    zabbix_template_list:
+      - Linux by Zabbix agent active
+      - SMART by Zabbix agent 2 active
 
   pre_tasks:
     - name: Verify sudo
       ansible.builtin.shell: "sudo w"
       delegate_to: localhost
+      run_once: true
+
+    - name: Get service facts
+      ansible.builtin.service_facts:
+
+    - name: Add additional templates to list
+      ansible.builtin.set_fact:
+        zabbix_template_list: "{{ zabbix_template_list + [item.template] }}"
+      when: item.service in ansible_facts.services
+      with_items:
+        - service: "haproxy"
+          template: "HAProxy by Zabbix agent"
+        - service: "docker"
+          template: "Docker by Zabbix agent 2"
 
   roles:
     - role: util_zabbix_prepare
 
-    - role: community.zabbix.zabbix_agent
-      zabbix_agent_version: 6.4
-      zabbix_agent2: true
-      zabbix_agent_server: "{{ zabbix_server_agent_addresses }}"
-      zabbix_agent_serveractive: "{{ zabbix_server_agent_addresses }}"
-      zabbix_agent_ip: "{{ ansible_host }}"
-      zabbix_agent_listenport: 10050
-      zabbix_agent_tlsconnect: unencrypted
-      zabbix_api_server_host: "{{ zabbix_server_host }}"
-      zabbix_api_use_ssl: false
-      zabbix_api_server_port: 8080
-      zabbix_api_validate_certs: false
-      ansible_zabbix_url_path: /
-      zabbix_useuip: 1
-      zabbix_api_login_user: "{{ zabbix_login_user }}"
-      zabbix_api_login_pass: "{{ zabbix_login_pass }}"
-      zabbix_api_create_hosts: true
-      zabbix_api_create_hostgroup: true
-      zabbix_agent_host_update: true
-      zabbix_agent_host_state: present
-      zabbix_agent_become_on_localhost: false
-      zabbix_agent_inventory_mode: automatic
-      zabbix_agent_tlspsk_auto: false
-      zabbix_agent_inventory_zabbix:
+    - role: zabbix.zabbix.agent
+      agent_variant: 2
+      agent_major_version: "{% if ansible_architecture == 'aarch64' %}6.0{% else %}6.4{% endif %}"
+      agent_package_state: latest
+      agent_param_server: "{{ zabbix_agent_listen_addresses }}" # Allow dial-in from multiple source addresses
+      agent_param_serveractive: "{{ zabbix_server_public_name }}" # Use DNS name for ServerActive
+      agent_apply_firewalld_rule: false
+      agent_apply_iptables_rule: false
+      agent_param_hostmetadata: '{{ group_names | join(",") }},Linux'
+
+    - role: zabbix.zabbix.host
+      host_zabbix_api_server: "{{ zabbix_server_public_name }}"
+      host_zabbix_api_port: 443
+      host_zabbix_api_user: "{{ zabbix_login_user }}"
+      host_zabbix_api_password: "{{ zabbix_login_pass }}"
+      host_zabbix_api_use_ssl: true
+      host_description: "Located in {{ node_info.json.city }}, {{ node_info.json.country }} at {{ node_info.json.org }}. Last updated via ansible on {{ ansible_date_time.date }} at {{ ansible_date_time.time }} {{ ansible_date_time.tz }}. "
+      host_interfaces:
+        - type: agent
+          ip: "{% if nebula_internal_ip_addr is defined and nebula_internal_ip_addr | ansible.utils.ipaddr %}{{ nebula_internal_ip_addr }}{% elif ansible_host | ansible.utils.ipaddr %}{{ ansible_host }}{% endif %}"
+          dns: ""
+          useip: true
+          port: "{{ agent_param_listenport | default(10050) }}"
+      host_hostgroups:
+        - Linux servers
+        - "{{ node_info.json.org }}"
+      host_inventory_mode: automatic
+      host_inventory:
         alias: "{{ inventory_hostname }}"
         software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
         location: "{{ node_info.json.org }}"
@@ -43,14 +65,7 @@
         site_city: "{{ node_info.json.city }}"
         site_state: "{{ node_info.json.region }}"
         site_country: "{{ node_info.json.country }}"
-      zabbix_host_groups:
-        - Linux servers
-        - "{{ node_info.json.org }}"
-      zabbix_agent_link_templates:
-        - Linux by Zabbix agent
-        - SMART by Zabbix agent 2
-        - "{% if 'haproxy' in ansible_facts.services %}HAProxy by Zabbix agent{% endif %}"
-        - "{% if 'docker' in ansible_facts.services %}Docker by Zabbix agent 2{% endif %}"
-      zabbix_agent_tags: "{{ inventory_group_dict }}"
+      host_templates: "{{ zabbix_template_list }}"
+      host_tags: "{{ inventory_group_dict }}"
 
     - role: util_zabbix_configure

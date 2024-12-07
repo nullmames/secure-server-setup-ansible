@@ -1,8 +1,4 @@
 ---
-# Prep machine for zabbix agent
-- name: Get service facts
-  ansible.builtin.service_facts:
-
 - name: Install smart monitoring
   ansible.builtin.apt:
     name:
@@ -26,9 +22,18 @@
   with_items:
     - "{{ group_names }}"
 
-- name: Remove outdated repository files if exists
+- name: Capture outdated zabbix repo files
+  ansible.builtin.find:
+    paths: "/etc/apt/sources.list.d"
+    file_type: file
+    patterns:
+      - "repo_zabbix_com_zabbix_*"
+      - "zabbix.sources"
+  register: found_files
+
+- name: Delete extra zabbix repos
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - /etc/apt/sources.list.d/repo_zabbix_com_zabbix_*.list
+  with_items:
+    - "{{ found_files['files'] }}"

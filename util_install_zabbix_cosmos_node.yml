@@ -1,4 +1,4 @@
-- name: Deploy Zabbix
+- name: Deploy Zabbix for Cosmos cl(/el) node
   hosts: all
   gather_facts: true
   become: true
@@ -9,7 +9,58 @@
     - name: Verify sudo
       ansible.builtin.shell: "sudo w"
       delegate_to: localhost
+      run_once: true
+
+    - name: Verify we're monitoring a node that exists
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
 
   roles:
     - util_zabbix_prepare
-    - util_zabbix_cosmos_node
+
+    - role: zabbix.zabbix.host
+      host_zabbix_api_server: "{{ zabbix_server_public_name }}"
+      host_zabbix_api_port: 443
+      host_zabbix_api_user: "{{ zabbix_login_user }}"
+      host_zabbix_api_password: "{{ zabbix_login_pass }}"
+      host_zabbix_api_use_ssl: true
+      host_name: "NODE-{{ network }}-{{ inventory_hostname }}"
+      host_description: "{{ network }} node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})"
+      host_hostgroups:
+        - Cosmos
+        - Cosmos node
+        - "{{ network }}"
+        - "{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
+        - "{% if rpc is defined %}Cosmos rpc{% elif archive is defined %}Cosmos archive{% else %}Cosmos validator{% endif %}"
+      host_inventory_mode: automatic
+      host_interfaces:
+        - type: agent
+          ip: "{% if nebula_internal_ip_addr is defined and nebula_internal_ip_addr | ansible.utils.ipaddr %}{{ nebula_internal_ip_addr }}{% elif ansible_host | ansible.utils.ipaddr %}{{ ansible_host }}{% endif %}"
+          dns: ""
+          useip: true
+          port: "{{ agent_param_listenport | default(10050) }}"
+      host_inventory:
+        alias: "{{ inventory_hostname }}"
+        software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+        location: "{{ node_info.json.org }}"
+        location_lat: "{{ latlong.0 }}"
+        location_lon: "{{ latlong.1 }}"
+        site_city: "{{ node_info.json.city }}"
+        site_state: "{{ node_info.json.region }}"
+        site_country: "{{ node_info.json.country }}"
+      host_templates:
+        - "{% if network == 'sei' %}Cosmos Nodes - Sei{% else %}Cosmos Nodes - Base{% endif %}"
+      host_tags: "{{ inventory_group_dict }}"
+      host_macros:
+        - macro: "{$SYSTEMD.NAME.SERVICE.MATCHES}"
+          value: "{{ daemon }}"
+        - macro: "{$NODE_DAEMON}"
+          value: "{{ daemon }}"
+        - macro: "{$RPC_PORT}"
+          value: "{{ custom_port_prefix }}57"
