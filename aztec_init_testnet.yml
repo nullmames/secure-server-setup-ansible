@@ -21,9 +21,12 @@
         stop_timeout: 600
         pull: true
         ports:
+          # p2p
           - "408{{ item.validator_number }}:408{{ item.validator_number }}/tcp"
           - "408{{ item.validator_number }}:408{{ item.validator_number }}/udp"
-          - "90{{ item.validator_number }}:90{{ item.validator_number }}/tcp"
+          # rpc
+          - "{{ nebula_internal_ip_addr }}:90{{ item.validator_number }}:90{{ item.validator_number }}"
+          - "127.0.0.1:90{{ item.validator_number }}:90{{ item.validator_number }}"
         volumes:
           - "/etc/localtime:/etc/localtime:ro"
           - "{{ user_dir }}/docker-compose/aztec/{{ item.validator_number }}/data:/data"
@@ -72,7 +75,7 @@
         healthcheck:
           test: ["CMD", "curl", "-fsS", "http://127.0.0.1:90{{ item.validator_number }}/status"]
           interval: 60s
-          timeout: 10s
-          retries: 3
+          timeout: 30s
+          retries: 30
           start_period: 120s
       loop: "{{ container_configs }}"
