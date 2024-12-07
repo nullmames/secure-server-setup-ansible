@@ -1,6 +1,6 @@
 ---
 - name: Upgrade Horcrux binary and restart all horcrux services running on target machine
-  gather_facts: false
+  gather_facts: true
   hosts: "{{ target }}"
   any_errors_fatal: true
 
