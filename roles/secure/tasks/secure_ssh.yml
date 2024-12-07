@@ -6,6 +6,7 @@
     owner: root
     group: root
     mode: "0644"
+    backup: true
   notify: Restart ssh
 
 - name: Remove small Diffie-Hellman moduli
@@ -16,3 +17,13 @@
     - "awk '$5 >= 3072' /etc/ssh/moduli > /etc/ssh/moduli.tmp"
     - "mv /etc/ssh/moduli.tmp /etc/ssh/moduli"
   notify: Restart ssh
+
+- name: Test config file prior to service restart
+  ansible.builtin.shell: "/usr/sbin/sshd -t"
+  register: sshd_test_output
+  ignore_errors: true
+
+- name: Fail if sshd_config test fails
+  ansible.builtin.fail:
+    msg: "sshd_config test failed: {{ sshd_test_output.stdout }}!"
+  when: sshd_test_output.rc != 0
