@@ -61,6 +61,10 @@ firewall:
       proto: icmp
       host: any
 
+    - port: 10050-10051 # zabbix agent and server
+      proto: tcp
+      host: any
+
 {% else %}
 
   inbound:
