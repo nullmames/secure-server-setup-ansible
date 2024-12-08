@@ -4,6 +4,6 @@
   gather_facts: true
   roles:
     - { role: util_ipfs_install, when: ipfs_role is defined }
-    - { role: util_ipfs_install_cluster, when: ipfs_role is defined }
+    - { role: util_ipfs_cluster_install, when: ipfs_role is defined }
     - util_docker_install
-    - util_install_imgproxy
+    - util_imgproxy_install
