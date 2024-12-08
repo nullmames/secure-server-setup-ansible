@@ -3,4 +3,4 @@
   hosts: all
   gather_facts: true
   roles:
-    - util_install_node
+    - util_node_install

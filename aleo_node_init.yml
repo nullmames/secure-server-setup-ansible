@@ -10,7 +10,7 @@
         msg: build_profile is not set in config. Unable to continue.
       when: not build_profile
   roles:
-    - util_install_rust
+    - util_rust_install
     - aleo_node_install
     - aleo_node_configure
     - aleo_node_launch

@@ -3,4 +3,4 @@
   hosts: all
   gather_facts: false
   roles:
-    - util_install_rust
+    - util_rust_install

@@ -26,4 +26,4 @@
   when: nebula_internal_ip_addr is defined
 
 - name: Import zabbix playbook
-  ansible.builtin.import_playbook: util_install_zabbix.yml
+  ansible.builtin.import_playbook: util_zabbix_install.yml
