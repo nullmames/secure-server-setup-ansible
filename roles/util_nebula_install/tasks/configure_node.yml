@@ -1,7 +1,7 @@
 - name: Ensure a cert/key exists for node on lighthouse
   ansible.builtin.command:
     chdir: /etc/nebula
-    cmd: ./nebula-cert sign -name "{{ inventory_hostname }}" -ip "{{ nebula_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}"
+    cmd: ./nebula-cert sign -name "{{ inventory_hostname }}" -ip "{{ nebula_internal_ip_addr }}/{{ nebula_network_cidr }}" -duration "{{ nebula_client_cert_duration }}" {% if nebula_groups is defined %}-groups "{{ nebula_groups }}"{% endif %}
     creates: "/etc/nebula/{{ inventory_hostname }}.crt"
   delegate_to: "{{ groups.nebula_lighthouse[0] }}"
 
