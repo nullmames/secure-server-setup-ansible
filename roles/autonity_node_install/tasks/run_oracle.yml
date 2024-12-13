@@ -9,7 +9,7 @@
   ansible.builtin.template:
     src: "oracle.key.j2"
     dest: "{{ user_dir }}/.autonity/keystore/{{ oracle_key_name }}.key"
-    mode: "0644"
+    mode: "0400"
 
 - name: Build base folder structure
   ansible.builtin.file:
@@ -29,7 +29,7 @@
 - name: Run autonity oracle container
   community.docker.docker_container:
     name: "{{ oracle_container_name }}"
-    image: ghcr.io/autonity/autonity-oracle-{{ execution_chain_id }}:{{ oracle_container_version }}
+    image: ghcr.io/autonity/autonity-oracle:{{ oracle_container_version }}
     restart_policy: unless-stopped
     state: started
     pull: true
