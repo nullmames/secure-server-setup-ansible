@@ -1,0 +1,49 @@
+- name: Register installed go version
+  ansible.builtin.shell: '/usr/local/go/bin/go version | cut -d " " -f3'
+  register: goversion
+  ignore_errors: true
+
+- name: Set url for architecture
+  ansible.builtin.set_fact:
+    go_arch: "{% if ansible_architecture == 'aarch64' %}arm64{% else %}amd64{% endif %}"
+
+- name: Download and install go
+  when: goversion.stdout != go_release
+  block:
+    - name: Download go
+      ansible.builtin.get_url:
+        url: https://golang.org/dl/{{ go_release }}.linux-{{ go_arch }}.tar.gz
+        dest: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
+        mode: "0700"
+
+    - name: Remove go binary
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+
+    - name: Unarchive go release
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
+        dest: /usr/local
+        remote_src: true
+
+    - name: Delete temporary file
+      ansible.builtin.file:
+        path: /tmp/{{ go_release }}.linux-{{ go_arch }}.tar.gz
+        state: absent
+
+- name: Copy .zprofile
+  ansible.builtin.template:
+    src: "zprofile.j2"
+    dest: "{{ user_dir }}/.zprofile"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+
+- name: Ensure go/bin exists
+  ansible.builtin.file:
+    path: "{{ user_dir }}/go/bin"
+    state: directory
+    mode: "0755"
