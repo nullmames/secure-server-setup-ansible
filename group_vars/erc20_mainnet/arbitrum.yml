@@ -11,3 +11,9 @@ execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
 
 # Arbitrum specific variables
 arbitrum_chain_name: arb1
+
+# Monitoring
+execution_github_org: OffchainLabs
+execution_github_repo: nitro
+execution_rpc_port: 11847
+execution_public_rpc: https://arb-mainnet.g.alchemy.com/v2/cwjCmVrqcavPhkx2sCWsIexm8_5wJDCW
