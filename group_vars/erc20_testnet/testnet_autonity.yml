@@ -7,13 +7,13 @@ custom_port_prefix: 144
 execution_chain_id: piccadilly
 # Execution container
 execution_container_name: autonity
-execution_container_version: v0.14.1
+execution_container_version: v1.0.2-alpha
 # Snapshots
 execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/autonity/chaindata"
 
 # Oracle Details
 oracle_container_name: autonity-oracle
-oracle_container_version: latest
+oracle_container_version: v0.2.2
 oracle_key_name: oracle
 oracle_key_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -22,3 +22,8 @@ oracle_key_password: !vault |
   62646663663465303532616666336364613935323838623531623030323439623962376161373936
   6138633836333164330a636462653531646232393664393233626663636239653564646233653033
   33646631623063623339653830643865313363393665313338383065393031313337
+
+# Monitoring
+execution_github_org: autonity
+execution_github_repo: autonity
+execution_public_rpc: https://autonity.rpc.web3cdn.network/testnet
