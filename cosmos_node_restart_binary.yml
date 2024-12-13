@@ -13,8 +13,15 @@
         name: "{{ daemon }}"
         state: restarted
 
-    - name: Sleep for 30 seconds (unless last host)
-      when: inventory_hostname != ansible_play_hosts_all[-1]
-      ansible.builtin.wait_for:
-        port: "{{ custom_port_prefix }}57"
-        delay: 30
+    - name: Wait for RPC response showing at-height
+      ansible.builtin.uri:
+        url: "http://localhost:{{ custom_port_prefix }}57/status"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: rpc_response
+      until: rpc_response.content is search(search_string)
+      retries: 24
+      delay: 15
+      vars:
+        search_string: '\"catching_up\":false,'
