@@ -2,9 +2,9 @@
 # Install and run Autonity node & Autonity Oracle
 # Installs `aut` cli manually to allow for wallet manipulation and creation
 
-# Install/upgrade autonity-cli on non-rpc nodes
-- name: Install autonity-cli on non-rpc nodes
-  when: (rpc is not defined) or (not rpc)
+# Install/upgrade autonity-cli on validator node
+- name: Install autonity-cli on validator node
+  when: (validator is defined) and (validator)
   block:
     - name: Install python3-venv
       become: true

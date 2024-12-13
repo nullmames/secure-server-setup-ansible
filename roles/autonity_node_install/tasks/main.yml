@@ -6,5 +6,5 @@
   ansible.builtin.include_tasks: run_node.yml
 
 - name: Run Oracle
-  when: (rpc is not defined) or (not rpc)
+  when: (validator is defined) and (validator)
   ansible.builtin.include_tasks: run_oracle.yml
