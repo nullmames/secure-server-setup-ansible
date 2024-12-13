@@ -2,7 +2,7 @@ network: odin
 folder: ".odin"
 daemon: odind
 chain_id: odin-mainnet-freya
-node_version: v0.10.0
+node_version: v0.11.0
 repo: https://github.com/ODIN-PROTOCOL/odin-core
 genesis: https://snapshots.polkachu.com/genesis/odin/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:16856,ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:16856"
@@ -14,4 +14,4 @@ snap_rpc: https://odin-rpc.polkachu.com:443
 
 # snapshot_url: https://snapshots.polkachu.com/snapshots/odin/odin_17251707.tar.lz4
 
-upgrade_name: v0.10.0
+upgrade_name: v0.11.0

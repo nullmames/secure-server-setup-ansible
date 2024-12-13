@@ -2,7 +2,7 @@ network: celestia
 folder: ".celestia-app"
 daemon: celestia-appd
 chain_id: celestia
-node_version: v2.1.2
+node_version: v3.0.2
 repo: https://github.com/celestiaorg/celestia-app
 genesis: https://raw.githubusercontent.com/celestiaorg/networks/master/celestia/genesis.json
 seeds: "20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:16656,9aa8a73ea9364aa3cf7806d4dd25b6aed88d8152@celestia.seed.mzonder.com:13156"
