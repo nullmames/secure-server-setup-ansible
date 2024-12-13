@@ -1,15 +1,69 @@
-- name: Deploy Zabbix
+- name: Deploy Zabbix for EVM el node
   hosts: all
   gather_facts: true
-  become: true
+  become: false
   vars_files:
-    - "{{ var_file }}"
+    - "group_vars/erc20_mainnet/{{ target }}.yml"
+    - "group_vars/erc20_testnet/{{ target }}.yml"
+    - "group_vars/erc20_sepolia/{{ target }}.yml"
 
   pre_tasks:
     - name: Verify sudo
       ansible.builtin.shell: "sudo w"
       delegate_to: localhost
+      run_once: true
+
+    - name: Verify we're monitoring a node that exists
+      ansible.builtin.stat:
+        path: "{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
 
   roles:
     - util_zabbix_prepare
-    - util_zabbix_evm_node
+
+    - role: zabbix.zabbix.host
+      host_zabbix_api_server: "{{ zabbix_server_public_name }}"
+      host_zabbix_api_port: 443
+      host_zabbix_api_user: "{{ zabbix_login_user }}"
+      host_zabbix_api_password: "{{ zabbix_login_pass }}"
+      host_zabbix_api_use_ssl: true
+      host_name: "NODE-{{ network }}-EL-{{ inventory_hostname }}"
+      host_description: "{{ network }} execution layer node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})"
+      host_hostgroups:
+        - EVM
+        - Execution Layer Node
+        - "{{ network }}"
+        - "{% if 'Testnet' in group_names %}testnet{% else %}mainnet{% endif %}"
+      host_inventory_mode: automatic
+      host_interfaces:
+        - type: agent
+          ip: "{% if nebula_internal_ip_addr is defined and nebula_internal_ip_addr | ansible.utils.ipaddr %}{{ nebula_internal_ip_addr }}{% elif ansible_host | ansible.utils.ipaddr %}{{ ansible_host }}{% endif %}"
+          dns: ""
+          useip: true
+          port: "{{ agent_param_listenport | default(10050) }}"
+      host_inventory:
+        alias: "{{ inventory_hostname }}"
+        software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+        location: "{{ node_info.json.org }}"
+        location_lat: "{{ latlong.0 }}"
+        location_lon: "{{ latlong.1 }}"
+        site_city: "{{ node_info.json.city }}"
+        site_state: "{{ node_info.json.region }}"
+        site_country: "{{ node_info.json.country }}"
+      host_templates:
+        - "EVM Node"
+      host_tags: "{{ inventory_group_dict }}"
+      host_macros:
+        - macro: "{$GITHUB_ORG}"
+          value: "{% if execution_github_org is defined %}{{ execution_github_org }}{% endif %}"
+        - macro: "{$GITHUB_REPO}"
+          value: "{% if execution_github_repo is defined %}{{ execution_github_repo }}{% endif %}"
+        - macro: "{$PORT_RPC}"
+          value: "{% if execution_rpc_port is defined %}{{ execution_rpc_port }}{% else %}{{ custom_port_prefix }}45{% endif %}"
+        - macro: "{$RPC_PUBLIC}"
+          value: "{% if execution_public_rpc is defined %}{{ execution_public_rpc }}{% endif %}"
