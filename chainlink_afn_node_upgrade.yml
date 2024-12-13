@@ -5,6 +5,6 @@
   vars_files:
     - "group_vars/mainnets/chainlink_afn.yml"
   roles:
-    - util_install_rust
+    - util_rust_install
     - chainlink_afn_node_install
     - chainlink_afn_node_configure
