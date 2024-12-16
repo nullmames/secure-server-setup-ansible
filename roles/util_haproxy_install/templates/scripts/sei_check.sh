@@ -13,7 +13,7 @@ fi
 LAG_AMOUNT=$(echo "${LAG}" | jq -r ".lag")
 
 # If LAG is null or greater than 300, exit
-if [ -z "${LAG_AMOUNT}" ] || [ "${LAG_AMOUNT}" -gt 300 ]; then
+if [ -z "${LAG_AMOUNT}" ] || [ "${LAG_AMOUNT}" -gt 1 ]; then
     exit 1
 fi
 
