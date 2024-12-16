@@ -31,6 +31,8 @@ for port in $ports; do
     tx_index=$(echo "$json_output" | jq -r "$base.node_info.other.tx_index")
     latest_block_height=$(echo "$json_output" | jq -r "$base.sync_info.latest_block_height")
     earliest_block_height=$(echo "$json_output" | jq -r "$base.sync_info.earliest_block_height")
+    total_blocks_on_node=$((latest_block_height - earliest_block_height))
+    total_blocks_on_node_formatted=$(printf "%'d" "$total_blocks_on_node")
     catching_up=$(echo "$json_output" | jq -r "$base.sync_info.catching_up")
     # Extract block times
     latest_block_time=$(echo "$json_output" | jq -r "$base.sync_info.latest_block_time")
@@ -54,6 +56,7 @@ for port in $ports; do
     echo "    Latest Block Time: $latest_block_time_readable"
     echo "    Earliest Block Height: $earliest_block_height"
     echo "    Earliest Block Time: $earliest_block_time_readable"
+    echo "    Total Blocks on Node: $total_blocks_on_node_formatted"
     echo "    Indexing: $tx_index"
     echo -e "    Catching Up: ${catching_up_format}${catching_up}${NC}"
     echo ""
