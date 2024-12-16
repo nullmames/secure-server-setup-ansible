@@ -5,5 +5,12 @@ custom_port_prefix: 116
 
 # Avalanche version
 execution_container_name: avalanchego
-execution_container_version: v1.11.11
+execution_container_version: v1.12.0
 execution_snapshot_location: "{{ folder }}/avalanchego-data/db"
+
+# Monitoring
+execution_github_org: ava-labs
+execution_github_repo: avalanchego
+execution_rpc_port: 9650
+execution_rpc_path: /ext/bc/C/rpc
+execution_public_rpc: https://api.avax.network/ext/bc/C/rpc

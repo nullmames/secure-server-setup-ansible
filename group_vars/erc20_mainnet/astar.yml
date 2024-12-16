@@ -7,3 +7,7 @@ custom_port_prefix: 131
 execution_container_name: "astar-collator"
 execution_container_version: v5.42.2
 execution_snapshot_location: "{{ folder }}/astar-collator"
+
+# Monitoring
+execution_rpc_port: 13144
+execution_public_rpc: https://astar.public.blastapi.io

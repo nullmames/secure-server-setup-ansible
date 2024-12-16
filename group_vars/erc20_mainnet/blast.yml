@@ -12,3 +12,6 @@ execution_snapshot_location: "{{ folder }}/bl-geth/geth/chaindata"
 # Consensus
 consensus_container_name: bl-node
 consensus_container_version: mainnet
+
+# Monitoring
+execution_public_rpc: https://rpc.blast.io

@@ -1,7 +1,7 @@
 # BNB Chain (bsc) network
 network: bnbchain
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
-custom_port_prefix: 141
+custom_port_prefix: 121 # SHOULD BE 121
 #consensus_port_prefix: 241
 
 # Execution
@@ -13,3 +13,8 @@ execution_snapshot_location: "{{ folder }}/bnb-geth/geth/chaindata"
 # Snapshot
 # https://github.com/48Club/bsc-snapshots
 bnbchain_snapshot_url: https://snapshots.48.club/geth.full.41723605.tar.zst
+
+# Monitoring
+execution_github_org: bnb-chain
+execution_github_repo: bsc
+execution_public_rpc: https://bsc-rpc.publicnode.com
