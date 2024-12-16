@@ -1,4 +1,5 @@
 {
   "state-sync-enabled": false,
-  "pruning-enabled": false
+  "pruning-enabled": false,
+  "rpc-tx-fee-cap": 0
 }

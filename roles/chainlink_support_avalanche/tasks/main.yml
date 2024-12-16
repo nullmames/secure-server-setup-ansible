@@ -61,5 +61,3 @@
       - --public-ip={{ public_ip.content | trim }}
       - --staking-port=9651
       - --log-level=info
-      # RMN
-      - --rpc-tx-fee-cap=0
