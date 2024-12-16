@@ -26,6 +26,12 @@
         - service: "docker"
           template: "Docker by Zabbix agent 2"
 
+    - name: Parse list of ansible inventory items to tag zabbix for hardware nodes
+      ansible.builtin.set_fact:
+        inventory_group_dict: "{{ inventory_group_dict | default([]) + [{ 'tag': 'inv', 'value': item }] }}"
+      with_items:
+        - "{{ group_names }}"
+
   roles:
     - role: util_zabbix_prepare
 
