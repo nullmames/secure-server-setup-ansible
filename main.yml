@@ -7,11 +7,6 @@
     - "{{ user_file }}"
 
   pre_tasks:
-    - name: Verify local sudo
-      become: false
-      ansible.builtin.shell: "sudo w"
-      delegate_to: localhost
-
     - name: Confirm with User if missing nebula_internal_ip_addr
       run_once: true
       ansible.builtin.pause:
