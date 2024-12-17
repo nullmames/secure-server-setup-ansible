@@ -57,5 +57,5 @@
         - {
             section: "beacon-kit.payload-builder",
             key: "suggested-fee-recipient",
-            value: '"{{ consensus_fee_recipient | default ("0x0000000000000000000000000000000000000000") }}"',
+            value: '"{{ suggested_fee_recipient | default ("0x0000000000000000000000000000000000000000") }}"',
           }
