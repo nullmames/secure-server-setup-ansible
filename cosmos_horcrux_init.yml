@@ -5,6 +5,7 @@
   any_errors_fatal: true
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
+    - "group_vars/testnets/{{ target }}.yml"
 
   tasks:
     - name: Check variables
@@ -40,6 +41,7 @@
   any_errors_fatal: true
   vars_files:
     - "group_vars/mainnets/{{ target }}.yml"
+    - "group_vars/testnets/{{ target }}.yml"
 
   pre_tasks:
     - name: Set shares
