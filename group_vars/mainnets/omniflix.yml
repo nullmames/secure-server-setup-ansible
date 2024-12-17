@@ -15,7 +15,7 @@ snap_rpc: https://rpc.cosmos.directory:443/omniflixhub
 snapshot_url:
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.2.10
   - 100.100.1.201

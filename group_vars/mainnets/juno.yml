@@ -17,7 +17,7 @@ upgrade_name: v25
 # snapshot_url: https://snapshots.lavenderfive.com/snapshots/juno/latest.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - "100.100.1.203"
   - "100.100.1.204"

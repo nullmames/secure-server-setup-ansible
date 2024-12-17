@@ -22,7 +22,7 @@ snap_rpc: "https://gitopia-rpc.polkachu.com:443"
 snapshot_url: https://snapshots.polkachu.com/snapshots/gitopia/gitopia_28890643.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.1.203
   - 100.100.1.201

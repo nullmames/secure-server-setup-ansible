@@ -18,7 +18,7 @@ upgrade_name: v4.2.6
 # snapshot_url: https://snapshots.polkachu.com/snapshots/migaloo/migaloo_6336770.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.1.208
   - 100.100.1.203

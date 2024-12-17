@@ -18,7 +18,7 @@ snap_rpc: https://quasar-rpc.publicnode.com:443
 snapshot_url: https://snapshots.polkachu.com/snapshots/quasar/quasar_7480562.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.1.180
   - 100.100.1.201

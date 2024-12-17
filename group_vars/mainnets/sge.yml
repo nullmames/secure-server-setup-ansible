@@ -16,7 +16,7 @@ snap_rpc: https://rpc.sge.indonode.net:443
 snapshot_url: https://snapshots.indonode.net/sge/sge-latest.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - "100.100.1.201"
   - "100.100.1.218"

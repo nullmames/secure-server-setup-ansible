@@ -14,7 +14,7 @@ snap_rpc: "https://chihuahua-rpc.polkachu.com:443"
 node_version: v8.0.2
 upgrade_name: v8.0.2
 
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.1.201
   - 100.100.1.219

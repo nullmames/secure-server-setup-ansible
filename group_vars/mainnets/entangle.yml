@@ -18,7 +18,7 @@ snap_rpc: https://entangle.rpc.moonbridge.team:443
 snapshot_url: https://snapshots.moonbridge.team/mainnet/entangle/snapshot_latest.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - 100.100.1.205
   - 100.100.1.201

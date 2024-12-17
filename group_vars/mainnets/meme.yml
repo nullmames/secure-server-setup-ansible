@@ -14,7 +14,7 @@ custom_port_prefix: 147
 snapshot_url: https://snapshots.polkachu.com/snapshots/meme/meme_12227219.tar.lz4
 
 # Horcrux
-horcrux_group: horcrux_alpha
+horcrux_group: horcrux_alfa
 sentries:
   - "100.100.1.201"
   - "100.100.1.110"
