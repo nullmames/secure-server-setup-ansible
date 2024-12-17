@@ -24,3 +24,9 @@ custom_snapshot_interval: 50000
 
 # Tenderduty High
 threshold_type: "high"
+
+# Horcrux
+horcrux_group: horcrux_uniform
+sentries:
+  - 100.100.3.11
+  - 100.100.3.8
