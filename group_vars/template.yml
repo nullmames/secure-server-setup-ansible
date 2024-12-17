@@ -5,7 +5,7 @@ chain_id:
 node_version:
 repo:
 genesis:
-seeds: ""
+seeds:
 peers:
 minimum_gas_price: ""
 custom_port_prefix:
