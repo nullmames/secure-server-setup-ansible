@@ -5,7 +5,6 @@
   vars:
     zabbix_template_list:
       - Linux by Zabbix agent active
-      - SMART by Zabbix agent 2 active
 
   pre_tasks:
     - name: Verify sudo
@@ -16,7 +15,12 @@
     - name: Get service facts
       ansible.builtin.service_facts:
 
-    - name: Add additional templates to list
+    - name: Add SMART template to list if bare metal
+      ansible.builtin.set_fact:
+        zabbix_template_list: "{{ zabbix_template_list + ['SMART by Zabbix agent 2 active'] }}"
+      when: "'baremetal' in group_names"
+
+    - name: Add additional service templates to list
       ansible.builtin.set_fact:
         zabbix_template_list: "{{ zabbix_template_list + [item.template] }}"
       when: item.service in ansible_facts.services
@@ -37,7 +41,7 @@
 
     - role: zabbix.zabbix.agent
       agent_variant: 2
-      agent_major_version: "{% if ansible_architecture == 'aarch64' %}6.0{% else %}6.4{% endif %}"
+      agent_major_version: "{% if ansible_architecture == 'aarch64' %}7.0{% else %}6.4{% endif %}"
       agent_package_state: latest
       agent_param_server: "{{ zabbix_agent_listen_addresses }}" # Allow dial-in from multiple source addresses
       agent_param_serveractive: "{{ zabbix_server_public_name }}" # Use DNS name for ServerActive
