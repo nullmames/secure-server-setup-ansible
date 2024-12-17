@@ -5,7 +5,7 @@ daemon: seid
 chain_id: "pacific-1"
 node_version: v6.0.1-hotfix-rpc-3
 repo: https://github.com/sei-protocol/sei-chain.git
-
+seeds: "400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc@sei.rpc.kjnodes.com:16859,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:11956"
 genesis: "https://gist.githubusercontent.com/ericjohncarlson/5d8a84c9f6622d4f4ea62484403394e4/raw/8d5bc4ba1218bc1338126fb77b7b61eebb394104/gistfile1.txt"
 custom_port_prefix: 119
 # peers: 42f5(polka), d7ad(sei-p2p), 1b798,80139(kucoin). 4d5f(mexc), c5a0(upbit), 7602,f303(binance), 6106,9ebc(sei), 2639(schultzie), b329(strangelove)
@@ -40,8 +40,7 @@ snapshot_hour: 1
 snapshot_minute: 30
 
 # Horcrux
-horcrux_group: horcrux_gamma
+horcrux_group: horcrux_bravo
 sentries:
   - 100.100.3.17
-  - 100.100.3.18
   - 100.100.3.155
