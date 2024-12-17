@@ -42,3 +42,6 @@
             name: "{{ initial_user }}"
             state: absent
             remove: true
+
+- name: Reboot host if necessary
+  ansible.builtin.import_playbook: util_system_reboot.yml
