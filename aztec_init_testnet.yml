@@ -12,6 +12,30 @@
         return_content: true
       register: public_ip
 
+    - name: Download config
+      ansible.builtin.uri:
+        url: "{{ aztec_config_endpoint }}"
+        method: POST
+        body: '{"jsonrpc":"2.0","method":"node_getNodeInfo","params":[],"id":1}'
+        body_format: json
+        return_content: true
+      register: config
+
+    - name: Assert that valid json returned
+      ansible.builtin.assert:
+        that:
+          - config.json.result.enr is defined
+          - config.json.result.l1ContractAddresses.registryAddress is defined
+          - config.json.result.l1ContractAddresses.governanceProposerAddress is defined
+          - config.json.result.l1ContractAddresses.feeJuiceAddress is defined
+          - config.json.result.l1ContractAddresses.rollupAddress is defined
+          - config.json.result.l1ContractAddresses.rewardDistributorAddress is defined
+          - config.json.result.l1ContractAddresses.governanceAddress is defined
+          - config.json.result.l1ContractAddresses.coinIssuerAddress is defined
+          - config.json.result.l1ContractAddresses.feeJuicePortalAddress is defined
+          - config.json.result.l1ContractAddresses.inboxAddress is defined
+          - config.json.result.l1ContractAddresses.outboxAddress is defined
+
     - name: Start aztec containers
       community.docker.docker_container:
         name: "aztec-{{ item.validator_number }}"
@@ -21,20 +45,13 @@
         stop_timeout: 600
         pull: true
         ports:
-          # p2p
           - "408{{ item.validator_number }}:408{{ item.validator_number }}/tcp"
           - "408{{ item.validator_number }}:408{{ item.validator_number }}/udp"
-          # rpc
-          - "{{ nebula_internal_ip_addr }}:90{{ item.validator_number }}:90{{ item.validator_number }}"
-          - "127.0.0.1:90{{ item.validator_number }}:90{{ item.validator_number }}"
+          - "90{{ item.validator_number }}:90{{ item.validator_number }}/tcp"
         volumes:
           - "/etc/localtime:/etc/localtime:ro"
           - "{{ user_dir }}/docker-compose/aztec/{{ item.validator_number }}/data:/data"
         env:
-          # General
-          DATA_DIRECTORY: "/data"
-          ARCHIVER_POLLING_INTERVAL_MS: "6000"
-          # validator.sh
           P2P_UDP_ANNOUNCE_ADDR: "{{ public_ip.content | trim }}:408{{ item.validator_number }}"
           P2P_TCP_ANNOUNCE_ADDR: "{{ public_ip.content | trim }}:408{{ item.validator_number }}"
           COINBASE: "0xbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -54,19 +71,20 @@
           AZTEC_EPOCH_DURATION: "32"
           AZTEC_EPOCH_PROOF_CLAIM_WINDOW_IN_L2_SLOTS: "13"
           ETHEREUM_HOST: "{{ ethereum_host }}"
-          BOOTSTRAP_NODES: "{{ bootnodes }}"
-          REGISTRY_CONTRACT_ADDRESS: "0x5fbdb2315678afecb367f032d93f642f64180aa3"
-          GOVERNANCE_PROPOSER_CONTRACT_ADDRESS: "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0"
-          FEE_JUICE_CONTRACT_ADDRESS: "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
-          ROLLUP_CONTRACT_ADDRESS: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6"
-          REWARD_DISTRIBUTOR_CONTRACT_ADDRESS: "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707"
-          GOVERNANCE_CONTRACT_ADDRESS: "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9"
-          COIN_ISSUER_CONTRACT_ADDRESS: "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9"
-          FEE_JUICE_PORTAL_CONTRACT_ADDRESS: "0x0165878a594ca255338adfa4d48449f69242eb8f"
-          INBOX_CONTRACT_ADDRESS: "0xed179b78d5781f93eb169730d8ad1be7313123f4"
-          OUTBOX_CONTRACT_ADDRESS: "0x1016b5aaa3270a65c315c664ecb238b6db270b64"
+          BOOTSTRAP_NODES: "{{ config.json.result.enr }}"
+          REGISTRY_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.registryAddress }}"
+          GOVERNANCE_PROPOSER_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.governanceProposerAddress }}"
+          FEE_JUICE_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.feeJuiceAddress }}"
+          ROLLUP_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.rollupAddress }}"
+          REWARD_DISTRIBUTOR_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.rewardDistributorAddress }}"
+          GOVERNANCE_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.governanceAddress }}"
+          COIN_ISSUER_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.coinIssuerAddress }}"
+          FEE_JUICE_PORTAL_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.feeJuicePortalAddress }}"
+          INBOX_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.inboxAddress }}"
+          OUTBOX_CONTRACT_ADDRESS: "{{ config.json.result.l1ContractAddresses.outboxAddress }}"
           P2P_UDP_LISTEN_ADDR: "0.0.0.0:408{{ item.validator_number }}"
           P2P_TCP_LISTEN_ADDR: "0.0.0.0:408{{ item.validator_number }}"
+          DATA_DIRECTORY: "/data"
         command:
           - start
           - --node
@@ -76,6 +94,6 @@
           test: ["CMD", "curl", "-fsS", "http://127.0.0.1:90{{ item.validator_number }}/status"]
           interval: 60s
           timeout: 30s
-          retries: 30
+          retries: 10
           start_period: 120s
       loop: "{{ container_configs }}"
