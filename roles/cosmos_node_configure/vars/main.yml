@@ -16,7 +16,7 @@ cosmos_node_configure_config_toml:
     max_num_outbound_peers: 34
     flush_throttle_timeout: '"10ms"'
   instrumentation:
-    prometheus: '"true"'
+    prometheus: "true"
     prometheus_listen_addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
     namespace: '"tendermint"'
 
@@ -77,8 +77,14 @@ cosmos_node_configure_config_toml_37:
     max-pending-txs-bytes: 1073741824
     pending-ttl-duration: '"0s"'
     pending-ttl-num-blocks: 0
+  self-remediation:
+    p2p-no-peers-available-window-seconds: 0
+    statesync-no-peers-available-window-seconds: 0
+    blocks-behind-threshold: 1000
+    blocks-behind-check-interval: 60
+    restart-cooldown-seconds: 600
   instrumentation:
-    prometheus: '"true"'
+    prometheus: "true"
     prometheus-listen-addr: '"0.0.0.0:{{ custom_port_prefix }}61"'
     namespace: '"tendermint"'
 
