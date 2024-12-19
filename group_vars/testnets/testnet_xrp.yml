@@ -1,0 +1,19 @@
+network: xrp
+folder: ".exrpd"
+daemon: exrpd
+chain_id: exrp_1440002-1
+node_version: v5.0.0
+repo: https://github.com/xrplevm/node.git
+genesis: https://raw.githubusercontent.com/Peersyst/xrp-evm-archive/main/poa-devnet/genesis.json
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:30056"
+peers: "a91aec8c83957561eefb89f66558d9b561dcec55@evm-sidechain-validator-0.peersyst.tech:26656,f00b27159fc247c8e80d5495073f12a430d887de@evm-sidechain-validator-1.peersyst.tech:26656,46b21b8974cd2e244a6d45e3b5123c257a654f5f@evm-sidechain-validator-9.peersyst.tech:26656"
+custom_port_prefix: 300
+minimum_gas_price: "0axrp"
+
+upgrade_name: v5.0.0
+
+# StateSync
+snap_rpc:
+
+snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/xrp/xrp_13254717.tar.lz4
+#
