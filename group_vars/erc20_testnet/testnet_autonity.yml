@@ -13,7 +13,7 @@ execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/autoni
 
 # Oracle Details
 oracle_container_name: autonity-oracle
-oracle_container_version: v0.2.2
+oracle_container_version: v0.2.3
 oracle_key_name: oracle
 oracle_key_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
