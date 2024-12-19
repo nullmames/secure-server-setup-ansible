@@ -1,8 +1,31 @@
 ---
+- name: Determine RPC response
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - "{{ var_file }}"
+
+  tasks:
+    - name: Determine RPC response type
+      run_once: true
+      block:
+        - name: Check rpc response
+          ansible.builtin.uri:
+            url: "http://127.0.0.1:{{ custom_port_prefix }}57/status"
+            method: GET
+            status_code: 200
+            return_content: true
+            body_format: json
+          register: test_response
+
+        - name: Set inspection path
+          ansible.builtin.set_fact:
+            inspection_path: "{% if test_response.json.result is defined %}result.sync_info.catching_up{% else %}sync_info.catching_up{% endif %}"
+
 - name: Restart selected cosmovisor binary (with delay for multiple hosts)
   hosts: all
   gather_facts: false
-  serial: 1 # Run one host at a time
+  serial: 1 # One host at a time
   vars_files:
     - "{{ var_file }}"
 
@@ -15,13 +38,12 @@
 
     - name: Wait for RPC response showing at-height
       ansible.builtin.uri:
-        url: "http://localhost:{{ custom_port_prefix }}57/status"
+        url: "http://127.0.0.1:{{ custom_port_prefix }}57/status"
         method: GET
         status_code: 200
         return_content: true
+        body_format: json
       register: rpc_response
-      until: rpc_response.content is search(search_string)
-      retries: 24
+      until: "(rpc_response.json | json_query(inspection_path)) is false"
+      retries: 40
       delay: 15
-      vars:
-        search_string: '\"catching_up\":false,'
