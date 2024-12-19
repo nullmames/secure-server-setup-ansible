@@ -40,10 +40,12 @@
       ansible.builtin.uri:
         url: "http://127.0.0.1:{{ custom_port_prefix }}57/status"
         method: GET
-        status_code: 200
         return_content: true
         body_format: json
       register: rpc_response
-      until: "(rpc_response.json | json_query(inspection_path)) is false"
+      until:
+        - rpc_response.status == 200
+        - rpc_response.json is defined
+        - "(rpc_response.json | json_query(inspection_path)) is false"
       retries: 40
       delay: 15
