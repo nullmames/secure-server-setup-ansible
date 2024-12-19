@@ -57,6 +57,15 @@
         mode: "0644"
       loop: '{{ config_changes.cosmos_node_configure_config_toml_37["mempool"] | dict2items }}'
 
+    - name: Adjust self-remediation section
+      community.general.ini_file:
+        path: "{{ user_dir }}/{{ folder }}/config/config.toml"
+        section: self-remediation
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+        mode: "0644"
+      loop: '{{ config_changes.cosmos_node_configure_config_toml_37["self-remediation"] | dict2items }}'
+
     - name: Adjust instrumentation section
       community.general.ini_file:
         path: "{{ user_dir }}/{{ folder }}/config/config.toml"
