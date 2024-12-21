@@ -7,13 +7,13 @@
       - Linux by Zabbix agent active
 
   pre_tasks:
-    - name: Verify sudo
+    - name: Get service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify sudo on localhost
       ansible.builtin.shell: "sudo w"
       delegate_to: localhost
       run_once: true
-
-    - name: Get service facts
-      ansible.builtin.service_facts:
 
     - name: Add SMART template to list if bare metal
       ansible.builtin.set_fact:
