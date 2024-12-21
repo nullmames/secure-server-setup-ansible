@@ -2,7 +2,7 @@ network: neutron
 folder: ".neutrond"
 daemon: neutrond
 chain_id: neutron-1
-node_version: v5.0.2
+node_version: v5.0.4
 repo: "https://github.com/neutron-org/neutron"
 genesis: "https://raw.githubusercontent.com/neutron-org/mainnet-assets/main/neutron-1-genesis.json"
 seeds: "74f3a4a0423e72334f4439b438b29934e5f0dbbd@p2p-xyphion.neutron-1.neutron.org:26656,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:19156"
@@ -13,4 +13,4 @@ snap_rpc: https://neutron-rpc.polkachu.com:443
 
 # snapshot_url: https://snapshots.polkachu.com/snapshots/neutron/neutron_17174995.tar.lz4
 
-upgrade_name: v5.0.2
+upgrade_name: v5.0.4
