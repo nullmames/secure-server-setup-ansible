@@ -1,0 +1,82 @@
+---
+# ZKSync-Era node  This does not handle snapshots.
+# Docs:
+# Custom port prefix: 147
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Build folder structure
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+
+- name: Postgres DB start
+  community.docker.docker_container:
+    name: zksync-postgres
+    image: postgres:14
+    restart_policy: unless-stopped
+    state: started
+    networks:
+      - name: "{{ network }}_net"
+    stop_timeout: 500
+    pull: true
+    volumes:
+      - "{{ folder }}/zksync-postgres:/var/lib/postgresql/data"
+    command: >
+      postgres
+      -c max_connections=200
+      -c log_error_verbosity=terse
+      -c shared_buffers=2GB
+      -c effective_cache_size=4GB
+      -c maintenance_work_mem=1GB
+      -c checkpoint_completion_target=0.9
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c min_wal_size=4GB
+      -c max_wal_size=16GB
+      -c max_worker_processes=16
+      -c checkpoint_timeout=1800
+    env:
+      POSTGRES_PASSWORD: "notsecurepassword"
+      PGPORT: "5430"
+
+- name: ZKSync Era Node
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    restart_policy: unless-stopped
+    state: started
+    image: "matterlabs/external-node:{{ execution_container_version }}"
+    ports:
+      - "127.0.0.1:{{ custom_port_prefix }}60:3060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:3060"
+      - "127.0.0.1:{{ custom_port_prefix }}61:3061"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}61:3061"
+      - "127.0.0.1:{{ custom_port_prefix }}81:3081"
+    stop_timeout: 500
+    pull: true
+    volumes:
+      - "{{ folder }}/{{ execution_container_name }}:/db"
+    networks:
+      - name: "{{ network }}_net"
+    env:
+      DATABASE_URL: "postgres://postgres:notsecurepassword@zksync-postgres:5430/zksync_local_ext_node"
+      DATABASE_POOL_SIZE: "10"
+      EN_HTTP_PORT: "3060"
+      EN_WS_PORT: "3061"
+      EN_HEALTHCHECK_PORT: "3081"
+      EN_PROMETHEUS_PORT: "3322"
+      EN_ETH_CLIENT_URL: "{{ ethereum_l1 }}"
+      EN_MAIN_NODE_URL: "https://zksync2-mainnet.zksync.io"
+      EN_L1_CHAIN_ID: "1"
+      EN_L2_CHAIN_ID: "324"
+      EN_STATE_CACHE_PATH: "./db/ext-node/state_keeper"
+      EN_MERKLE_TREE_PATH: "./db/ext-node/lightweight"
+      EN_SNAPSHOTS_RECOVERY_ENABLED: "true"
+      EN_SNAPSHOTS_OBJECT_STORE_BUCKET_BASE_URL: "zksync-era-mainnet-external-node-snapshots"
+      EN_SNAPSHOTS_OBJECT_STORE_MODE: "GCSAnonymousReadOnly"
+      RUST_LOG: "warn,zksync=info,zksync_core::metadata_calculator=info,zksync_state=info,zksync_utils=info,zksync_web3_decl::client=error"

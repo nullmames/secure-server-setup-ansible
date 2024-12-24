@@ -1,0 +1,13 @@
+# ZkSync versions and approach
+network: zksync-era
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 147
+
+# Execution
+execution_container_name: "{{ network }}"
+execution_container_version: v25.4.0-alpha
+execution_snapshot_location: "{{ folder }}/chaindata"
+
+# Monitoring
+execution_rpc_port: 14760
+execution_public_rpc: https://zksync-mainnet.g.alchemy.com/v2/AF8LJavPyJCAZ8Z-naw1yXhqxSiapsWJ
