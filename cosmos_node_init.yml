@@ -21,4 +21,4 @@
     - cosmos_node_launch
 
 - name: Install monitoring
-  ansible.builtin.import_playbook: utill_zabbix_cosmos_node_install.yml
+  ansible.builtin.import_playbook: util_zabbix_cosmos_node_install.yml
