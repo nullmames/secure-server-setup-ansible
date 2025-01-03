@@ -9,7 +9,7 @@ StartLimitBurst=5
 User={{ ansible_user }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 
-ExecStart=/usr/local/bin/agave-validator \
+ExecStart={{ user_dir }}/.local/share/solana/install/active_release/bin/agave-validator \
     --identity validator-keypair.json \
     --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2 \
     --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ \

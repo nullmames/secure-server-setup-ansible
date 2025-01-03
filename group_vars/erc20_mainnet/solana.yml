@@ -2,4 +2,4 @@
 network: solana
 folder: ".solana"
 repo: https://github.com/anza-xyz/agave.git
-node_version: v2.0.18
+node_version: v2.0.21 # unused

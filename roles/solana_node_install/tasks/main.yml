@@ -1,21 +1,6 @@
 # Build and update Solana RPC node (renamed to Agave September 2024)
-- name: Install additional build pre-requisites
-  become: true
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: present
-    cache_valid_time: 3600
-  loop:
-    - pkg-config
-    - libudev-dev
-    - llvm
-    - libclang-dev
-    - protobuf-compiler
-    - libssl-dev
-    - clang
-    - acl
 
-- name: Add additional system tweaks
+- name: Add system tweaks per recommendations
   become: true
   ansible.posix.sysctl:
     name: "{{ item.name }}"
@@ -63,6 +48,35 @@
     # - name: net.ipv4.tcp_fastopen
     #   value: "3"
 
+- name: Identify if binaries exist on node
+  ansible.builtin.stat:
+    path: "{{ user_dir }}/.local/share/solana/install/active_release/bin/agave-validator"
+  register: binaries_exist
+
+- name: Download agave library of binaries
+  when: not binaries_exist.stat.exists
+  ansible.builtin.shell:
+    cmd: 'sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"'
+  args:
+    executable: /bin/bash
+  notify: Restart agave
+
+- name: Update existing agave binaries
+  when: binaries_exist.stat.exists
+  ansible.builtin.shell:
+    cmd: "{{ user_dir }}/.local/share/solana/install/active_release/bin/agave-install update"
+  args:
+    executable: /bin/bash
+  notify: Restart agave
+
+- name: Add agave to path via zsh custom
+  ansible.builtin.copy:
+    content: "export PATH={{ user_dir }}/.local/share/solana/install/active_release/bin:$PATH"
+    dest: "{{ user_dir }}/.oh-my-zsh/custom/solana_path.zsh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
 - name: Create network folder
   ansible.builtin.file:
     path: "{{ user_dir }}/{{ folder }}"
@@ -76,71 +90,8 @@
     path: "{{ user_dir }}/{{ folder }}/validator-keypair.json"
   register: node_initialized
 
-- name: Registered installed version of agave-validator
-  ansible.builtin.shell: 'set -o pipefail && /usr/local/bin/agave-validator --version | cut -d " " -f2 | sed "s/^/v/"'
-  register: agave_installed_version
-  args:
-    executable: /bin/bash
-  ignore_errors: true
-
-- name: Build new version & install
-  notify: Restart agave
-  when: agave_installed_version is undefined or agave_installed_version.stdout != node_version
-  block:
-    - name: Update agave repo for node install
-      ansible.builtin.git:
-        repo: "{{ repo }}"
-        dest: "{{ user_dir }}/source/{{ network }}"
-        version: "{{ node_version }}"
-        update: true
-        force: true
-        recursive: true
-
-    - name: Build agave binary
-      ansible.builtin.command: "nice -n 15 {{ item }}"
-      args:
-        chdir: "{{ user_dir }}/source/{{ network }}"
-      environment:
-        PATH: "{{ path }}"
-      loop:
-        - "cargo clean"
-        - "cargo update"
-        - "cargo build --release"
-
-    - name: Check if existing binaries exist
-      ansible.builtin.stat:
-        path: "/usr/local/bin/agave-validator"
-      register: existing_binary
-
-    - name: Archive exiting binaries
-      become: true
-      when: existing_binary.stat.exists
-      ansible.builtin.copy:
-        src: "/usr/local/bin/{{ item }}"
-        dest: "/usr/local/bin/{{ item }}-{{ agave_installed_version.stdout }}"
-        owner: root
-        group: root
-        mode: "0755"
-        remote_src: true
-        force: true
-      loop:
-        - agave-validator
-
-    - name: Copy new binaries
-      become: true
-      ansible.builtin.copy:
-        src: "{{ user_dir }}/source/{{ network }}/target/release/{{ item }}"
-        dest: "/usr/local/bin"
-        owner: root
-        group: root
-        mode: "0755"
-        remote_src: true
-        force: true
-      loop:
-        - agave-validator
-
 - name: Create keys for node
   when: not node_initialized.stat.exists
   ansible.builtin.shell:
-    cmd: "{{ user_dir }}/source/{{ network }}/bin/agave-keygen new --no-bip39-passphrase -o {{ user_dir }}/{{ folder }}/validator-keypair.json"
+    cmd: "{{ user_dir }}/.local/share/solana/install/active_release/bin/solana-keygen new --no-bip39-passphrase -o {{ user_dir }}/{{ folder }}/validator-keypair.json"
     creates: "{{ user_dir }}/{{ folder }}/validator-keypair.json"
