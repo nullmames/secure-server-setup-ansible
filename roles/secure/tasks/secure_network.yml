@@ -21,7 +21,7 @@
       comment: External - TroyMgmt
     - subnet: 38.146.3.0/24
       comment: External - Troy /24
-    - subnet: 104.244.208.240/29
+    - subnet: 23.129.20.112/28
       comment: External - SouthfieldMgmt
 
 - name: Remove outdated ufw rules
@@ -30,8 +30,9 @@
     src: "{{ item }}"
     delete: true
   loop:
-    - 38.146.3.100/31 # Unneeded overlap
-    - 172.16.0.0/24 # Internal - Horcrux
+    - 38.146.3.100/31
+    - 172.16.0.0/24
+    - 104.244.208.240/29
 
 - name: Enable firewall
   community.general.ufw:
