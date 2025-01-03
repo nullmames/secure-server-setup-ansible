@@ -1,0 +1,140 @@
+---
+# Mode
+# Based on optimism stack
+# custom_port_prefix is 139
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Ensure mode folder exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+    - "{{ folder }}/mode-node"
+
+- name: Create jwtsecret if it does not exist
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Ensure rollup.json
+  ansible.builtin.copy:
+    src: rollup.json
+    dest: "{{ folder }}/mode-node/rollup.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Run mode-geth container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    volumes:
+      - "{{ folder }}/mode-geth:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - 127.0.0.1:{{ custom_port_prefix }}45:8545
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      - 127.0.0.1:{{ custom_port_prefix }}46:8546
+    entrypoint: geth
+    command:
+      # General
+      - --datadir=/data
+      - --verbosity=3
+      - --networkid=34443
+      - --rollup.sequencerhttp=https://rpc-mode-mainnet-0.t.conduit.xyz
+      - --db.engine=pebble
+      - --state.scheme=hash
+      # RPC
+      - --http
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=web3,eth,debug,txpool,net
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.origins=*
+      - --ws.api=web3,eth,debug,txpool,net
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/jwtsecret
+      # p2p
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+      - --syncmode=full
+      - --gcmode=archive
+      - --rpc.allow-unprotected-txs
+      - --nodiscover
+      - --maxpeers=100
+      # metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=9001
+      - --snapshot=false
+      # chain
+      - --override.holocene=1736445601
+      - --rollup.halt=major
+
+- name: Run mode-node container
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ consensus_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
+    volumes:
+      - "{{ folder }}/mode-node:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      OP_NODE_NETWORK: "mode-mainnet"
+      OP_NODE_L1_ETH_RPC: "{{ ethereum_l1_archive }}"
+      OP_NODE_L1_BEACON: "{{ ethereum_l1_archive_beacon }}"
+      OP_NODE_L1_TRUST_RPC: "true"
+      OP_NODE_L2_ENGINE_AUTH: "/jwtsecret"
+      OP_NODE_L2_ENGINE_RPC: "http://{{ execution_container_name }}:8551"
+      OP_NODE_LOG_LEVEL: "info"
+      OP_NODE_METRICS_ADDR: "0.0.0.0"
+      OP_NODE_METRICS_ENABLED: "true"
+      OP_NODE_METRICS_PORT: "7300"
+      OP_NODE_P2P_AGENT: "conduit"
+      OP_NODE_P2P_NAT: "true"
+      OP_NODE_P2P_LISTEN_IP: "0.0.0.0"
+      OP_NODE_P2P_LISTEN_TCP_PORT: "{{ custom_port_prefix }}13"
+      OP_NODE_P2P_LISTEN_UDP_PORT: "{{ custom_port_prefix }}13"
+      OP_NODE_ROLLUP_CONFIG: "/data/rollup.json"
+      OP_NODE_RPC_ADDR: "0.0.0.0"
+      OP_NODE_RPC_PORT: "8545"
+      OP_NODE_VERIFIER_L1_CONFS: "4"

@@ -1,0 +1,10 @@
+---
+- name: Chainlink support node - Mode
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/all.yml"
+    - "group_vars/erc20_mainnet/mode.yml"
+  roles:
+    - chainlink_support_mode
+    - util_docker_prune
