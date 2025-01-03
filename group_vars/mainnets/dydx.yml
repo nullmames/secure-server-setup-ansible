@@ -23,7 +23,7 @@ upgrade_name: v7.0
 # Add eth endpoint
 launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000 --optimistic-execution-enabled=true"
 
-snap_rpc: https://dydx-rpc.polkachu.com:443
+snap_rpc: https://dydx-rpc.kingnodes.com:443
 
 # Horcrux
 horcrux_group: horcrux_delta
