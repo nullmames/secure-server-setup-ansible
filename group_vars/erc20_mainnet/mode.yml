@@ -1,0 +1,16 @@
+# Mode
+# Port prefix: 139
+# Docs: https://github.com/mantlenetworkio/networks/blob/main/run-node-mainnetv2.md
+
+network: mode
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 139
+
+# Execution
+execution_container_name: mode_geth
+execution_container_version: v1.101411.4
+#execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
+
+# Consensus
+consensus_container_name: mode_node
+consensus_container_version: v1.10.2
