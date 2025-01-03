@@ -27,14 +27,6 @@
       - subnet: 172.0.{{ custom_port_prefix }}.0/24
         gateway: 172.0.{{ custom_port_prefix }}.1
 
-# - name: Check permissions
-#   become: true
-#   ansible.builtin.file:
-#     dest: "{{ folder }}/arbitrum-data"
-#     owner: "{{ ansible_user }}"
-#     group: "{{ ansible_user }}"
-#     recurse: true
-
 - name: Pull and run nitro container
   community.docker.docker_container:
     name: "{{ execution_container_name }}"
