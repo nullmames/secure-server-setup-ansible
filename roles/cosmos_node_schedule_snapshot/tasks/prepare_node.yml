@@ -42,17 +42,17 @@
 - name: Create archive - external wasm
   when: wasm_outside.stat.exists
   ansible.builtin.set_fact:
-    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=wasm/wasm/cache -cf - data wasm'
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=wasm/wasm/cache -cf {{ snapshot_filename }} data wasm'
 
 - name: Create archive - internal wasm
   when: wasm_inside.stat.exists
   ansible.builtin.set_fact:
-    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=data/wasm/wasm/cache -cf - data'
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json --exclude=data/wasm/wasm/cache -cf {{ snapshot_filename }} data'
 
 - name: Create archive - no wasm
   when: not wasm_inside.stat.exists and not wasm_outside.stat.exists
   ansible.builtin.set_fact:
-    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json -cf - data'
+    compress_command: 'tar -I "zstd -3 -T0" --exclude=data/priv_validator_state.json -cf {{ snapshot_filename }} data'
 
 - name: Set bucket name
   ansible.builtin.set_fact:

@@ -9,7 +9,7 @@ BUCKET_NAME="{{ bucket_name }}"
 SNAPSHOT_FILENAME="{{ snapshot_filename }}"
 DAEMON="{{ daemon }}"
 DAY=$(date '+%u')
-# HEALTHCHECKS_ID=
+HEALTHCHECK_ID="{{ snapshot_healthcheck_id }}"
 
 LOG="{{ user_dir }}/scripts/snapshot_logs/{{ network }}_snapshot_log.txt"
 #
@@ -21,55 +21,55 @@ exec 2>&1
 # Fail on error
 on_error() {
     echo -e "\n###### $(date): Snapshot ERRORED ######"
-    # curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HEALTHCHECKS_ID}/fail
+    curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HEALTHCHECK_ID}/fail
 }
 trap 'on_error' ERR
 
 # Begin snapshot
 echo -e "\n\n\n###### $(date): Snapshot STARTED ######"
+curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HEALTHCHECK_ID}/start
 
 echo -e "\n    ## $(date): Stopping ${DAEMON} and sleeping for 15 seconds..."
 sudo systemctl stop ${DAEMON}.service
 sleep 15
 
 ## Take snapshot
-echo -e "\n    ## $(date): Starting snapshot creation to ${BUCKET_NAME}/${SNAPSHOT_FILENAME}..."
 # Setting base directory to {{ user_dir }}/{{ folder }}
-
 cd {{ user_dir }}/{{ folder }}
 
-# Compress & send
-{{ compress_command }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/${BUCKET_NAME}/${SNAPSHOT_FILENAME}
+# Create archive
+echo -e "\n    ## $(date): Creating snapshot archive..."
+{{ compress_command }}
 
-sleep 10
+# Upload archive
+echo -e "\n    ## $(date): Uploading snapshot to ${BUCKET_NAME}/${SNAPSHOT_FILENAME}..."
+mc --quiet --dp --config-dir {{ user_dir }}/.mc put ${SNAPSHOT_FILENAME} snapshots/${BUCKET_NAME}/${SNAPSHOT_FILENAME} --parallel 8 --part-size 512MiB
 
-# If Sunday, statesync
-if [[ $DAY -eq 0 ]]; then
+# Delete archive
+rm ${SNAPSHOT_FILENAME}
 
-    echo -e "\n    ## $(date): Snapshot Complete. Running Statesync..."
+# Statesync
+echo -e "\n    ## $(date): Snapshot Complete. Running Statesync..."
 
-    # Saving priv_validator_state.json
-    cp data/priv_validator_state.json {{ user_dir }}/{{ network }}-priv_validator_state.json
+# Saving priv_validator_state.json
+cp data/priv_validator_state.json {{ user_dir }}/{{ network }}-priv_validator_state.json
 
-    # Remove and create data directory
-    rm -rf data
-    mkdir data
+# Remove and create data directory
+rm -rf data wasm
+mkdir data
 
-    # Copy priv_validator_state.json back
-    cp {{ user_dir }}/{{ network }}-priv_validator_state.json data/priv_validator_state.json
+# Copy priv_validator_state.json back
+cp {{ user_dir }}/{{ network }}-priv_validator_state.json data/priv_validator_state.json
 
-    # Run statesync script
-    source {{ user_dir }}/state_sync/state_sync_{{ network }}.sh
-
-    echo -e "\n    ## $(date): Ran Statesync Script..."
-
-fi
+# Run statesync script
+source {{ user_dir }}/state_sync/state_sync_{{ network }}.sh
 
 echo -e "\n    ## $(date): Running ${DAEMON}..."
 sudo systemctl start ${DAEMON}.service
 
 rm {{ user_dir }}/{{ network }}-priv_validator_state.json
 
+curl -fsS -m 10 --retry 5 -o /dev/null https://hc-ping.com/${HEALTHCHECK_ID}
 echo -e "\n\n\n###### $(date): Snapshot COMPLETE ######"
 
 exit 0

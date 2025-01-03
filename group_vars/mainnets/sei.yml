@@ -35,9 +35,10 @@ oracle_address: sei1v7qvhk77dn0kkde6chyj6plfkj7004c0pae9r7
 oracle_validator: seivaloper146m089lq8mkqw6w0mmlhxz6247g2taha89at74
 
 # Snapshot Schedule
-snapshot_weekday: "*"
-snapshot_hour: 1
-snapshot_minute: 30
+snapshot_weekday: "0,3"
+snapshot_hour: "12"
+snapshot_minute: "00"
+snapshot_healthcheck_id: 7c253382-b17e-4890-998b-14ebb5c2a852
 
 # Horcrux
 horcrux_group: horcrux_bravo
