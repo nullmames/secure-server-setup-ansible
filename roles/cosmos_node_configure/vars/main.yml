@@ -75,6 +75,7 @@ cosmos_node_configure_config_toml_37:
     size: 1000
     pending-size: 5000
     max-pending-txs-bytes: 1073741824
+    max-tx-gas: 2500000
     pending-ttl-duration: '"0s"'
     pending-ttl-num-blocks: 0
   self-remediation:
