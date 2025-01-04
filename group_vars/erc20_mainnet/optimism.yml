@@ -6,15 +6,20 @@ consensus_port_prefix: 233
 
 # Execution
 execution_container_name: op-geth
-execution_container_version: v1.101411.1
+execution_container_version: v1.101411.4
 execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
 consensus_container_name: op-node
-consensus_container_version: v1.9.5
+consensus_container_version: v1.10.2
 
 # Optimism specific
 execution_network: op-mainnet
 execution_sequencerhttp: https://mainnet-sequencer.optimism.io
 
 consensus_network: op-mainnet
+
+# Monitoring
+execution_github_org: ethereum-optimism
+execution_github_repo: op-geth
+execution_public_rpc: https://opt-mainnet.g.alchemy.com/v2/QnwybSaqi3HZdLEb5SkkjH1QwvJTDE8b
