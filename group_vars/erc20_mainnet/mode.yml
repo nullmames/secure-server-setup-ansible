@@ -1,4 +1,4 @@
-# Mode
+# Mode Network using Optimism Stack playbook
 # Port prefix: 139
 # Docs: https://github.com/mantlenetworkio/networks/blob/main/run-node-mainnetv2.md
 
@@ -7,10 +7,22 @@ folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 139
 
 # Execution
-execution_container_name: mode_geth
+execution_container_name: mode-geth
 execution_container_version: v1.101411.4
 #execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
-consensus_container_name: mode_node
+consensus_container_name: mode-node
 consensus_container_version: v1.10.2
+consensus_bootnodes: "enode://cd3730ae0a02324d4f529b1a0b492a4047552025c48dc8c9d6685af386dbe8de7780cb35567f76b9542537e96b9a5b160bee79edbd15fefa5a90371c12e57bed@34.127.98.251:9222?discport=30301,enode://d25ce99435982b04d60c4b41ba256b84b888626db7bee45a9419382300fbe907359ae5ef250346785bff8d3b9d07cd3e017a27e2ee3cfda3bcbb0ba762ac9674@bootnode.conduit.xyz:0?discport=30301,enode://2d4e7e9d48f4dd4efe9342706dd1b0024681bd4c3300d021f86fc75eab7865d4e0cbec6fbc883f011cfd6a57423e7e2f6e104baad2b744c3cafaec6bc7dc92c1@34.65.43.171:0?discport=30305,enode://9d7a3efefe442351217e73b3a593bcb8efffb55b4807699972145324eab5e6b382152f8d24f6301baebbfb5ecd4127bd3faab2842c04cd432bdf50ba092f6645@34.65.109.126:0?discport=30305"
+
+# Mode specific
+execution_network: mode-mainnet
+execution_sequencerhttp: https://rpc-mode-mainnet-0.t.conduit.xyz
+
+consensus_network: mode-mainnet
+
+# Monitoring
+execution_github_org: ethereum-optimism
+execution_github_repo: op-geth
+execution_public_rpc: https://mainnet.mode.network

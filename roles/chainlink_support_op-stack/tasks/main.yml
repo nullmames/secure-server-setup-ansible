@@ -1,10 +1,8 @@
 ---
-# Chainlink Base with op-node, op-geth.  Utilized snap-sync for sync.
-# Per https://github.com/base-org/node/releases
-# Base port prefix: 135
+# Optimism Stack with op-node, op-geth.  Utilized snap-sync for sync.  Supports Optimism, Base and Mode
 # Ports:
-#  - Geth: 13503 (p2p - public), 13545 (rpc), 13546 (ws), 8551 (authrpc)
-#  - Node: 13509 (p2p - public), 13549 (rpc)
+#  - Geth: xxx03 (p2p - public), xxx45 (rpc), xxx46 (ws), 8551 (authrpc)
+#  - Node: xxx13 (p2p - public), xxx55 (rpc)
 
 - name: Register public ip
   ansible.builtin.uri:
@@ -12,18 +10,16 @@
     return_content: true
   register: public_ip
 
-- name: Ensure base folders exists
+- name: Build folder structure
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
     - "{{ folder }}"
-    - "{{ folder }}/base-geth-data"
-    - "{{ folder }}/base-node-config"
 
 - name: Create jwtsecret if it does not exist
-  ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
   args:
     chdir: "{{ user_dir }}/docker-compose"
     creates: jwtsecret
@@ -32,12 +28,8 @@
 - name: Create a network
   community.docker.docker_network:
     name: "{{ network }}_net"
-    state: present
-    ipam_config:
-      - subnet: 172.0.{{ custom_port_prefix }}.0/24
-        gateway: 172.0.{{ custom_port_prefix }}.1
 
-- name: Run base-op-geth container
+- name: Run op-geth container for chain
   community.docker.docker_container:
     name: "{{ execution_container_name }}"
     image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
@@ -49,29 +41,29 @@
       - name: "{{ network }}_net"
     ports:
       # p2p
-      - 13503:13503/tcp
-      - 13503:13503/udp
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
       # rpc
-      - 127.0.0.1:13545:8545
-      - "{{ nebula_internal_ip_addr }}:13545:8545"
-      - 127.0.0.1:13546:8546
-      - "{{ nebula_internal_ip_addr }}:13546:8546"
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}46:8546"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
       # metrics
-      - 127.0.0.1:13560:6060
-      - "{{ nebula_internal_ip_addr }}:13560:6060"
+      - "127.0.0.1:{{ custom_port_prefix }}60:6060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
     volumes:
-      - "{{ folder }}/base-geth-data:/base-geth-data"
+      - "{{ folder }}/{{ execution_container_name }}:/data"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
-      - --datadir=/base-geth-data
+      - --datadir=/data
+      - --gcmode=full
       - --syncmode=snap
-      - --bootnodes={{ execution_bootnodes }}
       - --op-network={{ execution_network }}
+      - --rollup.halt=major
       - --db.engine=pebble
       - --state.scheme=path
-      # - --state.scheme=hash
       ## Interfaces
       # Consensus Layer Engine API
       - --authrpc.addr=0.0.0.0
@@ -92,8 +84,7 @@
       - --ws.origins=*
       - --ws.api=web3,debug,eth,txpool,net,engine
       # P2P
-      - --port=13503
-      - --discovery.port=13503
+      - --port={{ custom_port_prefix }}03
       - --nat=extip:{{ public_ip.content | trim }}
       # Metrics
       - --metrics
@@ -102,16 +93,15 @@
       # Transaction & Chain Specific
       - --rollup.sequencerhttp={{ execution_sequencerhttp }}
       - --rollup.disabletxpoolgossip=true
-      - --rollup.halt=major
-      - --rpc.gascap=0
       - --ipcdisable
+      # RMN
       - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
       - --rpc.txfeecap=0 # Per RMN Documentation
 
-- name: Run base-op-node container
+- name: Run op-node container for chain
   community.docker.docker_container:
     name: "{{ consensus_container_name }}"
-    image: ghcr.io/base-org/node:{{ consensus_container_version }}
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ consensus_container_version }}
     restart_policy: unless-stopped
     state: started
     stop_timeout: 600
@@ -120,35 +110,31 @@
       - name: "{{ network }}_net"
     ports:
       # p2p
-      - 13509:13509
+      - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
       # rpc
-      - 127.0.0.1:13549:9545
-      - "{{ nebula_internal_ip_addr }}:13549:9545"
+      - 127.0.0.1:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55"
     volumes:
-      # - "{{ folder }}/base-node-config/rollup.json:/rollup.json"
       - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
       - /etc/localtime:/etc/localtime:ro
     command:
       ## General
-      - ./op-node
+      - op-node
       - --l1={{ ethereum_l1 }}
       - --l1.beacon={{ ethereum_l1_beacon }}
-      - --l1.trustrpc=true
-      - --l2=http://{{ execution_container_name }}:8551
+      - --l1.trustrpc
+      - --l2=ws://{{ execution_container_name }}:8551
       - --l2.jwt-secret=/jwtsecret
+      - --l2.enginekind=geth
       - --network={{ consensus_network }}
-      - --rollup.load-protocol-versions=true
-      # - --rollup.config=/rollup.json
       # Syncing
       - --syncmode=execution-layer
       - --l1.max-concurrency=64
       - --l1.rpc-rate-limit=0
       - --l1.rpc-max-batch-size=500
-      - --verifier.l1-confs=4
       # p2p
       - --p2p.advertise.ip={{ public_ip.content | trim }}
-      - --p2p.listen.tcp=13509
-      - --p2p.bootnodes={{ consensus_bootnodes }}
+      - --p2p.listen.tcp={{ custom_port_prefix }}13
       ## Interfaces
       - --rpc.addr=0.0.0.0
-      - --rpc.port=9545
+      - --rpc.port={{ custom_port_prefix }}55

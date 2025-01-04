@@ -6,5 +6,5 @@
     - "group_vars/erc20_mainnet/all.yml"
     - "group_vars/erc20_mainnet/mode.yml"
   roles:
-    - chainlink_support_mode
+    - chainlink_support_op-stack
     - util_docker_prune
