@@ -6,7 +6,7 @@
 - name: Run berachain beacond container
   community.docker.docker_container:
     name: "{{ consensus_container_name }}"
-    image: "{{ consensus_container_name }}:{{ consensus_container_version }}"
+    image: "ghcr.io/berachain/beacon-kit:{{ consensus_container_version }}"
     restart_policy: unless-stopped
     state: started
     restart: true
@@ -23,6 +23,14 @@
       - "{{ folder }}/{{ consensus_container_name }}:/beacond"
       - "{{ folder }}/jwtsecret:/jwtsecret:ro"
       - /etc/localtime:/etc/localtime:ro
+    env:
+      CHAIN_SPEC: "!vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        31613330333432613234616331343064633033376463383935393065396635323462643664356366
+        3163663833396563353532653038343664623638356165650a303165386138376138383433333765
+        31346131386638343565316531643466653139663961396264366236363062313464373332366561
+        3530343237653766380a613435363566383030363031643834383938666133633666383438663961
+        3434"
     command:
       - start
       - --home=/beacond
@@ -56,6 +64,7 @@
       - --full
       - --datadir=/data
       - --port={{ custom_port_prefix }}03
+      - --discovery.port={{ custom_port_prefix }}03
       - --nat=extip:{{ public_ip.content | trim }}
       - --chain=/data/eth-genesis.json
       - --bootnodes={{ execution_bootnodes }}

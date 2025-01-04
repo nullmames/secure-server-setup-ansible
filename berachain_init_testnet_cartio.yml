@@ -1,0 +1,10 @@
+---
+- name: Berachain Install and Init
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_testnet/testnet_berachain_cartio.yml"
+
+  roles:
+    - berachain_node_install
+    - util_docker_prune

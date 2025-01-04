@@ -2,24 +2,6 @@
 # Install and run Berachain Beacond via Docker with init
 # Init standard reth client via Docker as execution client
 
-- name: Clone berachain beacond repo
-  ansible.builtin.git:
-    repo: "{{ consensus_repo }}"
-    dest: "{{ user_dir }}/source/{{ network }}"
-    version: "{{ consensus_version }}"
-    update: true
-    force: true
-    recursive: true
-  register: git_repo_status
-
-- name: Build berachain beacond docker image
-  community.docker.docker_image_build:
-    name: "{{ consensus_container_name }}"
-    tag: "{{ consensus_version }}"
-    path: "{{ user_dir }}/source/{{ network }}"
-    platform: linux/amd64
-  when: git_repo_status.changed
-
 - name: Build base folder structure
   ansible.builtin.file:
     path: "{{ item }}"
@@ -30,7 +12,7 @@
     - "{{ folder }}/{{ consensus_container_name }}"
     - "{{ folder }}/{{ execution_container_name }}"
 
-- name: Create jwtsecret if it does not exist
+- name: Create jwtsecret if it does not exist (Bera requires 0x)
   ansible.builtin.shell: "openssl rand -hex 32 | tr -d '\n' | sed -e 's/^/0x/' > jwtsecret"
   args:
     chdir: "{{ folder }}"
@@ -49,10 +31,18 @@
     - name: Initialize berachain beacond node
       community.docker.docker_container:
         name: "{{ consensus_container_name }}-init"
-        image: "{{ consensus_container_name }}:{{ consensus_container_version }}"
+        image: "ghcr.io/berachain/beacon-kit:{{ consensus_container_version }}"
         state: started
         volumes:
           - "{{ folder }}/{{ consensus_container_name }}:/beacond"
+        env:
+          CHAIN_SPEC: "!vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            64376263393736343831373437643563653738393835343133373535393436323463313134303838
+            6433666639343132376531393333613266313737626262620a383965653530626561373032346339
+            35313461353034333235326331343633613639623033653136633738623062613535373766396662
+            6132356661303432370a303665356637643366303133353630643335633236346264663965353166
+            3133"
         command:
           - init
           - "{{ network }}"
@@ -65,19 +55,21 @@
         name: "{{ consensus_container_name }}-init"
         state: absent
 
-    - name: Retrieve genesis.json file
+    - name: Replace genesis.json file
       become: true
       ansible.builtin.get_url:
         url: "{{ consensus_genesis }}"
         dest: "{{ folder }}/{{ consensus_container_name }}/config/genesis.json"
         mode: "0644"
+        force: true
 
-    - name: Ensure kzg trusted setup file
+    - name: Add kzg trusted setup file
       become: true
       ansible.builtin.get_url:
         url: "{{ consensus_kzg_trusted }}"
         dest: "{{ folder }}/{{ consensus_container_name }}/kzg-trusted-setup.json"
         mode: "0644"
+        force: true
 
 # Begin berachain execution engine initialization
 - name: Identify if execution is initialized
