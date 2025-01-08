@@ -9,9 +9,10 @@
   # Var file structure for reference:
   #
   # ---
-  # node_version: 0.67.1
-  # aztec_config_endpoint: "http://34.82.213.6:8080"
-  # ethereum_host: "http://34.19.127.9:8545"
+  # node_version: troll-turtle
+  # aztec_config_endpoint: "http://34.82.108.83:8080"
+  # ethereum_host: "http://34.82.53.127:8545"
+  # coinbase_address: "<your address>"
 
   # container_configs:
   #   - { private_key: "xxxx", validator_number: "00" }
