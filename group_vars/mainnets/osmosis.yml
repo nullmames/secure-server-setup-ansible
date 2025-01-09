@@ -11,4 +11,4 @@ custom_port_prefix: 125
 upgrade_name: v28
 
 snap_rpc: https://osmosis-rpc.cosmos-apis.com:443
-snapshot_url: https://osmosis.fra1.cdn.digitaloceanspaces.com/osmosis-1/snapshots/v27/osmosis-snapshot-202411281720-24749168.tar.lz4
+# snapshot_url:
