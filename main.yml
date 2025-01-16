@@ -21,6 +21,7 @@
   roles:
     - setup
     - secure
+    - util_docker_install # sigh
 
 - name: Import nebula playbook
   ansible.builtin.import_playbook: util_nebula_install.yml
