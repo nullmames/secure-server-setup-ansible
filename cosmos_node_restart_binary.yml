@@ -17,6 +17,10 @@
             return_content: true
             body_format: json
           register: test_response
+          until:
+            - test_response.status == 200
+          retries: 40
+          delay: 15
 
         - name: Set inspection path
           ansible.builtin.set_fact:
@@ -40,6 +44,7 @@
       ansible.builtin.uri:
         url: "http://127.0.0.1:{{ custom_port_prefix }}57/status"
         method: GET
+        status_code: 200
         return_content: true
         body_format: json
       register: rpc_response
