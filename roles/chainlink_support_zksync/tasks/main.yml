@@ -64,6 +64,7 @@
     networks:
       - name: "{{ network }}_net"
     env:
+      ZKSYNC_HOME: "/"
       DATABASE_URL: "postgres://postgres:notsecurepassword@zksync-postgres:5430/zksync_local_ext_node"
       DATABASE_POOL_SIZE: "10"
       EN_HTTP_PORT: "3060"
@@ -80,3 +81,6 @@
       EN_SNAPSHOTS_OBJECT_STORE_BUCKET_BASE_URL: "zksync-era-mainnet-external-node-snapshots"
       EN_SNAPSHOTS_OBJECT_STORE_MODE: "GCSAnonymousReadOnly"
       RUST_LOG: "warn,zksync=info,zksync_core::metadata_calculator=info,zksync_state=info,zksync_utils=info,zksync_web3_decl::client=error"
+      # RMN
+      EN_MAX_RESPONSE_BODY_SIZE_MB: "5000"
+      EN_MAX_BATCH_REQUEST_SIZE: "1000"
