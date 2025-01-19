@@ -1,0 +1,16 @@
+network: cosmos
+folder: ".gaia"
+daemon: gaiad
+chain_id: provider
+node_version: v21.0.1
+repo: "https://github.com/cosmos/gaia"
+genesis: "https://raw.githubusercontent.com/cosmos/testnets/master/interchain-security/provider/provider-genesis.json"
+minimum_gas_price: "0.0025uatom"
+seeds: "4ea6e56300a2f37b90e58de5ee27d1c9065cf871@provider-seed-02.ics-testnet.polypore.xyz:26656,08ec17e86dac67b9da70deb20177655495a55407@provider-seed-01.ics-testnet.polypore.xyz:26656"
+custom_port_prefix: 149
+
+snap_rpc: https://cosmos-rpc.polkachu.com:443
+
+upgrade_name: v21
+# snapshot_url: https://snapshots.polkachu.com/snapshots/cosmos/cosmos_21902086.tar.lz4
+
