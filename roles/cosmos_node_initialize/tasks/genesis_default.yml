@@ -2,4 +2,5 @@
   ansible.builtin.get_url:
     url: "{{ genesis }}"
     dest: "{{ user_dir }}/{{ folder }}/config/genesis.json"
+    force: true
     mode: "0644"
