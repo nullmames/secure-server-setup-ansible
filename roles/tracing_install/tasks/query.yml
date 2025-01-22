@@ -4,8 +4,8 @@
 - name: Docker login to ghcr.io
   community.docker.docker_login:
     registry_url: ghcr.io/confio/cosmwasm-tracing-ui
-    username: "{{ docker_username }}"
-    password: "{{ docker_token }}"
+    username: "{{ github_username }}"
+    password: "{{ github_token }}"
     reauthorize: true
 
 - name: Run Jaeger Query - Production
