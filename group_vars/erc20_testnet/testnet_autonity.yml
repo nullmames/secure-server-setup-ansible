@@ -1,4 +1,4 @@
-# Berachain Network Consensus (halo) and Execution (geth) clients
+# Autonity Network Consensus (halo) and Execution (geth) clients
 network: autonity
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 144
