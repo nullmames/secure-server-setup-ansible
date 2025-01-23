@@ -2,7 +2,7 @@
 # To init a templated vsphere image for use
 - name: Initial init of vsphere machines not ready for other playbooks
   hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   pre_tasks:
     - name: Apt update and upgrade
@@ -11,5 +11,9 @@
         upgrade: full
         autoremove: true
         autoclean: true
+
   roles:
     - init_vsphere
+
+- name: Reboot if necessary
+  ansible.builtin.import_playbook: util_system_reboot.yml
