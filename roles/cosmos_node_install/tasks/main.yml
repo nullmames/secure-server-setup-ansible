@@ -26,6 +26,12 @@
     - name: Install from source
       when: binary is undefined
       block:
+        - name: Prune git origin
+          ansible.builtin.command: "git remote prune origin"
+          args:
+            chdir: "{{ user_dir }}/source/{{ network }}"
+          ignore_errors: true
+
         - name: Clone node repo
           ansible.builtin.git:
             repo: "{{ repo }}"
