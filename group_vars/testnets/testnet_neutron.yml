@@ -11,5 +11,4 @@ minimum_gas_price: "0.02untrn"
 custom_port_prefix: 191
 
 upgrade_name: v5.0.5
-
-snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/neutron/neutron_20246723.tar.lz4
+# snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/injective/injective_60581404.tar.lz4
