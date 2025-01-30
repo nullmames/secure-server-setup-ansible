@@ -1,4 +1,5 @@
 - name: Open range of ufw ports for p2p traffic
+  become: true
   community.general.ufw:
     rule: allow
     port: 8000:8020
