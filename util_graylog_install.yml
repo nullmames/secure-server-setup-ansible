@@ -1,0 +1,118 @@
+- name: Deploy Graylog Server
+  hosts: management-graylog
+  gather_facts: true
+  become: true
+  vars:
+    mongo_db_version: 6.0.18
+    graylog_version: 6.1
+    graylog_root_password: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      35656237333465646231353831626433656463643735316130656330636231363531326238636339
+      3034366461313435646239653739643438333934383239310a346566333461383564343563356265
+      39613865343036666430646363373466313765643264353065623666616235636538383664656462
+      3862656265363837340a623165663230343434396230663138313733326132636263623137613666
+      61316537373030363062656264656137303838393066306166376238636462663531343462393461
+      32366465663533336536363739356535366538336539306364393961346639373366636134303461
+      63663030636332303134353530396665363862363738303532316566356534363063353664643538
+      37373639333937323366
+    graylog_password_secret: !vault |
+      $ANSIBLE_VAULT;1.1;AES256
+      62316232633135663764336530653839366538363733306432626264303939383462646239366134
+      6166343638343061363934663363353031646362356262660a666137363363303635303530376561
+      61363038313033393364333730616163393532643437386530363335313761323362366163386166
+      6163656532376630660a346531313835346533663566333032333561376138623738326438653662
+      34386232303631613833383931353132323062366632636364373064306437386532383236373838
+      64363863346436656564616131323038653764366533386430343762633565376238356139376335
+      31346330383635393038346437383433376430636363616564343434666364393532623563316464
+      65623937313464646632
+
+  tasks:
+    - name: Create network for Graylog
+      community.docker.docker_network:
+        name: graylog_net
+
+    - name: Create volumes for datanode and graylog
+      community.docker.docker_volume:
+        name: "{{ item }}"
+      loop:
+        - graylog_datanode_data
+        - graylog_data
+
+    - name: Get current user and group
+      ansible.builtin.shell:
+        cmd: echo "$(id -u):$(id -g)"
+      register: current_user
+
+    - name: Create monogodb container
+      community.docker.docker_container:
+        name: mongodb
+        image: mongo:{{ mongo_db_version }}
+        restart_policy: unless-stopped
+        state: started
+        pull: true
+        stop_timeout: 600
+        user: "{{ current_user.stdout }}"
+        networks:
+          - name: graylog_net
+        volumes:
+          - "{{ user_dir }}/docker-compose/graylog/mongodb_data:/data/db"
+          - "{{ user_dir }}/docker-compose/graylog/mongodb_config:/data/configdb"
+
+    - name: Run Graylog Datanode container
+      community.docker.docker_container:
+        name: datanode
+        image: "graylog/graylog-datanode:{{ graylog_version }}"
+        hostname: "datanode"
+        restart_policy: unless-stopped
+        state: started
+        pull: true
+        stop_timeout: 600
+        user: "{{ current_user.stdout }}"
+        ulimits:
+          - nofile:65536:65536
+          - memlock:-1:-1
+        networks:
+          - name: graylog_net
+        volumes:
+          - "graylog_datanode_data:/var/lib/graylog-datanode"
+        env:
+          GRAYLOG_DATANODE_NODE_ID_FILE: "/var/lib/graylog-datanode/node-id"
+          GRAYLOG_DATANODE_PASSWORD_SECRET: "{{ graylog_password_secret }}"
+          GRAYLOG_DATANODE_ROOT_PASSWORD_SHA2: "{{ graylog_root_password }}"
+          GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+
+    - name: Run Graylog Server container
+      community.docker.docker_container:
+        name: graylog
+        image: "graylog/graylog:{{ graylog_version }}"
+        hostname: "graylog"
+        restart_policy: unless-stopped
+        state: started
+        pull: true
+        stop_timeout: 600
+        user: "{{ current_user.stdout }}"
+        networks:
+          - name: graylog_net
+        ports:
+          # Graylog web interface and REST API
+          - "{{ nebula_internal_ip_addr }}:9000:9000/tcp"
+          - "127.0.0.1:9000:9000/tcp"
+          # Beats
+          - "{{ nebula_internal_ip_addr }}:5044:5044/tcp"
+          - 127.0.0.1:5044:5044/tcp
+          # Syslog TCP
+          - "{{ nebula_internal_ip_addr }}:5140:5140/tcp"
+          - 127.0.0.1:5140:5140/tcp
+          # Syslog UDP
+          - "{{ nebula_internal_ip_addr }}:5140:5140/udp"
+          - 127.0.0.1:5140:5140/udp
+        volumes:
+          - "graylog_data:/usr/share/graylog/data"
+        env:
+          GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/config/node-id"
+          GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
+          GRAYLOG_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+          GRAYLOG_REPORT_DISABLE_SANDBOX: "true"
+          GRAYLOG_PASSWORD_SECRET: "{{ graylog_password_secret }}"
+          GRAYLOG_ROOT_PASSWORD_SHA2: "{{ graylog_root_password }}"
+          GRAYLOG_HTTP_EXTERNAL_URI: "http://{{ nebula_internal_ip_addr }}:9000"
