@@ -6,7 +6,7 @@ folder: "{{ user_dir }}/docker-compose/{{ network }}"
 # Execution
 # https://github.com/ethereum/go-ethereum/releases
 execution_container_name: geth
-execution_container_version: v1.14.12
+execution_container_version: v1.14.13
 execution_snapshot_location: "{{ folder }}/geth/geth/nodes"
 execution_network: mainnet
 
