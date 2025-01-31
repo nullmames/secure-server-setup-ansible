@@ -5,5 +5,10 @@ custom_port_prefix: 120
 
 # Execution
 execution_container_name: "{{ network }}-erigon"
-execution_container_version: v2.60.1
+execution_container_version: v2.60.2
 execution_snapshot_location: "{{ folder }}/chaindata"
+
+# Monitoring
+execution_github_org: 0xPolygonHermez
+execution_github_repo: cdk-erigon
+execution_public_rpc: https://zkevm-rpc.com

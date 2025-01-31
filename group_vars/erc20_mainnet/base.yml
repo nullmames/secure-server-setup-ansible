@@ -7,13 +7,15 @@ custom_port_prefix: 135
 consensus_port_prefix: 235
 
 # Execution
+# https://github.com/ethereum-optimism/op-geth
 execution_container_name: base-geth
-execution_container_version: v1.101411.4
+execution_container_version: v1.101411.6
 execution_snapshot_location: "{{ folder }}/base-geth-data/geth/chaindata"
 
 # Consensus
+# https://github.com/ethereum-optimism/optimism
 consensus_container_name: base-node
-consensus_container_version: v1.10.2
+consensus_container_version: v1.10.3
 # consensus_snapshot_location: "{{ folder }}/tbd"
 
 # Base specific
