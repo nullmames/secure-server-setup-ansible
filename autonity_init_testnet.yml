@@ -6,6 +6,5 @@
     - "group_vars/erc20_testnet/testnet_autonity.yml"
 
   roles:
-    - util_docker_install
     - autonity_node_install
     - util_docker_prune
