@@ -63,25 +63,26 @@ cosmos_node_configure_config_toml_37:
     max-open-connections: 10000
     max-body-bytes: 2000000
     max-header-bytes: 1048576
-    pprof-laddr: '"localhost:{{ custom_port_prefix }}60"'
+    pprof-laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}60"'
   p2p:
     laddr: '"tcp://0.0.0.0:{{ custom_port_prefix }}56"'
     max-connections: 31
     flush-throttle-timeout: '"10ms"'
   mempool:
     keep-invalid-txs-in-cache: "true"
-    ttl-duration: '"5s"'
+    ttl-duration: '"3s"'
     ttl-num-blocks: 5
-    size: 1000
+    size: 5000
     pending-size: 5000
+    cache-size: 10000
     max-pending-txs-bytes: 1073741824
     max-tx-gas: 2500000
-    pending-ttl-duration: '"0s"'
-    pending-ttl-num-blocks: 0
+    pending-ttl-duration: '"3s"'
+    pending-ttl-num-blocks: 5
   self-remediation:
     p2p-no-peers-available-window-seconds: 0
     statesync-no-peers-available-window-seconds: 0
-    blocks-behind-threshold: 1000
+    blocks-behind-threshold: 600
     blocks-behind-check-interval: 60
     restart-cooldown-seconds: 600
   instrumentation:
