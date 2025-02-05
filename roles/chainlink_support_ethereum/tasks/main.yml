@@ -1,4 +1,3 @@
----
 # Geth/Lighthouse support structure with host networking
 # custom_port_prefix not in use
 # Ports: geth: 30303 (p2p), 8545 (rpc), 8546 (ws), lighthouse: 9000 (p2p), 5052 (rpc)
@@ -109,8 +108,4 @@
       - --execution-endpoint=http://{{ execution_container_name }}:8551
       - --execution-jwt=/root/.lighthouse/jwtsecret
       - --checkpoint-sync-url={{ consensus_checkpoint_sync_url }}
-      - --disable-backfill-rate-limiting
       - --disable-deposit-contract-sync
-      # - --genesis-backfill # Sync checkpoints from genesis
-      # - --prune-blobs=false # Keep all beacon chain data
-      # - --allow-insecure-genesis-sync
