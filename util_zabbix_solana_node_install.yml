@@ -1,0 +1,90 @@
+- name: Deploy Zabbix for Solana node
+  hosts: all
+  gather_facts: true
+  become: false
+  vars_files:
+    - "group_vars/erc20_mainnet/solana.yml"
+
+  pre_tasks:
+    - name: Verify we're monitoring a node that exists
+      ansible.builtin.stat:
+        path: "{{ folder }}"
+      register: network_folder
+
+    - name: Directory missing
+      ansible.builtin.fail:
+        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
+      when: not network_folder.stat.exists
+
+    - name: Set host macros
+      ansible.builtin.set_fact:
+        host_macro_values:
+          - { macro: "{$GITHUB_ORG}", value: "{{ execution_github_org | default(omit) }}" }
+          - { macro: "{$GITHUB_REPO}", value: "{{ execution_github_repo | default(omit) }}" }
+          - { macro: "{$PORT_RPC}", value: "8899" }
+          - { macro: "{$RPC_PUBLIC}", value: "{{ execution_public_rpc | default(omit) }}" }
+          - { macro: "{$PATH_RPC}", value: "{{ execution_rpc_path | default(omit) }}" }
+
+    - name: Initialize host macro dict
+      ansible.builtin.set_fact:
+        host_macro_dict: []
+
+    - name: Populate host macro dict
+      ansible.builtin.set_fact:
+        host_macro_dict: >-
+          {{ host_macro_dict + [{'macro': item.macro, 'value': item.value}] }}
+      with_items: "{{ host_macro_values }}"
+      when: item.value is defined
+
+  roles:
+    - util_zabbix_prepare
+
+    - role: zabbix.zabbix.host
+      delegate_to: localhost
+      host_zabbix_api_server: "{{ zabbix_server_public_name }}"
+      host_zabbix_api_port: 443
+      host_zabbix_api_user: "{{ zabbix_login_user }}"
+      host_zabbix_api_password: "{{ zabbix_login_pass }}"
+      host_zabbix_api_use_ssl: true
+      host_name: "NODE-{{ network }}-{% if consensus_container_name is defined %}EL-{% endif %}{{ inventory_hostname }}"
+      host_description: "{{ network }} {% if consensus_container_name is defined %}execution layer {% endif %}node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})."
+      host_hostgroups:
+        - "{{ network }}"
+        - "mainnet"
+        - "{% if validator is defined %}validator{% elif archive is defined %}archive{% else %}rpc{% endif %}"
+      host_inventory_mode: automatic
+      host_interfaces:
+        - type: agent
+          ip: "{% if nebula_internal_ip_addr is defined and nebula_internal_ip_addr | ansible.utils.ipaddr %}{{ nebula_internal_ip_addr }}{% elif ansible_host | ansible.utils.ipaddr %}{{ ansible_host }}{% endif %}"
+          dns: ""
+          useip: true
+          port: "{{ agent_param_listenport | default(10050) }}"
+      host_inventory:
+        alias: "{{ inventory_hostname }}"
+        software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+        location: "{{ node_info.json.org }}"
+        location_lat: "{{ latlong.0 }}"
+        location_lon: "{{ latlong.1 }}"
+        site_city: "{{ node_info.json.city }}"
+        site_state: "{{ node_info.json.region }}"
+        site_country: "{{ node_info.json.country }}"
+      host_templates:
+        - "Solana Node - Base"
+      host_tags:
+        - tag: "network"
+          value: "{{ network }}"
+        - tag: "node_layer"
+          value: "{% if consensus_container_name is defined %}EL{% else %}allinone{% endif %}"
+        - tag: "execution_container_name"
+          value: "{{ execution_container_name }}"
+        - tag: "role"
+          value: "{% if validator is defined %}validator{% elif archive is defined %}archive{% else %}rpc{% endif %}"
+        - tag: "location_city"
+          value: "{{ node_info.json.city }}"
+        - tag: "location_state"
+          value: "{{ node_info.json.region }}"
+        - tag: "location_country"
+          value: "{{ node_info.json.country }}"
+        - tag: "location_org"
+          value: "{{ node_info.json.org }}"
+      host_macros: "{{ host_macro_dict }}"
