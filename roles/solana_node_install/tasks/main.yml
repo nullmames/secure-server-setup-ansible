@@ -48,23 +48,9 @@
     # - name: net.ipv4.tcp_fastopen
     #   value: "3"
 
-- name: Identify if binaries exist on node
-  ansible.builtin.stat:
-    path: "{{ user_dir }}/.local/share/solana/install/active_release/bin/agave-validator"
-  register: binaries_exist
-
 - name: Download agave library of binaries
-  when: not binaries_exist.stat.exists
   ansible.builtin.shell:
-    cmd: 'sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"'
-  args:
-    executable: /bin/bash
-  notify: Restart agave
-
-- name: Update existing agave binaries
-  when: binaries_exist.stat.exists
-  ansible.builtin.shell:
-    cmd: "{{ user_dir }}/.local/share/solana/install/active_release/bin/agave-install update"
+    cmd: 'sh -c "$(curl -sSfL https://release.anza.xyz/{{ node_version | default("stable") }}/install)"'
   args:
     executable: /bin/bash
   notify: Restart agave
@@ -77,13 +63,19 @@
     group: "{{ ansible_user }}"
     mode: "0644"
 
-- name: Create network folder
+- name: Create folder structure
+  become: true
   ansible.builtin.file:
     path: "{{ user_dir }}/{{ folder }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: "0755"
+  loop:
+    - "{{ user_dir}}/{{ folder }}"
+    - "{{ ledger_dir }}"
+    - "{{ accounts_dir }}"
+    - "{{ snapshots_dir }}"
 
 - name: Verify if node is initialized
   ansible.builtin.stat:
