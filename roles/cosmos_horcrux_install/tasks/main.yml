@@ -10,6 +10,7 @@
   register: horcrux
 
 - name: Build horcrux
+  when: horcrux.changed
   ansible.builtin.command: "{{ item }}"
   args:
     chdir: "{{ user_dir }}/source/horcrux"
@@ -20,6 +21,7 @@
     GOPATH: "{{ user_dir }}/go"
 
 - name: Move to /usr/local/bin
+  when: horcrux.changed
   become: true
   ansible.builtin.copy:
     src: "{{ user_dir }}/go/bin/horcrux"
