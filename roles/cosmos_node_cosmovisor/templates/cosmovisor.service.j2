@@ -31,6 +31,8 @@ MemoryMax={{ memory_max_mb }}M
 {% if tracing is defined and tracing %}
 Environment="no_tracing_ibcreceive_capture=true"
 Environment="no_tracing_ibcreceive_log=true"
+Environment="no_tracing_ibcreceive=true"
+Environment="no_tracing_ibcack=true"
 Environment="JAEGER_SAMPLER_TYPE=const"
 Environment="JAEGER_SAMPLER_PARAM=1"
 Environment="JAEGER_REPORTER_LOG_SPANS=true"
