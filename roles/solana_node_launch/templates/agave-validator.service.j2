@@ -16,8 +16,9 @@ ExecStart={{ user_dir }}/.local/share/solana/install/active_release/bin/agave-va
     --known-validator 9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv \
     --known-validator Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN \
     --no-voting \
-    --ledger ledger \
-    --accounts accounts \
+    --ledger {{ ledger_dir }} \
+    --accounts {{ accounts_dir }} \
+    --snapshots {{ snapshots_dir }} \
     --only-known-rpc \
     --full-rpc-api \
     --rpc-port 8899 \
@@ -32,11 +33,12 @@ ExecStart={{ user_dir }}/.local/share/solana/install/active_release/bin/agave-va
     --entrypoint entrypoint5.mainnet-beta.solana.com:8001 \
     --expected-genesis-hash 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d \
     --wal-recovery-mode skip_any_corrupted_record \
-    --limit-ledger-size
+    {% if node_initialized.stat.exists %}--no-snapshot-fetch \{% endif %}{{''}}
+    --limit-ledger-size 50000000
 
-ExecStop=/bin/kill -s INT ${MAINPID}
 Restart=on-failure
-RestartSec=5
+RestartSec=30
+TimeoutSec=600
 
 Environment="RUST_LOG=info"
 Environment="RUST_BACKTRACE=full"
