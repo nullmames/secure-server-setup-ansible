@@ -13,10 +13,10 @@ execution_network: mainnet
 # Consensus
 # https://github.com/sigp/lighthouse/releases
 consensus_container_name: lighthouse
-consensus_container_version: v5.3.0
+consensus_container_version: v6.0.1
 consensus_snapshot_location: "{{ folder }}/lighthouse/mainnet/beacon"
 consensus_network: mainnet
-consensus_checkpoint_sync_url: https://mainnet-checkpoint-sync.attestant.io
+consensus_checkpoint_sync_url: https://sync-mainnet.beaconcha.in
 
 # Monitoring
 execution_github_org: ethereum

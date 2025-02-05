@@ -1,5 +1,13 @@
 # Network information
 network: solana
 folder: ".solana"
-repo: https://github.com/anza-xyz/agave.git
-node_version: v2.0.21 # unused
+node_version: v2.1.11
+#
+ledger_dir: "{{ user_dir }}/{{ folder }}/ledger"
+accounts_dir: "{{ user_dir }}/{{ folder }}/accounts"
+snapshots_dir: "/mnt/snapshots"
+
+# Monitoring
+execution_github_org: anza-xyz
+execution_github_repo: agave
+execution_public_rpc: https://solana-rpc.publicnode.com
