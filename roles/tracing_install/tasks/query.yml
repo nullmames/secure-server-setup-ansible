@@ -1,12 +1,15 @@
 ---
 # Run Jaeger Query/UI components
 
-- name: Docker login to ghcr.io
+- name: Docker login to private cosmwasm-tracing-ui repo
   community.docker.docker_login:
-    registry_url: ghcr.io/confio/cosmwasm-tracing-ui
+    registry_url: "{{ item }}"
     username: "{{ github_username }}"
     password: "{{ github_token }}"
     reauthorize: true
+  loop:
+    - ghcr.io/confio/cosmwasm-tracing-ui
+    - ghcr.io/confio/tracing2-api
 
 - name: Run Jaeger Query - Production
   community.docker.docker_container:
@@ -40,3 +43,13 @@
       QUERY_GRPC_SERVER_HOST_PORT: ":26685"
       QUERY_HTTP_SERVER_HOST_PORT: ":26686"
       ADMIN_HTTP_HOST_PORT: ":26687"
+
+- name: Run CosmWasm Tracing API
+  community.docker.docker_container:
+    name: tracing2-api
+    image: ghcr.io/confio/tracing2-api:latest
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 200
+    network_mode: host
+    pull: true
