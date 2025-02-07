@@ -1,0 +1,20 @@
+chainlink_support_soneium_op_node_base_command:
+  - "op-node"
+  - "--l1={{ ethereum_l1 }}"
+  - "--l1.beacon={{ ethereum_l1_beacon }}"
+  - "--l1.trustrpc"
+  - "--l2=ws://{{ execution_container_name }}:8551"
+  - "--l2.jwt-secret=/jwtsecret"
+  - "--l2.enginekind=geth"
+  - "--p2p.bootnodes={{ consensus_bootnodes | default('') }}"
+  # Syncing
+  - "--syncmode=execution-layer"
+  - "--l1.max-concurrency=64"
+  - "--l1.rpc-rate-limit=0"
+  - "--l1.rpc-max-batch-size=500"
+  # p2p
+  - "--p2p.advertise.ip={{ public_ip.content | trim }}"
+  - "--p2p.listen.tcp={{ custom_port_prefix }}13"
+  # rpc
+  - "--rpc.addr=0.0.0.0"
+  - "--rpc.port={{ custom_port_prefix }}55"

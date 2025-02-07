@@ -1,0 +1,137 @@
+---
+# Soneium uses a non-standard Optimism Stack with op-node, op-geth.  Utilized snap-sync for sync.
+# Ports:
+#  - Geth: xxx03 (p2p - public), xxx45 (rpc), xxx46 (ws), 8551 (authrpc)
+#  - Node: xxx13 (p2p - public), xxx55 (rpc)
+
+- name: Register public ip
+  ansible.builtin.uri:
+    url: https://ipv4.icanhazip.com/
+    return_content: true
+  register: public_ip
+
+- name: Build folder structure
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ folder }}"
+
+- name: Create jwtsecret if it does not exist
+  ansible.builtin.shell: "set -o pipefail && openssl rand -hex 32 | tr -d '\n' > jwtsecret"
+  args:
+    chdir: "{{ user_dir }}/docker-compose"
+    creates: jwtsecret
+    executable: /bin/bash
+
+- name: Identify if node is initialized
+  become: true
+  ansible.builtin.stat:
+    path: "{{ folder }}/{{ execution_container_name }}/geth/chaindata"
+  register: geth_dir
+
+- name: Initialize node
+  when: not geth_dir.stat.exists
+  ansible.builtin.import_tasks: init_node.yml
+
+- name: Create a network
+  community.docker.docker_network:
+    name: "{{ network }}_net"
+
+- name: Run op-geth container for chain
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/tcp"
+      - "{{ custom_port_prefix }}03:{{ custom_port_prefix }}03/udp"
+      # rpc
+      - "127.0.0.1:{{ custom_port_prefix }}45:8545"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}45:8545"
+      - "127.0.0.1:{{ custom_port_prefix }}46:8546"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}46:8546"
+      # metrics
+      - "127.0.0.1:{{ custom_port_prefix }}60:6060"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}60:6060"
+    volumes:
+      - "{{ folder }}/{{ execution_container_name }}:/data"
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      ## General
+      - --datadir=/data
+      - --gcmode={{ execution_gcmode | default('full') }}
+      - --syncmode={{ execution_syncmode | default('snap') }}
+      - --rollup.halt=major
+      - --db.engine=pebble
+      - --state.scheme=path
+      - --bootnodes={{ execution_bootnodes | default('') }}
+      ## Interfaces
+      # Consensus Layer Engine API
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/jwtsecret
+      # HTTP/RPC
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --http.api=web3,debug,eth,txpool,net,engine
+      # Websocket
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.origins=*
+      - --ws.api=web3,debug,eth,txpool,net,engine
+      # P2P
+      - --port={{ custom_port_prefix }}03
+      - --nat=extip:{{ public_ip.content | trim }}
+      # Metrics
+      - --metrics
+      - --metrics.addr=0.0.0.0
+      - --metrics.port=6060
+      # Transaction & Chain Specific
+      - --rollup.sequencerhttp={{ execution_sequencerhttp | default('') }}
+      - --rollup.disabletxpoolgossip=true
+      - --ipcdisable
+      # RMN
+      - --rpc.batch-response-max-size=70000000 # Per RMN Documentation
+      - --rpc.txfeecap=0 # Per RMN Documentation
+
+- name: Transform consensus options into command arguments
+  ansible.builtin.set_fact:
+    consensus_command_args: "{{
+      consensus_options.keys() | map('regex_replace', '^(.*)$', '--\\1=') | zip(consensus_options.values()) | map('join') | list
+      }}"
+
+- name: Run op-node container for chain
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:{{ consensus_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    stop_timeout: 600
+    pull: true
+    networks:
+      - name: "{{ network }}_net"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}13:{{ custom_port_prefix }}13"
+      # rpc
+      - 127.0.0.1:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}55:{{ custom_port_prefix }}55"
+    volumes:
+      - "{{ user_dir }}/docker-compose/jwtsecret:/jwtsecret"
+      - "{{ folder }}/{{ consensus_container_name }}/rollup.json:/rollup.json"
+      - /etc/localtime:/etc/localtime:ro
+    command: "{{ chainlink_support_soneium_op_node_base_command + consensus_command_args }}"

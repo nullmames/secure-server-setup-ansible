@@ -1,0 +1,60 @@
+- name: Verify vars
+  ansible.builtin.assert:
+    that:
+      - execution_genesis is defined
+      - consensus_rollup is defined
+    fail_msg: "execution_genesis is not defined"
+
+# Execution Layer
+- name: Download genesis file
+  ansible.builtin.get_url:
+    url: "{{ execution_genesis }}"
+    dest: "{{ folder }}/genesis.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: Initialize execution client
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}-init"
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
+    restart_policy: unless-stopped
+    state: started
+    pull: true
+    volumes:
+      - "{{ folder }}/genesis.json:/genesis.json"
+      - "{{ folder }}/{{ execution_container_name }}:/data"
+    command:
+      ## General
+      - init
+      - --datadir=/data
+      - --db.engine=pebble
+      - --state.scheme=path
+      - /genesis.json
+
+- name: Remove unneeded init container
+  community.docker.docker_container:
+    name: "{{ execution_container_name }}-init"
+    state: absent
+
+- name: Delete genesis file
+  ansible.builtin.file:
+    path: "{{ folder }}/genesis.json"
+    state: absent
+
+# Consensus Layer
+- name: Create consensus container folder
+  ansible.builtin.file:
+    path: "{{ folder }}/{{ consensus_container_name }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Download rollup file
+  ansible.builtin.get_url:
+    url: "{{ consensus_rollup }}"
+    dest: "{{ folder }}/{{ consensus_container_name }}/rollup.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
