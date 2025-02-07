@@ -1,0 +1,37 @@
+# Soneium Network using Optimism Stack playbook
+# Port prefix: 139
+# Docs: https://startale.notion.site/CONFIDENTIAL-Soneium-Mainnet-Node-Setup-Instructions-HOLOCENE-15134d293491809f9c29c8bea0336399
+
+network: soneium
+folder: "{{ user_dir }}/docker-compose/{{ network }}"
+custom_port_prefix: 149
+
+# Execution
+# https://github.com/ethereum-optimism/op-geth
+execution_container_name: soneium-geth
+execution_container_version: v1.101411.6
+#execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
+
+# Consensus
+# https://github.com/ethereum-optimism/optimism
+consensus_container_name: soneium-node
+consensus_container_version: v1.10.3
+consensus_rollup: https://snapshots.rhinostake.com/soneium/soneium-rollup.json
+consensus_bootnodes: "enr:-J24QFKJIsLSdrHMNj_WfsYeL05YrVJEcq8rKfIUio0ok7aYD8hiAJtJkRod41HHZ5rafwsn_HF0zaEoQhxqp2daE8KGAZOICYvKgmlkgnY0gmlwhGJVQO6Hb3BzdGFja4PMDgCJc2VjcDI1NmsxoQMo2J0Z46Ul_eRxcaHrXmbBpXPEVosbkVRchDotfRp1AoN0Y3CCJAaDdWRwgiQH,enr:-J24QAGAAjNNElj_YJEcwSbebPgOrvyxhPzXb95q-zVsUPeCU-GhySWj0Wdbv6scZkCrm_5-ARpaK0I5hg0evZG7oFWGAZOICbxHgmlkgnY0gmlwhGJVgFKHb3BzdGFja4PMDgCJc2VjcDI1NmsxoQIUyu7sy_esGEUiGlzVGeXTpo0BteEljJxoJ5kv76Vs0oN0Y3CCJAaDdWRwgiQH"
+consensus_options:
+  override.holocene: "1738573200"
+  rollup.config: "/rollup.json"
+
+# Soneium specific
+execution_genesis: https://snapshots.rhinostake.com/soneium/soneium-genesis.json
+execution_syncmode: full
+# execution_network: mode-mainnet
+# execution_sequencerhttp:
+execution_bootnodes: enode://6526c348274c54e7b4184014741897eb25e12ca388f588b0265bb2246caeea87ed5fcb2d55b7b08a90cd271a53bc76decb6d1ec37f219dbe4cd3ed53a888118b@peering-02.prd.hypersonicl2.com:30303,enode://34f172c255b11f64828d73c90a60395691e89782639423d434385594dd38b434ddffb78ad411da6fd37cbda6d0f93e17ceae399ac4f2594b0d54eb8c83c27de9@peering-01.prd.hypersonicl2.com:30303
+
+consensus_network: mode-mainnet
+
+# Monitoring
+execution_github_org: ethereum-optimism
+execution_github_repo: op-geth
+execution_public_rpc: https://soneium.drpc.org
