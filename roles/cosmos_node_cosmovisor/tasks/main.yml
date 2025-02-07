@@ -1,17 +1,21 @@
 ---
-- name: Set facts for memory limits # 90% of memory if 32GB or less, else 50% and 70%
+- name: Set facts for memory limits # 32GB (75%/85%), 64GB (80%/88%), 128GB (85%/90%)
   ansible.builtin.set_fact:
     memory_high_mb: >-
       {%- if ansible_memory_mb.real.total < 32768 -%}
-        {{ (ansible_memory_mb.real.total * 0.9) | round | int }}
+        {{ (ansible_memory_mb.real.total * 0.75) | round | int }}
+      {%- elif ansible_memory_mb.real.total < 65536 -%}
+        {{ (ansible_memory_mb.real.total * 0.80) | round | int }}
       {%- else -%}
-        {{ (ansible_memory_mb.real.total * 0.5) | round | int }}
+        {{ (ansible_memory_mb.real.total * 0.85) | round | int }}
       {%- endif -%}
     memory_max_mb: >-
       {%- if ansible_memory_mb.real.total < 32768 -%}
-        {{ (ansible_memory_mb.real.total * 0.9) | round | int }}
+        {{ (ansible_memory_mb.real.total * 0.85) | round | int }}
+      {%- elif ansible_memory_mb.real.total < 65536 -%}
+        {{ (ansible_memory_mb.real.total * 0.88) | round | int }}
       {%- else -%}
-        {{ (ansible_memory_mb.real.total * 0.7) | round | int }}
+        {{ (ansible_memory_mb.real.total * 0.90) | round | int }}
       {%- endif -%}
 
 - name: Install cosmovisor
@@ -31,7 +35,6 @@
 
 - name: Copy cosmovisor systemctl service file for binary
   become: true
-  notify: Restart cosmovisor
   ansible.builtin.template:
     src: "cosmovisor.service.j2"
     dest: "/etc/systemd/system/{{ daemon }}.service"
