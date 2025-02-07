@@ -11,8 +11,8 @@ custom_port_prefix: 129
 snap_rpc: "https://chihuahua-rpc.polkachu.com:443"
 
 # Version Info
-node_version: v9.0.0
-upgrade_name: v9.0.0
+node_version: v9.0.1
+upgrade_name: v9.0.1
 
 horcrux_group: horcrux_alfa
 sentries:

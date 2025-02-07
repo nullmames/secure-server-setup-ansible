@@ -2,7 +2,7 @@ network: allora
 folder: ".allorad"
 daemon: allorad
 chain_id: allora-testnet-1
-node_version: v0.8.0
+node_version: v0.8.2
 genesis: https://raw.githubusercontent.com/allora-network/networks/main/allora-testnet-1/genesis.json
 repo: https://github.com/allora-network/allora-chain.git
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:26756,b825e8d944952e50afe5739fa4afa7cb16f11db9@seed-0-p2p.testnet-1.testnet.allora.network:32110,cc11f2c02f9dea5f3b86eec3e00ae373b7076ea4@seed-1-p2p.testnet-1.testnet.allora.network:32111,9b1cdf7947dcd5e15bec361c38c55f033658003b@seed-2-p2p.testnet-1.testnet.allora.network:32112"
