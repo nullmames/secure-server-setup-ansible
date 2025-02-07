@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/scroll.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
-    - util_docker_install
     - chainlink_support_scroll
     - util_docker_prune

@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/ethereum.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
-    - util_docker_install
     - chainlink_support_ethereum_reth_lighthouse
     - util_docker_prune

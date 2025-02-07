@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/arbitrum.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
-    - util_docker_install
     - chainlink_support_arbitrum
     - util_docker_prune

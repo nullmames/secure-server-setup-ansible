@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/bnbchain.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
-    - util_docker_install
     - chainlink_support_bnbchain
     - util_docker_prune

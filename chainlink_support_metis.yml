@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/all.yml"
     - "group_vars/erc20_mainnet/metis.yml"
   roles:
-    - util_docker_install
     - chainlink_support_metis
     - util_docker_prune

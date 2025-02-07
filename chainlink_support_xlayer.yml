@@ -6,6 +6,5 @@
     - "group_vars/erc20_mainnet/xlayer.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
-    - util_docker_install
     - chainlink_support_xlayer
     - util_docker_prune
