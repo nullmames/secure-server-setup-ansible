@@ -98,14 +98,20 @@
           - "{{ nebula_internal_ip_addr }}:9000:9000/tcp"
           - "127.0.0.1:9000:9000/tcp"
           # Beats
-          - "{{ nebula_internal_ip_addr }}:5044:5044/tcp"
-          - 127.0.0.1:5044:5044/tcp
+          - "{{ nebula_internal_ip_addr }}:{{ graylog_beats_port }}:{{ graylog_beats_port }}"
+          - 127.0.0.1:{{ graylog_beats_port }}:{{ graylog_beats_port }}
           # Syslog TCP
-          - "{{ nebula_internal_ip_addr }}:5140:5140/tcp"
-          - 127.0.0.1:5140:5140/tcp
+          - "{{ nebula_internal_ip_addr }}:{{ graylog_syslog_port }}:{{ graylog_syslog_port }}/tcp"
+          - 127.0.0.1:{{ graylog_syslog_port }}:{{ graylog_syslog_port }}/tcp
           # Syslog UDP
-          - "{{ nebula_internal_ip_addr }}:5140:5140/udp"
-          - 127.0.0.1:5140:5140/udp
+          - "{{ nebula_internal_ip_addr }}:{{ graylog_syslog_port }}:{{ graylog_syslog_port }}/udp"
+          - 127.0.0.1:{{ graylog_syslog_port }}:{{ graylog_syslog_port }}/udp
+          # GELF TCP
+          - "{{ nebula_internal_ip_addr }}:{{ graylog_gelf_port }}:{{ graylog_gelf_port }}/tcp"
+          - 127.0.0.1:{{ graylog_gelf_port }}:{{ graylog_gelf_port }}/tcp
+          # GELF UDP
+          - "{{ nebula_internal_ip_addr }}:{{ graylog_gelf_port }}:{{ graylog_gelf_port }}/udp"
+          - 127.0.0.1:{{ graylog_gelf_port }}:{{ graylog_gelf_port }}/udp
         volumes:
           - "graylog_data:/usr/share/graylog/data"
         env:
@@ -115,4 +121,4 @@
           GRAYLOG_REPORT_DISABLE_SANDBOX: "true"
           GRAYLOG_PASSWORD_SECRET: "{{ graylog_password_secret }}"
           GRAYLOG_ROOT_PASSWORD_SHA2: "{{ graylog_root_password }}"
-          GRAYLOG_HTTP_EXTERNAL_URI: "http://{{ nebula_internal_ip_addr }}:9000"
+          GRAYLOG_HTTP_EXTERNAL_URI: "http://{{ nebula_internal_ip_addr }}:9000/"
