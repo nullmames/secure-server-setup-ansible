@@ -16,11 +16,11 @@ cosmprund_version: "v1.0.0"
 # aria2c options
 aria2c_options: "-x16 -s16 -k100M -c"
 
-# promtail
-promtail: false
-promtail_version: "v2.8.2"
-promtail_monitor: "http://10.254.100.13:3100"
-promtail_monitor_nebula: "http://100.100.0.13:3100"
+# graylog
+graylog_ip: "100.100.0.14"
+graylog_beats_port: 5044
+graylog_syslog_port: 5140
+graylog_gelf_port: 12201
 
 # ipfs
 ipfs_release: "0.31.0"
