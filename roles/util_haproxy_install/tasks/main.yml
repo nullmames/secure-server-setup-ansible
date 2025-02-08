@@ -125,20 +125,15 @@
     group: root
     mode: "0644"
 
-- name: Stat local map file
+- name: Find local map files for config
   delegate_to: localhost
-  ansible.builtin.stat:
-    path: "{{ role_path }}/templates/haproxy-{{ haproxy_config }}.map"
+  ansible.builtin.find:
+    path: "{{ role_path }}/templates/"
+    patterns: "haproxy-{{ haproxy_config }}*.map"
   register: map_exists
 
-- name: Stat local ws-map file
-  delegate_to: localhost
-  ansible.builtin.stat:
-    path: "{{ role_path }}/templates/haproxy-{{ haproxy_config }}-ws.map"
-  register: ws_map_exists
-
-- name: Copy map file
-  when: map_exists.stat.exists
+- name: Copy map files
+  when: map_exists.files | length > 0
   notify: Restart haproxy
   block:
     - name: Create map folder
@@ -150,24 +145,15 @@
         mode: "0755"
         state: directory
 
-    - name: Copy map file
+    - name: Copy map files
       become: true
-      ansible.builtin.template:
-        src: "haproxy-{{ haproxy_config }}.map"
-        dest: "/etc/haproxy/maps/host.map"
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "/etc/haproxy/maps/{{ item.path | basename }}"
         owner: root
         group: root
         mode: "0644"
-
-    - name: Copy ws-map file
-      when: ws_map_exists.stat.exists
-      become: true
-      ansible.builtin.template:
-        src: "haproxy-{{ haproxy_config }}-ws.map"
-        dest: "/etc/haproxy/maps/host-ws.map"
-        owner: root
-        group: root
-        mode: "0644"
+      loop: "{{ map_exists.files }}"
 
 - name: Test haproxy config
   ansible.builtin.command: /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -c
