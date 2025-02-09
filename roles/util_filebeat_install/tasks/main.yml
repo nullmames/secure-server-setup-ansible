@@ -1,0 +1,41 @@
+- name: Install elasticsearch repository
+  become: true
+  block:
+    - name: Obtain elasticsearch repository key
+      ansible.builtin.get_url:
+        url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+        dest: /usr/share/keyrings/elasticsearch.asc
+        mode: "0644"
+        force: true
+
+    - name: Install elasticsearch repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/8.x/apt stable main"
+        filename: elastic-8.x.list
+        state: present
+        update_cache: true
+
+- name: Install filebeat
+  become: true
+  ansible.builtin.apt:
+    name:
+      - filebeat
+    state: present
+    update_cache: true
+
+- name: Copy filebeat configuration
+  become: true
+  ansible.builtin.template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart filebeat
+
+- name: Enable and start Filebeat
+  become: true
+  ansible.builtin.systemd:
+    name: filebeat
+    enabled: true
+    state: started

@@ -1,0 +1,21 @@
+filebeat.inputs:
+- type: journald
+  id: everything
+  processors:
+    - drop_event:
+        when:
+          contains:
+            message: "UFW BLOCK"
+
+- type: container
+  enabled: true
+  paths:
+    - {{ user_dir }}/docker-compose/docker-data/containers/*/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+
+output.logstash:
+  hosts: ["{{ graylog_ip }}:{{ graylog_beats_port }}"]
+
+# Ignore metrics logging output
+logging.metrics.enabled: false

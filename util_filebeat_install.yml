@@ -1,0 +1,6 @@
+---
+- name: Install or update filebeat
+  hosts: all
+  gather_facts: false
+  roles:
+    - util_filebeat_install
