@@ -1,5 +1,4 @@
 ---
-#
 # Replace the current running binary in directory.  This is used to replace the current running binary with a non-breaking change
 # ansible-playbook main_cosmos_node_hotfix.yml -i inventory-testnet.ini --limit testnet_juno"
 - name: Deploy hotfix to node
@@ -7,7 +6,7 @@
   gather_facts: true
   vars_files:
     - "{{ var_file }}"
-  # serial: "30%"
+
   pre_tasks:
     - name: Confirm with User
       run_once: true
