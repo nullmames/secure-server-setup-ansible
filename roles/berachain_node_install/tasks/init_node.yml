@@ -35,19 +35,11 @@
         state: started
         volumes:
           - "{{ folder }}/{{ consensus_container_name }}:/beacond"
-        env:
-          CHAIN_SPEC: "!vault |
-            $ANSIBLE_VAULT;1.1;AES256
-            64376263393736343831373437643563653738393835343133373535393436323463313134303838
-            6433666639343132376531393333613266313737626262620a383965653530626561373032346339
-            35313461353034333235326331343633613639623033653136633738623062613535373766396662
-            6132356661303432370a303665356637643366303133353630643335633236346264663965353166
-            3133"
+        env: "{{ {'CHAIN_SPEC': consensus_chain_spec} if consensus_chain_spec is defined else {} }}"
         command:
           - init
           - "{{ network }}"
           - --chain-id={{ consensus_chain_id }}
-          - --consensus-key-algo=bls12_381
           - --home=/beacond
 
     - name: Remove unneeded init container

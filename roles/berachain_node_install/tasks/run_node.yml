@@ -13,24 +13,20 @@
     stop_timeout: 600
     networks:
       - name: "{{ network }}_net"
+    env: "{{ {'CHAIN_SPEC': consensus_chain_spec} if consensus_chain_spec is defined else {} }}"
     ports:
       # p2p
       - "{{ custom_port_prefix }}56:{{ custom_port_prefix }}56"
       # rpc for monitor
       - "127.0.0.1:{{ custom_port_prefix }}57:26657"
       - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}57:26657"
+      # beaconkit.node-api
+      - "127.0.0.1:{{ custom_port_prefix }}30:3500"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}30:3500"
     volumes:
       - "{{ folder }}/{{ consensus_container_name }}:/beacond"
       - "{{ folder }}/jwtsecret:/jwtsecret:ro"
       - /etc/localtime:/etc/localtime:ro
-    env:
-      CHAIN_SPEC: "!vault |
-        $ANSIBLE_VAULT;1.1;AES256
-        31613330333432613234616331343064633033376463383935393065396635323462643664356366
-        3163663833396563353532653038343664623638356165650a303165386138376138383433333765
-        31346131386638343565316531643466653139663961396264366236363062313464373332366561
-        3530343237653766380a613435363566383030363031643834383938666133633666383438663961
-        3434"
     command:
       - start
       - --home=/beacond
@@ -63,6 +59,7 @@
       - node
       - --full
       - --datadir=/data
+      - --config=/data/reth.toml
       - --port={{ custom_port_prefix }}03
       - --discovery.port={{ custom_port_prefix }}03
       - --nat=extip:{{ public_ip.content | trim }}
