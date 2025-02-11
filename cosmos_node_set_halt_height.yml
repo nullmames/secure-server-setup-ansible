@@ -2,7 +2,6 @@
 - name: Cosmos set halt-height and restart binary
   hosts: all
   gather_facts: true
-  serial: 1 # Run on one host at a time
   vars_files:
     - "{{ var_file }}"
     - "{{ user_file }}"
@@ -23,5 +22,13 @@
         msg: "Directory {{ folder }} does not exist. Wrong --limit?"
       when: not network_folder.stat.exists
 
-  roles:
-    - cosmos_node_configure_halt_height
+  tasks:
+    - name: Configure halt-height on chain
+      ansible.builtin.lineinfile:
+        path: "{{ user_dir }}/{{ folder }}/config/app.toml"
+        regexp: "^halt-height ="
+        line: "halt-height = {{ halt_height }}"
+        state: present
+
+- name: Restart binaries after hotfix
+  ansible.builtin.import_playbook: cosmos_node_restart_binary.yml
