@@ -12,3 +12,8 @@ execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/chaind
 consensus_container_name: gnosis_lighthouse
 consensus_container_version: latest-modern
 consensus_snapshot_location: "{{ folder }}/{{ consensus_container_name }}/data"
+
+# Monitoring
+execution_github_org: nethermindeth
+execution_github_repo: nethermind
+execution_public_rpc: https://gnosis-rpc.publicnode.com
