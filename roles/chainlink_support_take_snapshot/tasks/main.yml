@@ -27,11 +27,11 @@
 
 # Execution Client
 - name: Snapshot of Execution Client
-  when: execution_snapshot_location is defined
+  when: execution_snapshot_locations is defined
   block:
     - name: Set fact
       ansible.builtin.set_fact:
-        execution_snapshot_filename: "{{ execution_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.zst"
+        execution_snapshot_filename: "{{ execution_container_name }}-snapshot.{{ '%Y%m%d-%H%M%S' | strftime(utc=true) }}.UTC.tar.zst"
 
     - name: Stop execution container
       community.docker.docker_container:
@@ -42,8 +42,8 @@
     - name: Create and send execution archive
       become: true
       ansible.builtin.shell:
-        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ execution_snapshot_location | basename }} | mc --quiet --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}'
-        chdir: "{{ execution_snapshot_location | dirname }}"
+        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ execution_snapshot_locations | map("basename") | join(" ") }} | mc --quiet --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ execution_snapshot_filename }}'
+        chdir: "{{ execution_snapshot_locations[0] | dirname }}"
       args:
         executable: /usr/bin/bash
       environment:
@@ -51,11 +51,11 @@
 
 # Consensus Client
 - name: Snapshot of Consensus Client
-  when: consensus_snapshot_location is defined
+  when: consensus_snapshot_locations is defined
   block:
     - name: Set fact
       ansible.builtin.set_fact:
-        consensus_snapshot_filename: "{{ consensus_container_name }}-snapshot.{{ ansible_date_time.iso8601 }}.tar.zst"
+        consensus_snapshot_filename: "{{ consensus_container_name }}-snapshot.{{ '%Y%m%d-%H%M%S' | strftime(utc=true) }}.UTC.tar.zst"
 
     - name: Stop consensus container
       community.docker.docker_container:
@@ -66,8 +66,8 @@
     - name: Create and send consensus archive
       become: true
       ansible.builtin.shell:
-        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ consensus_snapshot_location | basename }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}'
-        chdir: "{{ consensus_snapshot_location | dirname }}"
+        cmd: 'set -o pipefail && tar --use-compress-program="zstd -3 -T0" -cf - {{ consensus_snapshot_locations | map("basename") | join (" ") }} | mc --config-dir {{ user_dir }}/.mc pipe snapshots/{{ bucket_name }}/{{ consensus_snapshot_filename }}'
+        chdir: "{{ consensus_snapshot_locations[0] | dirname }}"
       args:
         executable: /usr/bin/bash
       environment:
@@ -75,7 +75,7 @@
 
 # Start containers
 - name: Start consensus container
-  when: consensus_snapshot_location is defined
+  when: consensus_snapshot_locations is defined
   community.docker.docker_container:
     name: "{{ consensus_container_name }}"
     state: started
