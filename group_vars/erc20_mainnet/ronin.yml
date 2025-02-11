@@ -7,3 +7,8 @@ custom_port_prefix: 145
 execution_container_name: "ronin"
 execution_container_version: latest
 #execution_snapshot_location: "{{ folder }}/scroll/chaindata"
+
+# Monitoring
+execution_github_org: axieinfinity
+execution_github_repo: ronin
+execution_public_rpc: https://api.roninchain.com/rpc

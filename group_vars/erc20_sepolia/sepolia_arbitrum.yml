@@ -5,8 +5,14 @@ custom_port_prefix: 118
 
 # Execution version
 execution_container_name: testnet-arbitrum
-execution_container_version: v3.2.1-d81324d
-execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
+execution_container_version: v3.5.0-bdc2fd2
+# execution_snapshot_location: "{{ folder }}/arbitrum-data/xx"
 
 # Arbitrum specific variables
 arbitrum_chain_name: sepolia-rollup
+
+# Monitoring
+execution_github_org: OffchainLabs
+execution_github_repo: nitro
+execution_rpc_port: 11847
+execution_public_rpc: https://arbitrum-sepolia-rpc.publicnode.com

@@ -7,3 +7,8 @@ custom_port_prefix: 134
 execution_container_name: "scroll-geth"
 execution_container_version: v5.7.25
 execution_snapshot_location: "{{ folder }}/scroll/chaindata"
+
+# Monitoring
+execution_github_org: scroll-tech
+execution_github_repo: go-ethereum
+execution_public_rpc: https://rpc.scroll.io

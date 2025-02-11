@@ -2,6 +2,7 @@
 network: kroma
 folder: "{{ user_dir }}/docker-compose/kroma-data"
 custom_port_prefix: 146
+execution_container_name: kroma
 
 # Monitoring
 execution_github_org: kroma-network
