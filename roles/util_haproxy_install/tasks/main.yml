@@ -1,5 +1,5 @@
 ---
-- name: Instally haproxy on Debian
+- name: Install haproxy on Debian
   when: ansible_distribution == "Debian"
   become: true
   block:
@@ -61,17 +61,6 @@
     update_cache: false
   notify: Restart haproxy
 
-- name: Copy all certificates
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/etc/ssl/"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart haproxy
-  with_fileglob: "templates/certs/*.pem"
-
 - name: Copy all check scripts
   become: true
   ansible.builtin.template:
@@ -114,6 +103,29 @@
     src: "/etc/haproxy/fragments/"
     dest: "/etc/haproxy/whitelist.txt"
     mode: "0644"
+
+- name: Copy all certificates
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/ssl/"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart haproxy
+  with_fileglob: "templates/certs/*.pem"
+
+- name: Find SSL certificate files
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: "{{ role_path }}/templates/certs/"
+    patterns: "origin*.pem"
+  register: ssl_certs
+
+- name: Generate HAProxy bind line
+  ansible.builtin.set_fact:
+    haproxy_bind_line: >-
+      bind :443 ssl {% for file in ssl_certs.files %}crt /etc/ssl/{{ file.path | basename }} {% endfor %}alpn h2,http/1.1
 
 - name: Copy haproxy config
   notify: Restart haproxy

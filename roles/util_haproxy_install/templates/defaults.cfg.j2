@@ -1,0 +1,17 @@
+defaults
+        mode http
+        log global
+        option httplog
+
+        # Timeouts aligned with Cloudflare
+        timeout connect 5s
+        timeout client 90s
+        timeout server 90s
+        timeout http-keep-alive 115s
+        timeout http-request 10s
+        timeout tunnel 30m
+
+        # Load balancing and health check
+        balance roundrobin
+        default-server inter 5s fall 2 rise 3
+{{ "\n" }}
