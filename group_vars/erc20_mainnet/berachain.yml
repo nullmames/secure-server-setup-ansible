@@ -18,7 +18,8 @@ suggested_fee_recipient: "0x2Bb47e75627B3A4479F36B35c17FD1eD21DeF3f5"
 consensus_container_name: bera-beacond
 consensus_container_version: "{{ consensus_version }}"
 # Snapshots
-consensus_snapshot_location: "{{ folder }}/bera-beacond/data"
+consensus_snapshot_locations:
+  - "{{ folder }}/bera-beacond/data"
 
 # Execution Engine Details
 execution_genesis: https://raw.githubusercontent.com/berachain/beacon-kit/refs/heads/main/testing/networks/80094/eth-genesis.json
@@ -28,7 +29,9 @@ execution_bootnodes: enode://ffc452fe451a2e5f89fe634744aea334d92dcd30d881b76209d
 execution_container_name: bera-reth
 execution_container_version: v1.1.5
 # Snapshots
-execution_snapshot_location: "{{ folder }}/bera-reth/db"
+execution_snapshot_locations:
+  - "{{ folder }}/bera-reth/db"
+  - "{{ folder }}/bera-reth/static_files"
 
 # Monitoring
 execution_github_org: paradigmxyz
