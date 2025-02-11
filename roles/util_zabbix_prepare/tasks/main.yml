@@ -12,6 +12,17 @@
     return_content: true
   register: node_info
 
+- name: Get country global_region
+  ansible.builtin.uri:
+    url: "https://restcountries.com/v3.1/alpha/{{ node_info.json.country }}"
+    method: GET
+    return_content: true
+  register: country_info
+
+- name: Set region fact
+  ansible.builtin.set_fact:
+    global_region: "{{ country_info.json[0].subregion }}"
+
 - name: Split lat long
   ansible.builtin.set_fact:
     latlong: "{{ node_info.json.loc | split(',') }}"
