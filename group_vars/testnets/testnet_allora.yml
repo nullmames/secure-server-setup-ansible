@@ -11,6 +11,6 @@ minimum_gas_price: "0uallo"
 
 upgrade_name: v0.8.0
 
-snap_rpc: https://allora-rpc.testnet.allora.network:443
+snap_rpc: https://allora-testnet-rpc.polkachu.com:443
 
 snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/allora/allora_994575.tar.lz4
