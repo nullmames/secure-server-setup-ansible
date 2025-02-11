@@ -7,6 +7,5 @@
 
   roles:
     - util_go_install
-    - util_docker_install
     - omni_node_install
     - util_docker_prune
