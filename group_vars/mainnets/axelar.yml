@@ -4,7 +4,7 @@ folder: ".axelar"
 daemon: axelard
 chain_id: "axelar-dojo-1"
 #
-node_version: v1.1.2
+node_version: v1.2.1
 make_args: "build && cp bin/axelard {{ user_dir }}/go/bin/axelard"
 #
 repo: https://github.com/axelarnetwork/axelar-core
@@ -14,7 +14,7 @@ genesis: "https://raw.githubusercontent.com/axelarnetwork/axelarate-community/re
 seeds: "3470414cd299d15911e9bb28557f6bffb8e514c6@seed-axelar-01.stakeflow.io:1606,8542cd7e6bf9d260fef543bc49e59be5a3fa9074@seed.publicnode.com:26656"
 custom_port_prefix: 151
 
-upgrade_name: v1.1
+upgrade_name: v1.2
 # [Optional] Snapshot
 
 snap_rpc: "https://axelar-rpc.quantnode.tech:443"

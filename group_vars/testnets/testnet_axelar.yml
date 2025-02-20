@@ -4,7 +4,7 @@ folder: ".axelar"
 daemon: axelard
 chain_id: "axelar-testnet-lisbon-3"
 #
-node_version: v1.1.2
+node_version: v1.2.1
 make_args: "build && cp bin/axelard {{ user_dir }}/go/bin/axelard"
 #
 repo: https://github.com/axelarnetwork/axelar-core
@@ -14,7 +14,7 @@ genesis: "https://raw.githubusercontent.com/axelarnetwork/axelarate-community/ma
 seeds: "a005b8923888007eb5cf9ed8c8120ed956bc31f7@k8s-testnet-axelarco-c0dd71f944-b4c8da2f814e7b8f.elb.us-east-2.amazonaws.com:26656"
 custom_port_prefix: 151
 
-upgrade_name: v1.1
+upgrade_name: v1.2
 # [Optional] Snapshot
 
 snap_rpc: "https://rpc-axelar-testnet.imperator.co:443"

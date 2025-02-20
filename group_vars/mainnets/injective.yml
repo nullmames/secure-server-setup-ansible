@@ -4,8 +4,8 @@ daemon: injectived
 chain_id: injective-1
 #
 # BINARY
-node_version: v1.13.2
-binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.13.2-1723753267/linux-amd64.zip
+node_version: v1.14.0
+binary: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/v1.14.0-1739303348/linux-amd64.zip
 binary_processing: zip
 lib_sidecar: true
 #
@@ -19,4 +19,4 @@ snap_rpc: https://injective-rpc.polkachu.com:443
 
 # snapshot_url: https://snapshots.publicnode.com/injective-pruned-91499158-91499168.tar.lz4
 
-upgrade_name: v1.13.2
+upgrade_name: v1.14.0

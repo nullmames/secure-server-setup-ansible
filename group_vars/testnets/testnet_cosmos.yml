@@ -2,7 +2,7 @@ network: cosmos
 folder: ".gaia"
 daemon: gaiad
 chain_id: provider
-node_version: v22.0.0
+node_version: v22.2.0
 repo: "https://github.com/cosmos/gaia"
 genesis: "https://raw.githubusercontent.com/cosmos/testnets/master/interchain-security/provider/provider-genesis.json"
 minimum_gas_price: "0.0025uatom"
@@ -11,6 +11,6 @@ custom_port_prefix: 149
 
 snap_rpc: https://cosmos-rpc.polkachu.com:443
 
-upgrade_name: v22
+upgrade_name: v22.2.0
 
 snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/cosmos/cosmos_10141360.tar.lz4
