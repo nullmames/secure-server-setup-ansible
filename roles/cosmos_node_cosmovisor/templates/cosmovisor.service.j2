@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 User={{ ansible_user }}
-ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }} {{ '--trace --twasm.open-tracing' if tracing is defined and tracing }}
+ExecStart={{ user_dir }}/go/bin/cosmovisor start --home {{ user_dir }}/{{ folder }} {{ launch_commands | default('') }} {{ '--twasm.open-tracing' if tracing is defined and tracing }}
 WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=5
@@ -32,7 +32,7 @@ MemoryMax={{ memory_max_mb }}M
 Environment="no_tracing_ibcreceive_capture=true"
 Environment="no_tracing_ibcreceive_log=true"
 Environment="no_tracing_ibcreceive=true"
-Environment="no_tracing_ibcack=true"
+
 Environment="JAEGER_SAMPLER_TYPE=const"
 Environment="JAEGER_SAMPLER_PARAM=1"
 Environment="JAEGER_REPORTER_LOG_SPANS=true"
