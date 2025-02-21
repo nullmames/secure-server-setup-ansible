@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: true
   vars_files:
-    - "group_vars/erc20_mainnet/ethereum.yml"
+    - "group_vars/erc20_mainnet/ethereum_reth.yml"
     - "group_vars/erc20_mainnet/all.yml"
   roles:
     - chainlink_support_ethereum_reth_lighthouse
