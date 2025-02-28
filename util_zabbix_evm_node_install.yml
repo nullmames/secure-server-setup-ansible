@@ -18,12 +18,21 @@
         msg: "Directory {{ folder }} does not exist. Wrong --limit?"
       when: not network_folder.stat.exists
 
+    - name: Set variables conditionally
+      ansible.builtin.set_fact:
+        el_label: "{{ '-el' if consensus_container_name is defined else '' }}"
+        network_label: "{{ 't' if target is search('testnet') else 't' if target is search('sepolia') else 'm' }}"
+        node_label: "{{ 'val' if validator is defined else 'archive' if archive is defined else 'sentry' if sentry is defined else 'rpc' }}"
+
     - name: Set host macros
       ansible.builtin.set_fact:
         host_macro_values:
           - { macro: "{$GITHUB_ORG}", value: "{{ execution_github_org | default(omit) }}" }
           - { macro: "{$GITHUB_REPO}", value: "{{ execution_github_repo | default(omit) }}" }
-          - { macro: "{$PORT_RPC}", value: "{{ execution_rpc_port | default(custom_port_prefix ~ '45') }}" }
+          - {
+              macro: "{$PORT_RPC}",
+              value: "{{ execution_rpc_port | default((custom_port_prefix ~ '45') if custom_port_prefix is defined else '8545') }}",
+            }
           - { macro: "{$RPC_PUBLIC}", value: "{{ execution_public_rpc | default(omit) }}" }
           - { macro: "{$PATH_RPC}", value: "{{ execution_rpc_path | default(omit) }}" }
 
@@ -48,13 +57,13 @@
       host_zabbix_api_user: "{{ zabbix_login_user }}"
       host_zabbix_api_password: "{{ zabbix_login_pass }}"
       host_zabbix_api_use_ssl: true
-      host_name: "NODE-{{ network }}-{% if consensus_container_name is defined %}EL-{% endif %}{{ inventory_hostname }}"
-      host_description: "{{ network }} {% if consensus_container_name is defined %}execution layer {% endif %}node in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})."
+      host_name: "{{ network_label }}-{{ network }}-{{ node_label }}-{{ inventory_hostname }}{{ el_label }}"
+      host_description: "{% if target is search('testnet') %}testnet{% elif target is search('sepolia') %}sepolia{% else %}mainnet{% endif %} {{ network }} {{ node_label }} node in {{ global_region }}.  Hosted in {{ node_info.json.org }} ({{ node_info.json.city }}, {{ node_info.json.country }})."
       host_hostgroups:
-        - EVM
         - "{{ network }}"
         - "{% if target is search('testnet') %}testnet{% elif target is search('sepolia') %}sepolia{% else %}mainnet{% endif %}"
-        - "{% if validator is defined %}validator{% elif archive is defined %}archive{% else %}rpc{% endif %}"
+        - "{{ node_label }}"
+        - "{{ global_region }}"
       host_inventory_mode: automatic
       host_interfaces:
         - type: agent
@@ -63,31 +72,33 @@
           useip: true
           port: "{{ agent_param_listenport | default(10050) }}"
       host_inventory:
-        alias: "{{ inventory_hostname }}"
+        name: "{{ inventory_hostname }}"
         software: "{{ ansible_distribution }} {{ ansible_distribution_major_version }}"
-        location: "{{ node_info.json.org }}"
-        location_lat: "{{ latlong.0 }}"
-        location_lon: "{{ latlong.1 }}"
-        site_city: "{{ node_info.json.city }}"
-        site_state: "{{ node_info.json.region }}"
-        site_country: "{{ node_info.json.country }}"
+        location: "{{ node_info.json.org | default('') }}"
+        location_lat: "{{ latlong.0 | default('') }}"
+        location_lon: "{{ latlong.1 | default('') }}"
+        site_city: "{{ node_info.json.city | default('') }}"
+        site_state: "{{ node_info.json.region | default('') }}"
+        site_country: "{{ node_info.json.country | default('') }}"
       host_templates:
         - "EVM Node"
       host_tags:
         - tag: "network"
-          value: "{{ network }}"
+          value: "{{ network | default('unknown') }}"
         - tag: "node_layer"
           value: "{% if consensus_container_name is defined %}EL{% else %}allinone{% endif %}"
         - tag: "execution_container_name"
-          value: "{{ execution_container_name }}"
+          value: "{{ execution_container_name | default('unknown') }}"
         - tag: "role"
-          value: "{% if validator is defined %}validator{% elif archive is defined %}archive{% else %}rpc{% endif %}"
+          value: "{{ node_label | default('unknown') }}"
         - tag: "location_city"
-          value: "{{ node_info.json.city }}"
+          value: "{{ node_info.json.city | default('') }}"
         - tag: "location_state"
-          value: "{{ node_info.json.region }}"
+          value: "{{ node_info.json.region | default('') }}"
         - tag: "location_country"
-          value: "{{ node_info.json.country }}"
+          value: "{{ node_info.json.country | default('') }}"
         - tag: "location_org"
-          value: "{{ node_info.json.org }}"
+          value: "{{ node_info.json.org | default('') }}"
+        - tag: "location_region"
+          value: "{{ global_region | default('') }}"
       host_macros: "{{ host_macro_dict }}"
