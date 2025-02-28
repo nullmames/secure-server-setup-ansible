@@ -8,7 +8,6 @@
   roles:
     - util_go_install
     - util_node_install
-    - util_docker_install
     - chainlink_node_install
     - chainlink_node_configure
     - chainlink_node_launch
