@@ -10,9 +10,9 @@ NC='\033[0m'       # No color, resets text formatting
 ports=$(netstat -nlt | grep 'LISTEN' | awk '{print $4}' | awk -F':' '{print $NF}' | grep -E '^[0-9]{5}$' | grep '57$' | sort -n)
 
 # Iterate over each port
-echo "----------------------------------------"
+echo "-----------------------------------------------"
 echo " Discovered Cosmos blockchains on this machine"
-echo "----------------------------------------"
+echo "-----------------------------------------------"
 for port in $ports; do
     # Fetch the JSON data using curl
     json_output=$(curl -sL 127.0.0.1:$port/status)
@@ -34,6 +34,7 @@ for port in $ports; do
     total_blocks_on_node=$((latest_block_height - earliest_block_height))
     total_blocks_on_node_formatted=$(printf "%'d" "$total_blocks_on_node")
     catching_up=$(echo "$json_output" | jq -r "$base.sync_info.catching_up")
+
     # Extract block times
     latest_block_time=$(echo "$json_output" | jq -r "$base.sync_info.latest_block_time")
     earliest_block_time=$(echo "$json_output" | jq -r "$base.sync_info.earliest_block_time")
@@ -41,6 +42,12 @@ for port in $ports; do
     # Convert block times to readable format
     latest_block_time_readable=$(date -d "${latest_block_time}" "+%a %b %d %H:%M:%S %Y")
     earliest_block_time_readable=$(date -d "${earliest_block_time}" "+%a %b %d %H:%M:%S %Y")
+
+    # Determine number of days of node data
+    latest_block_time_seconds=$(date -d "${latest_block_time}" +%s)
+    earliest_block_time_seconds=$(date -d "${earliest_block_time}" +%s)
+    diff_seconds=$((latest_block_time_seconds - earliest_block_time_seconds))
+    block_days_readable=$(echo "scale=1; $diff_seconds / 86400" | bc)
 
     # Determine color and bold formatting for catching_up
     if [ "$catching_up" == "true" ]; then
@@ -57,6 +64,7 @@ for port in $ports; do
     echo "    Earliest Block Height: $earliest_block_height"
     echo "    Earliest Block Time: $earliest_block_time_readable"
     echo "    Total Blocks on Node: $total_blocks_on_node_formatted"
+    echo "    Days of Node Data: $block_days_readable days"
     echo "    Indexing: $tx_index"
     echo -e "    Catching Up: ${catching_up_format}${catching_up}${NC}"
     echo ""
