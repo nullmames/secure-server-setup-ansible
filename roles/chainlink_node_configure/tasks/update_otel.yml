@@ -1,0 +1,12 @@
+---
+- name: Create otel docker-compose directory
+  ansible.builtin.file:
+    path: "{{ user_dir }}/docker-compose/otel"
+    state: directory
+    mode: "0755"
+
+- name: Update otel config file
+  ansible.builtin.template:
+    src: "templates/otel/config.yml.j2"
+    dest: "{{ user_dir }}/docker-compose/otel/config.yml"
+    mode: "0644"
