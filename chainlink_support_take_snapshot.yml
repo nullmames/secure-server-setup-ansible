@@ -10,12 +10,12 @@
     - name: Ensure chain exists on source
       become: true
       ansible.builtin.stat:
-        path: "{{ execution_snapshot_location }}"
+        path: "{{ execution_snapshot_locations[0] }}"
       register: snapshot_folder
 
     - name: Directory missing
       ansible.builtin.fail:
-        msg: "Directory {{ execution_snapshot_location }} does not exist. Wrong --limit?"
+        msg: "Directory {{ execution_snapshot_locations }} does not exist. Wrong --limit?"
       when: not snapshot_folder.stat.exists
 
   roles:
