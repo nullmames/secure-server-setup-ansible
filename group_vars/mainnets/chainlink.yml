@@ -3,8 +3,11 @@ folder: .chainlink
 repo: https://github.com/smartcontractkit/chainlink.git
 #
 ## versions
-node_version: v2.20.0
+node_version: eaa03c3a8ceb71d3e469b077f60a578af2532fe5 # v2.21.0
 p2p_port: 32451
+
+# Otel Collector
+otel_version: 0.108.0
 
 # Grafana dashboard
 dashboardUID: NGatdDfnk
