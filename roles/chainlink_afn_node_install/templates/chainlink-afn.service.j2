@@ -4,7 +4,8 @@ After=network-online.target
 
 [Service]
 User={{ ansible_user }}
-ExecStart=/usr/local/bin/afn run --check-rpc-pruning --mode active --keystore {{ user_dir }}/{{ folder }}/keystore-file
+ExecStart=/usr/local/bin/afn run --mode active --keystore {{ user_dir }}/{{ folder }}/keystore-file
+# --check-rpc-pruning
 WorkingDirectory={{ user_dir }}/{{ folder }}
 Restart=on-failure
 RestartSec=10
