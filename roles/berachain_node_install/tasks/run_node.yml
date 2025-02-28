@@ -3,41 +3,12 @@
   community.docker.docker_network:
     name: "{{ network }}_net"
 
-- name: Run berachain beacond container
-  community.docker.docker_container:
-    name: "{{ consensus_container_name }}"
-    image: "ghcr.io/berachain/beacon-kit:{{ consensus_container_version }}"
-    restart_policy: unless-stopped
-    state: started
-    restart: true
-    stop_timeout: 600
-    networks:
-      - name: "{{ network }}_net"
-    env: "{{ {'CHAIN_SPEC': consensus_chain_spec} if consensus_chain_spec is defined else {} }}"
-    ports:
-      # p2p
-      - "{{ custom_port_prefix }}56:{{ custom_port_prefix }}56"
-      # rpc for monitor
-      - "127.0.0.1:{{ custom_port_prefix }}57:26657"
-      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}57:26657"
-      # beaconkit.node-api
-      - "127.0.0.1:{{ custom_port_prefix }}30:3500"
-      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}30:3500"
-    volumes:
-      - "{{ folder }}/{{ consensus_container_name }}:/beacond"
-      - "{{ folder }}/jwtsecret:/jwtsecret:ro"
-      - /etc/localtime:/etc/localtime:ro
-    command:
-      - start
-      - --home=/beacond
-
 - name: Run berachain execution container
   community.docker.docker_container:
     name: "{{ execution_container_name }}"
     image: ghcr.io/paradigmxyz/reth:{{ execution_container_version }}
     restart_policy: unless-stopped
     state: started
-    restart: true
     pull: true
     stop_timeout: 600
     networks:
@@ -82,3 +53,40 @@
       - --authrpc.jwtsecret=/jwtsecret
       # Metrics
       - --metrics=0.0.0.0:6060
+      # Berachain specific
+      - --engine.persistence-threshold=0
+      - --engine.memory-block-buffer-target=0
+  register: execution_container
+
+- name: Sleep for 15 seconds to allow EL to start
+  when: execution_container is changed
+  ansible.builtin.pause:
+    seconds: 15
+
+- name: Run berachain beacond container
+  community.docker.docker_container:
+    name: "{{ consensus_container_name }}"
+    image: "ghcr.io/berachain/beacon-kit:{{ consensus_container_version }}"
+    restart_policy: unless-stopped
+    state: started
+    restart: true
+    stop_timeout: 600
+    networks:
+      - name: "{{ network }}_net"
+    env: "{{ {'CHAIN_SPEC': consensus_chain_spec} if consensus_chain_spec is defined else {} }}"
+    ports:
+      # p2p
+      - "{{ custom_port_prefix }}56:{{ custom_port_prefix }}56"
+      # rpc for monitor
+      - "127.0.0.1:{{ custom_port_prefix }}57:26657"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}57:26657"
+      # beaconkit.node-api
+      - "127.0.0.1:{{ custom_port_prefix }}30:3500"
+      - "{{ nebula_internal_ip_addr }}:{{ custom_port_prefix }}30:3500"
+    volumes:
+      - "{{ folder }}/{{ consensus_container_name }}:/beacond"
+      - "{{ folder }}/jwtsecret:/jwtsecret:ro"
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - start
+      - --home=/beacond
