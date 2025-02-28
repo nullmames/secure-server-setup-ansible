@@ -5,7 +5,7 @@ chain_id: "dydx-mainnet-1"
 repo: "https://github.com/dydxprotocol/v4-chain" # Ignored
 #
 # Version Number
-protocol_version: "8.0.5"
+protocol_version: "8.0.7"
 #
 node_version: "protocol/v{{ protocol_version }}"
 binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv{{ protocol_version }}/dydxprotocold-v{{ protocol_version }}-linux-amd64.tar.gz"
