@@ -1,0 +1,16 @@
+network: nillion
+folder: ".nillionapp"
+daemon: nilchaind
+chain_id: nillion-1
+node_version: v0.2.5
+genesis: https://storage.nodes.guru/nillion/genesis.json # replace
+repo: https://github.com/NillionNetwork/nilchain.git
+seeds: "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:28156,20e1000e88125698264454a884812746c2eb4807@testnet-seeds.lavenderfive.com:28156"
+custom_port_prefix: 281
+minimum_gas_price: "0.025unil"
+
+# Horcrux
+horcrux_group: horcrux_alfa
+sentries:
+  - 100.100.1.203
+  - 100.100.1.205

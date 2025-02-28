@@ -10,4 +10,4 @@ execution_snapshot_location: "{{ folder }}/chaindata"
 
 # Monitoring
 execution_rpc_port: 14760
-execution_public_rpc: https://zksync-mainnet.g.alchemy.com/v2/AF8LJavPyJCAZ8Z-naw1yXhqxSiapsWJ
+execution_public_rpc: https://mainnet.era.zksync.io

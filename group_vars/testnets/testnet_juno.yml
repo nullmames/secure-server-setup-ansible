@@ -2,7 +2,7 @@ network: juno
 folder: .juno
 daemon: junod
 chain_id: uni-6
-node_version: v27.0.0
+node_version: v28.0.1
 repo: https://github.com/CosmosContracts/juno
 genesis: https://github.com/CosmosContracts/testnets/raw/main/uni-6/genesis.json
 seeds: "babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:12656"
@@ -12,4 +12,4 @@ custom_port_prefix: 126
 
 snapshot_url: https://snapshots.polkachu.com/testnet-snapshots/juno/juno_11508012.tar.lz4
 
-upgrade_name: v27
+upgrade_name: v28

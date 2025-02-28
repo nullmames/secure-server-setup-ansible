@@ -3,8 +3,11 @@ network: berachain
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 254
 
+# Enable tenderduty Monitoring
+valoper: "cosmosvalcons1v45h4za2rzgac02xdhldheg74snyjd4hzsrddq"
+
 # Consensus Engine Details
-consensus_version: v1.1.2
+consensus_version: v1.1.3
 consensus_seeds: "2784663b1c3fa2984b18cba3cffcd9af6c6ecef5@35.203.60.135:26656,157a420b52213bdc6f8169f2a3283b43d4851a23@34.118.176.138:26656,7b525992c6d6a882aeba3e7a6659c47549d46654@35.203.45.113:26656"
 consensus_persistent_peers: ""
 consensus_chain_id: mainnet-beacon-80094

@@ -5,7 +5,7 @@ chain_id: "dydx-mainnet-1"
 repo: "https://github.com/dydxprotocol/v4-chain" # Ignored
 #
 # Version Number
-protocol_version: "8.0.1"
+protocol_version: "8.0.5"
 #
 node_version: "protocol/v{{ protocol_version }}"
 binary: "https://github.com/dydxprotocol/v4-chain/releases/download/protocol%2Fv{{ protocol_version }}/dydxprotocold-v{{ protocol_version }}-linux-amd64.tar.gz"
@@ -23,7 +23,8 @@ upgrade_name: v8.0
 # Add eth endpoint
 launch_commands: "--bridge-daemon-eth-rpc-endpoint http://100.100.3.110:5000 --optimistic-execution-enabled=true"
 
-snap_rpc: https://dydx-rpc.kingnodes.com:443
+snap_rpc: https://dydx-rpc.polkachu.com:443
+# snap_rpc: https://dydx-ops-rpc.kingnodes.com:443
 
 # Horcrux
 horcrux_group: horcrux_delta
