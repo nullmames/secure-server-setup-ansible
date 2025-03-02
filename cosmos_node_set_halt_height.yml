@@ -30,5 +30,18 @@
         line: "halt-height = {{ halt_height }}"
         state: present
 
+    - name: Temporarily reconfigure cosmovisor to disable restart
+      become: true
+      ansible.builtin.lineinfile:
+        path: "/etc/systemd/system/{{ daemon }}.service"
+        regexp: "^Restart="
+        line: "Restart=no"
+        state: present
+
+    - name: Reload systemd
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+
 - name: Restart binaries after hotfix
   ansible.builtin.import_playbook: cosmos_node_restart_binary.yml
