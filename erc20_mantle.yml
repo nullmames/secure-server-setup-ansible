@@ -1,0 +1,16 @@
+---
+- name: Mantle node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/all.yml"
+    - "group_vars/erc20_mainnet/mantle.yml"
+  vars:
+    ara_playbook_name: mantle node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_mantle
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
