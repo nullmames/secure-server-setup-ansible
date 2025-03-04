@@ -17,7 +17,7 @@
 - name: Initialize execution client
   community.docker.docker_container:
     name: "{{ execution_container_name }}-init"
-    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:{{ execution_container_version }}
+    image: "{{ execution_container_image | default('us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth') }}:{{ execution_container_version }}"
     restart_policy: unless-stopped
     state: started
     pull: true

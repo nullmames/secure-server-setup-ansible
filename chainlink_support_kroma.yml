@@ -1,9 +1,0 @@
----
-- name: Chainlink support node - kroma
-  hosts: all
-  gather_facts: true
-  vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
-  roles:
-    - chainlink_support_kroma
-    - util_docker_prune
