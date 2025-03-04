@@ -1,0 +1,16 @@
+---
+- name: Metis node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/all.yml"
+    - "group_vars/erc20_mainnet/metis.yml"
+  vars:
+    ara_playbook_name: metis node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_metis
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
