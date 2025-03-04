@@ -1,0 +1,16 @@
+---
+- name: Base node - Sepolia
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_sepolia/sepolia_base.yml"
+    - "group_vars/erc20_sepolia/sepolia_all.yml"
+  vars:
+    ara_playbook_name: base node
+    ara_playbook_labels: sepolia
+
+  roles:
+    - erc20_op-stack
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
