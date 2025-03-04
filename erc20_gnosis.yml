@@ -1,0 +1,16 @@
+---
+- name: Gnosis nethermind/lighthouse node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/gnosis.yml"
+
+  vars:
+    ara_playbook_name: gnosis node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_gnosis
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel

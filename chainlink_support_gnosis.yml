@@ -1,9 +1,0 @@
----
-- name: Chainlink support node - gnosis nethermind/lighthouse
-  hosts: all
-  gather_facts: true
-  vars_files:
-    - "group_vars/erc20_mainnet/gnosis.yml"
-  roles:
-    - chainlink_support_gnosis
-    - util_docker_prune
