@@ -5,6 +5,8 @@
   vars_files:
     - "group_vars/erc20_mainnet/{{ target }}.yml"
     - "group_vars/erc20_testnet/{{ target }}.yml"
+  vars:
+    ara_playbook_name: erc20 take snapshot
 
   pre_tasks:
     - name: Ensure chain exists on source
@@ -19,4 +21,4 @@
       when: not snapshot_folder.stat.exists
 
   roles:
-    - chainlink_support_take_snapshot
+    - erc20_take_snapshot
