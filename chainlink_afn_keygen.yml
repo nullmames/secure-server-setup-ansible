@@ -4,5 +4,6 @@
   gather_facts: true
   vars_files:
     - "group_vars/mainnets/chainlink_afn.yml"
+
   roles:
     - chainlink_afn_keygen

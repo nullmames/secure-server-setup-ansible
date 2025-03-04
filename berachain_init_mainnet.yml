@@ -2,9 +2,14 @@
 - name: Berachain Install and Init
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: berachain node
+    ara_playbook_labels: mainnet
   vars_files:
     - "group_vars/erc20_mainnet/berachain.yml"
 
   roles:
     - berachain_node_install
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel

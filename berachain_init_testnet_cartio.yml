@@ -4,7 +4,12 @@
   gather_facts: true
   vars_files:
     - "group_vars/erc20_testnet/testnet_berachain_cartio.yml"
+  vars:
+    ara_playbook_name: berachain node
+    ara_playbook_labels: testnet_cartio
 
   roles:
     - berachain_node_install
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel

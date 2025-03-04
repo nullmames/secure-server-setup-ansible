@@ -4,7 +4,11 @@
   gather_facts: true
   vars_files:
     - "group_vars/erc20_testnet/testnet_autonity.yml"
+  vars:
+    ara_playbook_name: autonity node
 
   roles:
     - autonity_node_install
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
