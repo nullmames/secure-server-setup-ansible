@@ -1,0 +1,8 @@
+util_ara_configure_new_labels: >-
+  [
+    "network:{{ network }}",
+    "{{ network }}_version:{{ node_version }}"
+    {%- if shared_config_version is defined and shared_config_version -%}
+    , "{{ network }}_config_version:{{ shared_config_version }}"
+    {%- endif -%}
+  ]

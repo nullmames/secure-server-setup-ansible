@@ -1,0 +1,39 @@
+# Add additional labels and enrichment to the ARA database based on playbook entries
+
+- name: Include vars
+  ansible.builtin.include_tasks: add_vars.yml
+
+- name: Run ARA API tasks
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Get the currently running playbook
+      ara_playbook:
+      register: running_playbook
+
+    - name: Query API for ARA playbook details
+      ansible.builtin.uri:
+        url: "{{ ara_base_url }}/api/v1/playbooks/{{ running_playbook.playbook.id | string }}"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: ara_response
+
+    - name: Extract current labels
+      ansible.builtin.set_fact:
+        current_labels: "{{ ara_response.json.labels | map(attribute='name') | list }}"
+
+    - name: Combine new and existing labels
+      ansible.builtin.set_fact:
+        combined_labels: "{{ current_labels + util_ara_configure_new_labels }}"
+
+    - name: Update ARA playbook with new labels
+      ansible.builtin.uri:
+        url: "{{ ara_base_url }}/api/v1/playbooks/{{ running_playbook.playbook.id | string }}"
+        method: PATCH
+        status_code: 200
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+        body:
+          labels: "{{ combined_labels }}"
