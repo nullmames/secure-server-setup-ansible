@@ -1,0 +1,16 @@
+---
+- name: XLayer node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/xlayer.yml"
+    - "group_vars/erc20_mainnet/all.yml"
+  vars:
+    ara_playbook_name: xlayer node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_xlayer
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel

@@ -1,0 +1,16 @@
+---
+- name: ZKSync node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/all.yml"
+    - "group_vars/erc20_mainnet/zksync.yml"
+  vars:
+    ara_playbook_name: zksync node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_zksync
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
