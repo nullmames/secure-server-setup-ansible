@@ -4,6 +4,9 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  vars:
+    ara_playbook_name: Cosmos snapshot
+    ara_playbook_labels: cosmos_snapshot
 
   pre_tasks:
     - name: Verify we're on the right node
@@ -18,3 +21,6 @@
 
   roles:
     - cosmos_node_reset_snapshot
+    - role: util_ara_configure
+      tags:
+        - node_snapshot

@@ -1,13 +1,18 @@
 ---
-- name: Aptos node upgrade
+- name: Aptos hotfix
   hosts: all
   gather_facts: false
+  vars:
+    ara_playbook_name: aptos hotfix
+    ara_playbook_labels: aptos_hotfix
   vars_files:
     - "{{ var_file }}"
-  tasks:
+
+  pre_tasks:
     - name: Verify hotfix_binary_url is set
       ansible.builtin.fail:
         msg: hotfix_binary_url is not set in config. Unable to continue.
       when: not hotfix_binary_url
+
   roles:
     - aptos_node_hotfix_install

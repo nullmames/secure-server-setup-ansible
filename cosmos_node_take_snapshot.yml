@@ -2,6 +2,9 @@
 - name: Snapshot a node
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: Cosmos take snapshot
+    ara_playbook_labels: cosmos_take_snapshot
   vars_files:
     - "{{ var_file }}"
 

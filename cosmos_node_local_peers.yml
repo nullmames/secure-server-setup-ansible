@@ -5,6 +5,9 @@
   any_errors_fatal: true
   vars_files:
     - "{{ var_file }}"
+  vars:
+    ara_playbook_name: Cosmos local peers
+    ara_playbook_labels: cosmos_local_peers
 
   pre_tasks:
     - name: Verify we're on the right node

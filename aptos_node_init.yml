@@ -2,6 +2,9 @@
 - name: Aptos node init
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: aptos node init
+    ara_playbook_labels: aptos_init
   vars_files:
     - "{{ var_file }}"
 

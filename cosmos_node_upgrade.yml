@@ -1,42 +1,35 @@
 ---
-#
 # Prepare a target for an upgrade
 # ansible-playbook main_cosmos_node_upgrade.yml -i inventory-testnet.ini --limit testnet_juno -e "upgrade_name=v12.0.0 node_version=1.2.3"
-- name: Verify pre-requisites
-  hosts: all
-  gather_facts: false
-  vars_files:
-    - "{{ var_file }}"
-
-  pre_tasks:
-    - name: Verify upgrade_name is set
-      ansible.builtin.fail:
-        msg: upgrade_name is not set in config. Unable to continue.
-      when: not upgrade_name
-
-    - name: Verify version is set
-      ansible.builtin.fail:
-        msg: version is not set in config. Unable to continue.
-      when: not node_version
-
-    - name: Verify we're on the right node
-      ansible.builtin.stat:
-        path: "{{ user_dir }}/{{ folder }}"
-      register: network_folder
-
-    - name: Directory missing
-      ansible.builtin.fail:
-        msg: "Directory {{ folder }} does not exist. Wrong --limit?"
-      when: not network_folder.stat.exists
-
-- name: Prepare network upgrade using cosmovisor
+- name: Cosmos Node Prep Upgrade
   hosts: all
   gather_facts: true
   vars_files:
     - "{{ var_file }}"
+  vars:
+    ara_playbook_name: cosmos node upgrade
+    ara_playbook_labels: cosmos_upgrade
+
+  pre_tasks:
+    - name: Stat folder
+      ansible.builtin.stat:
+        path: "{{ user_dir }}/{{ folder }}"
+      register: network_folder
+
+    - name: Verify prior to play
+      ansible.builtin.assert:
+        that:
+          - upgrade_name is defined
+          - node_version is defined
+          - network_folder.stat.exists
+        fail_msg: "Upgrade name or version missing or directory {{ folder }} does not exist. Wrong --limit?"
+
   roles:
     - util_go_install
     - cosmos_node_install
     - cosmos_node_cosmovisor
     - cosmos_node_tools
     - cosmos_node_upgrade
+    - role: util_ara_configure
+      tags:
+        - node_upgrade

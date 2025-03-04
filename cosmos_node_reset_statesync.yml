@@ -4,6 +4,9 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  vars:
+    ara_playbook_name: Cosmos statesync
+    ara_playbook_labels: cosmos_statesync
 
   pre_tasks:
     - name: Verify we're on the right node
@@ -18,3 +21,6 @@
 
   roles:
     - cosmos_node_reset_statesync
+    - role: util_ara_configure
+      tags:
+        - node_statesync

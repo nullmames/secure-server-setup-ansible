@@ -5,6 +5,10 @@
   vars_files:
     - "{{ var_file }}"
     - "{{ user_file }}"
+  vars:
+    ara_playbook_name: Cosmos gentx
+    ara_playbook_labels: cosmos_gentx
+
   roles:
     - util_go_install
     - cosmos_node_install

@@ -4,6 +4,7 @@
   gather_facts: true
   vars:
     ara_playbook_name: aptos node upgrade
+    ara_playbook_labels: aptos_upgrade
   vars_files:
     - "{{ var_file }}"
 
@@ -13,16 +14,9 @@
         msg: build_profile is not set in config. Unable to continue.
       when: not build_profile
 
-    - name: Record vars for ara
-      run_once: true
-      delegate_to: localhost
-      ara_record:
-        key: "{{ item.key }}"
-        value: "{{ item.value }}"
-        type: "{{ item.type }}"
-      loop:
-        - { key: "aptos_version", value: "{{ node_version }}", type: "text" }
-
   roles:
     - aptos_node_dependencies
     - aptos_node_install
+    - role: util_ara_configure
+      tags:
+        - node_upgrade

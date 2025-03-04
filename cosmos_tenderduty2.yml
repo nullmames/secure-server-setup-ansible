@@ -3,6 +3,8 @@
   hosts: all
   gather_facts: false
   any_errors_fatal: true
+  vars:
+    ara_playbook_name: Cosmos Tenderduty
 
   roles:
     - cosmos_tenderduty2

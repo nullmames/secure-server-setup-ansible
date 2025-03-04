@@ -4,5 +4,9 @@
   gather_facts: false
   vars_files:
     - "{{ var_file }}"
+  vars:
+    ara_playbook_name: Cosmos remove binary
+    ara_playbook_labels: cosmos_remove_binary
+
   roles:
     - cosmos_node_remove
