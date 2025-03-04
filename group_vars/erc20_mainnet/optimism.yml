@@ -7,7 +7,7 @@ consensus_port_prefix: 233
 # Execution
 # https://github.com/ethereum-optimism/op-geth
 execution_container_name: op-geth
-execution_container_version: v1.101411.6
+execution_container_version: v1.101411.8
 execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
