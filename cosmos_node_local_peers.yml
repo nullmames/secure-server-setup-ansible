@@ -6,7 +6,7 @@
   vars_files:
     - "{{ var_file }}"
   vars:
-    ara_playbook_name: Cosmos local peers
+    ara_playbook_name: cosmos local peers
     ara_playbook_labels: cosmos_local_peers
 
   pre_tasks:

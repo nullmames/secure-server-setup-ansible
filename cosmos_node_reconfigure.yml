@@ -6,7 +6,7 @@
     - "{{ var_file }}"
     - "{{ user_file }}"
   vars:
-    ara_playbook_name: Cosmos reconfigure node
+    ara_playbook_name: cosmos reconfigure node
     ara_playbook_labels: cosmos_reconfigure_node
 
   pre_tasks:

@@ -4,7 +4,7 @@
   gather_facts: false
   any_errors_fatal: true
   vars:
-    ara_playbook_name: Cosmos Tenderduty
+    ara_playbook_name: cosmos tenderduty
 
   roles:
     - cosmos_tenderduty2

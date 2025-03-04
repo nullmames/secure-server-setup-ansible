@@ -8,9 +8,9 @@
   vars:
     ara_playbook_name: zksync node
     ara_playbook_labels: mainnet
+    ara_label_includes: node_upgrade_clel
 
   roles:
     - erc20_zksync
     - util_docker_prune
-    - role: util_ara_configure
-      tags: node_upgrade_clel
+    - util_ara_configure

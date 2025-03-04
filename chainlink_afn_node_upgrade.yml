@@ -6,10 +6,10 @@
     - "group_vars/mainnets/chainlink_afn.yml"
   vars:
     ara_playbook_name: chainlink_afn
+    ara_label_includes: node_upgrade
 
   roles:
     - util_rust_install
     - chainlink_afn_node_install
     - chainlink_afn_node_configure
-    - role: util_ara_configure
-      tags: node_upgrade
+    - util_ara_configure

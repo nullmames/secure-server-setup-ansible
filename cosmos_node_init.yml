@@ -6,8 +6,9 @@
     - "{{ var_file }}"
     - "{{ user_file }}"
   vars:
-    ara_playbook_name: Cosmos init
+    ara_playbook_name: cosmos init
     ara_playbook_labels: cosmos_init
+    ara_label_includes: node_upgrade
 
   pre_tasks:
     - name: Verify sudo
@@ -22,9 +23,7 @@
     - cosmos_node_cosmovisor
     - cosmos_node_tools
     - cosmos_node_launch
-    - role: util_ara_configure
-      tags:
-        - node_upgrade
+    - util_ara_configure
 
 - name: Install monitoring
   ansible.builtin.import_playbook: util_zabbix_cosmos_node_install.yml

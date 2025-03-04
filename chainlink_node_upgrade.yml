@@ -7,6 +7,7 @@
     - "group_vars/erc20_mainnet/all.yml"
   vars:
     ara_playbook_name: chainlink_ocr
+    ara_label_includes: node_upgrade
 
   roles:
     - util_go_install
@@ -15,5 +16,4 @@
     - chainlink_node_configure
     - chainlink_node_launch
     - util_docker_prune
-    - role: util_ara_configure
-      tags: node_upgrade
+    - util_ara_configure

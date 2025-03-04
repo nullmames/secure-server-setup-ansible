@@ -8,9 +8,9 @@
   vars:
     ara_playbook_name: base node
     ara_playbook_labels: sepolia
+    ara_label_includes: node_upgrade_clel
 
   roles:
     - erc20_op-stack
     - util_docker_prune
-    - role: util_ara_configure
-      tags: node_upgrade_clel
+    - util_ara_configure

@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: true
   vars:
-    ara_playbook_name: Cosmos set halt-height
+    ara_playbook_name: cosmos set halt-height
     ara_playbook_labels: cosmos_halt_height
   vars_files:
     - "{{ var_file }}"

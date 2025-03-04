@@ -6,7 +6,7 @@
     - "{{ var_file }}"
     - "{{ user_file }}"
   vars:
-    ara_playbook_name: Cosmos gentx
+    ara_playbook_name: cosmos gentx
     ara_playbook_labels: cosmos_gentx
 
   roles:
