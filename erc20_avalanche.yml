@@ -5,6 +5,12 @@
   vars_files:
     - "group_vars/erc20_mainnet/avalanche.yml"
     - "group_vars/erc20_mainnet/all.yml"
+  vars:
+    ara_playbook_name: avalanche node
+    ara_playbook_labels: mainnet
+
   roles:
-    - chainlink_support_avalanche
+    - erc20_avalanche
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
