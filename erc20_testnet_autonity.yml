@@ -1,14 +1,15 @@
 ---
-- name: Autonity Install and Init
+- name: Autonity node - testnet
   hosts: all
   gather_facts: true
   vars_files:
     - "group_vars/erc20_testnet/testnet_autonity.yml"
   vars:
     ara_playbook_name: autonity node
+    ara_playbook_labels: testnet
 
   roles:
-    - autonity_node_install
+    - erc20_autonity
     - util_docker_prune
     - role: util_ara_configure
       tags: node_upgrade_clel
