@@ -5,7 +5,12 @@
   vars_files:
     - "group_vars/erc20_sepolia/sepolia_arbitrum.yml"
     - "group_vars/erc20_sepolia/sepolia_all.yml"
+  vars:
+    ara_playbook_name: arbitrum node
+    ara_playbook_labels: sepolia
+
   roles:
-    - util_docker_install
-    - chainlink_support_arbitrum
+    - erc20_arbitrum
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel

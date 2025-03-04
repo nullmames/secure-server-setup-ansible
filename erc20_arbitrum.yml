@@ -5,6 +5,12 @@
   vars_files:
     - "group_vars/erc20_mainnet/arbitrum.yml"
     - "group_vars/erc20_mainnet/all.yml"
+  vars:
+    ara_playbook_name: arbitrum node
+    ara_playbook_labels: mainnet
+
   roles:
-    - chainlink_support_arbitrum
+    - erc20_arbitrum
     - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
