@@ -11,6 +11,6 @@
     ara_label_includes: node_upgrade_clel
 
   roles:
-    - erc20_optimism
+    - erc20_op-stack
     - util_docker_prune
     - util_ara_configure
