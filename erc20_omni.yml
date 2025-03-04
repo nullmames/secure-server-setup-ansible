@@ -1,0 +1,15 @@
+---
+- name: Omni node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/omni.yml"
+  vars:
+    ara_playbook_name: omni node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_omni
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
