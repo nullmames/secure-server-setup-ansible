@@ -1,0 +1,16 @@
+---
+- name: Ethereum reth/lighthouse full node
+  hosts: all
+  gather_facts: true
+  vars_files:
+    - "group_vars/erc20_mainnet/ethereum_reth.yml"
+    - "group_vars/erc20_mainnet/all.yml"
+  vars:
+    ara_playbook_name: ethereum node
+    ara_playbook_labels: mainnet
+
+  roles:
+    - erc20_ethereum_reth_lighthouse
+    - util_docker_prune
+    - role: util_ara_configure
+      tags: node_upgrade_clel
