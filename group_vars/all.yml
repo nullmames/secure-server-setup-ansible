@@ -58,6 +58,9 @@ nebula_lighthouse_extra_config: {}
 
 nebula_firewall_block_action: drop
 
+# ARA
+ara_base_url: "http://10.254.100.12:8000"
+
 # Locale
 config_system_locale: "en_US.UTF-8"
 config_system_language: "en_US.UTF-8"
