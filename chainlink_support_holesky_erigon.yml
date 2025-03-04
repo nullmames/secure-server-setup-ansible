@@ -1,9 +1,0 @@
----
-- name: Chainlink support node - ethereum prysm/nethermind on goerli
-  hosts: all
-  gather_facts: true
-  vars_files:
-    - "group_vars/mainnets/chainlink_support.yml"
-  roles:
-    - chainlink_support_ethereum_holesky_erigon
-    - util_docker_prune
