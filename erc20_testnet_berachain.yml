@@ -1,5 +1,5 @@
 ---
-- name: Berachain Install and Init
+- name: Berachain node - cArtio
   hosts: all
   gather_facts: true
   vars_files:
@@ -9,7 +9,7 @@
     ara_playbook_labels: testnet_cartio
 
   roles:
-    - berachain_node_install
+    - erc20_berachain
     - util_docker_prune
     - role: util_ara_configure
       tags: node_upgrade_clel
