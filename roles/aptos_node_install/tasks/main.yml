@@ -24,9 +24,8 @@
       args:
         chdir: "{{ user_dir }}/source/{{ network }}"
       loop:
-        - "rustup override set stable"
+        - "rustup override unset"
         - "cargo clean"
-        - "cargo update"
         - "cargo build --jobs {{ (ansible_processor_vcpus * (2 / 3)) | round | int }} --package aptos-node --profile {{ build_profile }}"
       environment:
         PATH: "{{ path }}"
