@@ -1,6 +1,0 @@
----
-- name: Install or reinstall go
-  hosts: all
-  gather_facts: true
-  roles:
-    - util_go_install
