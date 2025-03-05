@@ -8,7 +8,7 @@
   vars:
     ara_playbook_name: kroma node
     ara_playbook_labels: mainnet
-    ara_label_includes: node_upgrade_clel
+    ara_label_includes: node_version_clel
 
   roles:
     - erc20_op-stack-custom

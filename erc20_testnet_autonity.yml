@@ -7,7 +7,7 @@
   vars:
     ara_playbook_name: autonity node
     ara_playbook_labels: testnet
-    ara_label_includes: node_upgrade_clel
+    ara_label_includes: node_version_clel
 
   roles:
     - erc20_autonity
