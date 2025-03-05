@@ -1,7 +1,9 @@
 # Add additional labels and enrichment to the ARA database based on playbook entries
 
-- name: Include vars
-  ansible.builtin.include_tasks: add_vars.yml
+- name: Include additional vars
+  ansible.builtin.include_vars:
+    file: "{{ ara_label_includes }}.yml"
+  when: ara_label_includes is defined
 
 - name: Run ARA API tasks
   delegate_to: localhost
@@ -25,7 +27,7 @@
 
     - name: Combine new and existing labels
       ansible.builtin.set_fact:
-        combined_labels: "{{ current_labels + util_ara_configure_new_labels }}"
+        combined_labels: "{{ current_labels + (util_ara_configure_new_labels | default([])) }}"
 
     - name: Update ARA playbook with new labels
       ansible.builtin.uri:
