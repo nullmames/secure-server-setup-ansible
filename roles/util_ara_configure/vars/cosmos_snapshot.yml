@@ -1,3 +1,0 @@
-util_ara_configure_new_labels:
-  - "network:{{ network }}"
-  - "snapshot_url:{{ snapshot_url }}"

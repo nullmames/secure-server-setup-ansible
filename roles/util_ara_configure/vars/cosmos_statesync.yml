@@ -1,3 +1,0 @@
-util_ara_configure_new_labels:
-  - "network:{{ network }}"
-  - "snap_rpc:{{ snap_rpc }}"
