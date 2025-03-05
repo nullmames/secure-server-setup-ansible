@@ -9,7 +9,8 @@ execution_chain_id: piccadilly
 execution_container_name: autonity
 execution_container_version: v1.0.2-alpha
 # Snapshots
-execution_snapshot_location: "{{ folder }}/{{ execution_container_name }}/autonity/chaindata"
+execution_snapshot_locations:
+  - "{{ folder }}/{{ execution_container_name }}/autonity/chaindata"
 
 # Oracle Details
 oracle_container_name: autonity-oracle
