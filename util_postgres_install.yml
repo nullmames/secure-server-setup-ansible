@@ -1,0 +1,8 @@
+---
+- name: Deploy Postgresql Cluster
+  hosts: postgres
+  gather_facts: true
+  become: true
+
+  roles:
+    - util_postgres_install

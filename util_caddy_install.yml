@@ -2,5 +2,8 @@
 - name: Install or reinstall caddy
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: caddy install
+
   roles:
     - util_caddy_install

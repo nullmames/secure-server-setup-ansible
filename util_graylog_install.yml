@@ -3,6 +3,7 @@
   gather_facts: true
   become: true
   vars:
+    ara_playbook_name: graylog install and update
     mongo_db_version: 6.0.18
     graylog_version: 6.1
     graylog_root_password: !vault |

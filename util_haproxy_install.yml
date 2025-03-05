@@ -2,5 +2,8 @@
 - name: Install and configure haproxy
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: haproxy install
+
   roles:
     - { role: util_haproxy_install, when: haproxy_config is defined }

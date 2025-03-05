@@ -2,6 +2,9 @@
 - name: Install or reinstall docker
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: docker install
+
   roles:
     - util_docker_install
     - util_docker_prune

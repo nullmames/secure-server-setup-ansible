@@ -4,6 +4,9 @@
   gather_facts: false
   vars_files:
     - "{{ user_file }}"
+  vars:
+    ara_playbook_name: bare metal init
+    ara_playbook_labels: init
   become: true
 
   vars_prompt:

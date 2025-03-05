@@ -1,9 +1,14 @@
 ---
-- name: Solana node init
+- name: Solana node
   hosts: all
   gather_facts: true
   vars_files:
     - "group_vars/erc20_mainnet/solana.yml"
+  vars:
+    ara_playbook_name: solana node
+    ara_playbook_labels: mainnet
+    ara_label_includes: node_version
+
   roles:
     - solana_node_install
     - solana_node_launch

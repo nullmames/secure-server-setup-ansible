@@ -2,6 +2,8 @@
 - name: Upgrade Nebula Binary
   hosts: all
   gather_facts: true
+  vars:
+    ara_playbook_name: nebula upgrade
   become: true
 
   vars_files:

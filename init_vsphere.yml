@@ -4,6 +4,10 @@
   hosts: all
   gather_facts: true
   become: true
+  vars:
+    ara_playbook_name: vsphere init
+    ara_playbook_labels: init
+
   pre_tasks:
     - name: Apt update and upgrade
       ansible.builtin.apt:

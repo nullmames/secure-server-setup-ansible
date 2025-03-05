@@ -5,6 +5,9 @@
   become: true
   vars_files:
     - "{{ user_file }}"
+  vars:
+    ara_playbook_name: bare metal setup
+    ara_playbook_labels: setup,secure
 
   pre_tasks:
     - name: Verify sudo on localhost
