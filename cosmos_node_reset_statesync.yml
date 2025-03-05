@@ -1,5 +1,5 @@
 ---
-- name: Statesync a node
+- name: Statesync a Cosmos node
   hosts: all
   gather_facts: false
   vars_files:
@@ -7,7 +7,7 @@
   vars:
     ara_playbook_name: cosmos statesync
     ara_playbook_labels: cosmos_statesync
-    ara_label_includes: cosmos_statesync
+    ara_label_includes: node_version
 
   pre_tasks:
     - name: Verify we're on the right node
@@ -23,3 +23,9 @@
   roles:
     - cosmos_node_reset_statesync
     - util_ara_configure
+
+  post_tasks:
+    - name: Record statesync rpc used to Ara
+      ara_record:
+        key: "snap_rpc"
+        value: "{{ snap_rpc }}"

@@ -7,7 +7,7 @@
   vars:
     ara_playbook_name: cosmos snapshot
     ara_playbook_labels: cosmos_snapshot
-    ara_label_includes: cosmos_snapshot
+    ara_label_includes: node_version
 
   pre_tasks:
     - name: Verify we're on the right node
@@ -23,3 +23,9 @@
   roles:
     - cosmos_node_reset_snapshot
     - util_ara_configure
+
+  post_tasks:
+    - name: Record snapshot used to Ara
+      ara_record:
+        key: "snapshot_url"
+        value: "{{ snapshot_url }}"
