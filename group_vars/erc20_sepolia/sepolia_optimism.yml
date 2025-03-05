@@ -6,12 +6,12 @@ consensus_port_prefix: 233
 
 # Execution
 execution_container_name: testnet-op-geth
-execution_container_version: v1.101411.8
+execution_container_version: v1.101500.0
 execution_snapshot_location: "{{ folder }}/op-geth/geth/chaindata"
 
 # Consensus
 consensus_container_name: testnet-op-node
-consensus_container_version: v1.10.3
+consensus_container_version: v1.11.1
 
 # Optimism specific
 execution_network: op-sepolia

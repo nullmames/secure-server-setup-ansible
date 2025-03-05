@@ -1,6 +1,7 @@
 # Base
 # Per https://github.com/base-org/node/releases
 # Uses op-geth and base specific node
+# SUPERCHAIN
 network: testnet_base
 folder: "{{ user_dir }}/docker-compose/{{ network }}"
 custom_port_prefix: 135
@@ -8,12 +9,12 @@ consensus_port_prefix: 235
 
 # Execution
 execution_container_name: testnet-base-geth
-execution_container_version: v1.101411.4
+execution_container_version: v1.101500.1
 execution_snapshot_location: "{{ folder }}/base-geth-data/geth/chaindata"
 
 # Consensus
 consensus_container_name: testnet-base-node
-consensus_container_version: v0.11.1
+consensus_container_version: v1.11.2
 # consensus_snapshot_location: "{{ folder }}/tbd"
 
 # Base specific
