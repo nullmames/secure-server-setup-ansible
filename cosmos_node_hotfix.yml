@@ -9,7 +9,7 @@
   vars:
     ara_playbook_name: cosmos node hotfix
     ara_playbook_labels: cosmos_hotfix
-    ara_label_includes: node_upgrade
+    ara_label_includes: node_version
 
   pre_tasks:
     - name: Confirm with User

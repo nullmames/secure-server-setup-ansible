@@ -8,7 +8,7 @@
   vars:
     ara_playbook_name: cosmos init
     ara_playbook_labels: cosmos_init
-    ara_label_includes: node_upgrade
+    ara_label_includes: node_version
 
   pre_tasks:
     - name: Verify sudo

@@ -9,7 +9,7 @@
   vars:
     ara_playbook_name: cosmos node upgrade
     ara_playbook_labels: cosmos_upgrade
-    ara_label_includes: node_upgrade
+    ara_label_includes: node_version
 
   pre_tasks:
     - name: Stat folder
